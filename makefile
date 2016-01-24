@@ -40,8 +40,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(CORE_INCLUDES)
 	$(CC) $(CFLAGS) $< -o $@
 
 $(LIBDIR)/core.a: $(CORE_OBJ) $(OBJDIR)/Xwin_main.o
-	-rm $(LIBDIR)/core.a
-	ar -cvq  $(LIBDIR)/core.a $(CORE_OBJ) $(OBJDIR)/Xwin_main.o
+	-rm $(LIBDIR)/libEngineMk1.a
+	ar -cvq  $(LIBDIR)/libEngineMk1.a $(CORE_OBJ) $(OBJDIR)/Xwin_main.o
 
 coreWin: $(WIN_CORE_OBJ) $(WOBJDIR)/winmain.wo
 coreLinux: $(CORE_OBJ) $(OBJDIR)/Xwin_main.o $(LIBDIR)/core.a
