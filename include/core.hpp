@@ -657,12 +657,12 @@ public:
 	//enum	TYPE	{BROADCAST,
 	bool	Initialize_Server(TYPE i_eType, unsigned short i_usPort);
 	bool	Initialize_Client(TYPE i_eType, const std::string & i_szServer_Address, unsigned short i_usPort);
-	bool	Send(int *i_lpiData, size_t i_zNum_To_Send);
-	bool	Send(short * i_lpsData, size_t i_zNum_To_Send);
-	bool	Send(char * i_lplpcData, size_t i_zNum_To_Send);
-	bool	Send(unsigned int *i_lpiData, size_t i_zNum_To_Send);
-	bool	Send(unsigned short * i_lpsData, size_t i_zNum_To_Send);
-	bool	Send(unsigned char * i_lplpcData, size_t i_zNum_To_Send);
+	bool	Send(const int *i_lpiData, size_t i_zNum_To_Send);
+	bool	Send(const short * i_lpsData, size_t i_zNum_To_Send);
+	bool	Send(const char * i_lplpcData, size_t i_zNum_To_Send);
+	bool	Send(const unsigned int *i_lpiData, size_t i_zNum_To_Send);
+	bool	Send(const unsigned short * i_lpsData, size_t i_zNum_To_Send);
+	bool	Send(const unsigned char * i_lplpcData, size_t i_zNum_To_Send);
 	bool	Receive(int * i_lpiData, size_t i_zNum_To_Receive);
 	bool	Receive(short * i_lpsData, size_t i_zNum_To_Receive);
 	bool	Receive(char * i_lpcData, size_t i_zNum_To_Receive);

@@ -4,7 +4,7 @@
 #include <core.hpp>
 #include <sstream>
 #include <cstring>
-
+#include <errno.h>
 
 class SOCKET_INFO_LINUX
 {
@@ -23,6 +23,7 @@ public:
 
 bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 {
+	bool bError_Reported = false;
 	struct addrinfo hints, *res;
 	int sockfd;
 	std::ostringstream szPort;
@@ -39,13 +40,25 @@ bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = AI_PASSIVE;     // fill in my IP for me
 
-		bError = (getaddrinfo(NULL, szPort.str().c_str(), &hints, &(lpSock_Info->m_lpsAddress_Info)) != -1);
+		bError = (getaddrinfo(NULL, szPort.str().c_str(), &hints, &(lpSock_Info->m_lpsAddress_Info)) == -1);
+	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to allocate socket information\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
 	}
 	// make a socket:
 	if (!bError)
 	{
 		lpSock_Info->m_iSocket_ID = socket(lpSock_Info->m_lpsAddress_Info->ai_family, lpSock_Info->m_lpsAddress_Info->ai_socktype, lpSock_Info->m_lpsAddress_Info->ai_protocol);
 		bError = lpSock_Info->m_iSocket_ID == -1;
+	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to get address information\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
 	}
 
 	// bind it to the port we passed in to getaddrinfo():
@@ -54,21 +67,45 @@ bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 	{
 		bError = (bind(lpSock_Info->m_iSocket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, lpSock_Info->m_lpsAddress_Info->ai_addrlen) == -1);
 	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to open socket\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
+	}
 	if (!bError)
 	{
-		bError = (listen(lpSock_Info->m_iSocket_ID, 2) == -1);
+		bError = (listen(lpSock_Info->m_iSocket_ID, 20) == -1);
+	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to bind\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
 	}
 	m_bIs_Initialized = !bError;
 	if (bError)
 	{
-		delete lpSock_Info;
+		if (lpSock_Info)
+			delete lpSock_Info;
 		m_lpvSystem_Info = NULL;
+		if (!bError_Reported)
+		{
+			fprintf(stderr,"Error initializing port: failed to listen %i\n",errno);
+			bError_Reported = true;
+			lpSock_Info->m_iLast_Error = errno;
+		}
+	}
+	if (bError_Reported)
+	{
+		fprintf(stderr,"%s\n",strerror(errno));
 	}
 
 	return !bError;
 }
 bool	COMMSOCKET::Initialize_Client(TYPE i_eType, const std::string &i_szServer_Addr, unsigned short i_usPort)
 {
+	bool bError_Reported = false;
 	struct addrinfo hints, *res;
 	int sockfd;
 	std::ostringstream szPort;
@@ -85,13 +122,25 @@ bool	COMMSOCKET::Initialize_Client(TYPE i_eType, const std::string &i_szServer_A
 		hints.ai_family = AF_UNSPEC;  // use IPv4 or IPv6, whichever
 		hints.ai_socktype = SOCK_STREAM;
 
-		bError = (getaddrinfo(NULL, szPort.str().c_str(), &hints, &(lpSock_Info->m_lpsAddress_Info)) != -1);
+		bError = (getaddrinfo(i_szServer_Addr.c_str(), szPort.str().c_str(), &hints, &(lpSock_Info->m_lpsAddress_Info)) == -1);
+	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to allocate socket information\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
 	}
 	// make a socket:
 	if (!bError)
 	{
 		lpSock_Info->m_iSocket_ID = socket(lpSock_Info->m_lpsAddress_Info->ai_family, lpSock_Info->m_lpsAddress_Info->ai_socktype, lpSock_Info->m_lpsAddress_Info->ai_protocol);
 		bError = lpSock_Info->m_iSocket_ID == -1;
+	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to get addr info\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
 	}
 
 	// connect to the remote server we passed in to getaddrinfo():
@@ -100,12 +149,28 @@ bool	COMMSOCKET::Initialize_Client(TYPE i_eType, const std::string &i_szServer_A
 	{
 		bError = (connect(lpSock_Info->m_iSocket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, lpSock_Info->m_lpsAddress_Info->ai_addrlen) == -1);
 	}
+	else if (!bError_Reported)
+	{
+		fprintf(stderr,"Error initializing port: failed to open socket\n");
+		bError_Reported = true;
+		lpSock_Info->m_iLast_Error = errno;
+	}
 	m_bIs_Initialized = !bError;
 	m_bIs_Connected = !bError;
 	if (bError)
 	{
 		delete lpSock_Info;
 		m_lpvSystem_Info = NULL;
+		if (!bError_Reported)
+		{
+			fprintf(stderr,"Error initializing port: failed to connect\n");
+			bError_Reported = true;
+			lpSock_Info->m_iLast_Error = errno;
+		}
+	}
+	if (bError_Reported)
+	{
+		fprintf(stderr,"%s\n",strerror(errno));
 	}
 	return !bError;
 }
@@ -114,7 +179,7 @@ int * g_lpiData_Container = NULL;
 size_t g_zInt_Data_Container_Size = 0;
 short * g_lpsData_Container = NULL;
 size_t g_zShort_Data_Container_Size = 0;
-bool	COMMSOCKET::Send(int *i_lpiData, size_t i_zNum_To_Send)
+bool	COMMSOCKET::Send(const int *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -133,7 +198,7 @@ bool	COMMSOCKET::Send(int *i_lpiData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Send(short *i_lpiData, size_t i_zNum_To_Send)
+bool	COMMSOCKET::Send(const short *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -153,7 +218,7 @@ bool	COMMSOCKET::Send(short *i_lpiData, size_t i_zNum_To_Send)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Send(char * i_lplpcData, size_t i_zNum_To_Send)
+bool	COMMSOCKET::Send(const char * i_lplpcData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -173,7 +238,7 @@ bool	COMMSOCKET::Send(char * i_lplpcData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Send(unsigned int *i_lpiData, size_t i_zNum_To_Send)
+bool	COMMSOCKET::Send(const unsigned int *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -192,7 +257,7 @@ bool	COMMSOCKET::Send(unsigned int *i_lpiData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Send(unsigned short *i_lpiData, size_t i_zNum_To_Send)
+bool	COMMSOCKET::Send(const unsigned short *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -212,7 +277,7 @@ bool	COMMSOCKET::Send(unsigned short *i_lpiData, size_t i_zNum_To_Send)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Send(unsigned char * i_lplpcData, size_t i_zNum_To_Send)
+bool	COMMSOCKET::Send(const unsigned char * i_lplpcData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
