@@ -10,11 +10,13 @@ class SOCKET_INFO_LINUX
 {
 public:
 	int 			m_iSocket_ID;
+	int				m_iAccept_Socket_ID;
 	struct addrinfo * m_lpsAddress_Info;
 	int				m_iLast_Error;
 
 	SOCKET_INFO_LINUX(void)
 	{
+		m_iAccept_Socket_ID = -1;
 		m_iSocket_ID = -1;
 		m_lpsAddress_Info = NULL;
 		m_iLast_Error = 0;
@@ -51,8 +53,8 @@ bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 	// make a socket:
 	if (!bError)
 	{
-		lpSock_Info->m_iSocket_ID = socket(lpSock_Info->m_lpsAddress_Info->ai_family, lpSock_Info->m_lpsAddress_Info->ai_socktype, lpSock_Info->m_lpsAddress_Info->ai_protocol);
-		bError = lpSock_Info->m_iSocket_ID == -1;
+		lpSock_Info->m_iAccept_Socket_ID = socket(lpSock_Info->m_lpsAddress_Info->ai_family, lpSock_Info->m_lpsAddress_Info->ai_socktype, lpSock_Info->m_lpsAddress_Info->ai_protocol);
+		bError = lpSock_Info->m_iAccept_Socket_ID == -1;
 	}
 	else if (!bError_Reported)
 	{
@@ -65,7 +67,7 @@ bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 
 	if (!bError)
 	{
-		bError = (bind(lpSock_Info->m_iSocket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, lpSock_Info->m_lpsAddress_Info->ai_addrlen) == -1);
+		bError = (bind(lpSock_Info->m_iAccept_Socket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, lpSock_Info->m_lpsAddress_Info->ai_addrlen) == -1);
 	}
 	else if (!bError_Reported)
 	{
@@ -75,7 +77,7 @@ bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 	}
 	if (!bError)
 	{
-		bError = (listen(lpSock_Info->m_iSocket_ID, 20) == -1);
+		bError = (listen(lpSock_Info->m_iAccept_Socket_ID, 20) == -1);
 	}
 	else if (!bError_Reported)
 	{
@@ -168,6 +170,8 @@ bool	COMMSOCKET::Initialize_Client(TYPE i_eType, const std::string &i_szServer_A
 			lpSock_Info->m_iLast_Error = errno;
 		}
 	}
+	else
+		lpSock_Info->m_iAccept_Socket_ID = lpSock_Info->m_iSocket_ID;
 	if (bError_Reported)
 	{
 		fprintf(stderr,"%s\n",strerror(errno));
@@ -194,7 +198,7 @@ bool	COMMSOCKET::Send(const int *i_lpiData, size_t i_zNum_To_Send)
 		}
 		for (unsigned int uiI = 0; uiI < i_zNum_To_Send; uiI++)
 			g_lpiData_Container[uiI] = htonl(i_lpiData[uiI]);
-		bSuccess = Send((char *)g_lpiData_Container,i_zNum_To_Send * sizeof(int));
+		bSuccess = Send((const char *)g_lpiData_Container,i_zNum_To_Send * sizeof(int));
 	}
 	return bSuccess;
 }
@@ -213,7 +217,7 @@ bool	COMMSOCKET::Send(const short *i_lpiData, size_t i_zNum_To_Send)
 		}
 		for (unsigned int uiI = 0; uiI < i_zNum_To_Send; uiI++)
 			g_lpsData_Container[uiI] = htons(i_lpiData[uiI]);
-		bSuccess = Send(g_lpsData_Container,sizeof(short) * i_zNum_To_Send);
+		bSuccess = Send((const char *)g_lpsData_Container,sizeof(short) * i_zNum_To_Send);
 	}
 	return bSuccess;
 }
@@ -224,17 +228,28 @@ bool	COMMSOCKET::Send(const char * i_lplpcData, size_t i_zNum_To_Send)
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
 		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
-		size_t zSent;
+		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
-		while (zSent_Total < i_zNum_To_Send && uiTries < m_uiMax_Tries)
+		while (zSent != -1 && zSent_Total < i_zNum_To_Send && uiTries < m_uiMax_Tries)
 		{
 			unsigned int uiTransmit_Idx = zSent_Total;
 			zSent = send(lpSock_Info->m_iSocket_ID,&(i_lplpcData[uiTransmit_Idx]),i_zNum_To_Send - uiTransmit_Idx,0);
-			zSent_Total += zSent;
-			uiTries++;
+			if (zSent == -1)
+				lpSock_Info->m_iLast_Error = errno;
+			else
+			{
+	//			for (unsigned int uiI = 0; uiI < zSent; uiI++)
+	//			{
+	//				printf("Sent %x\n",i_lplpcData[uiTransmit_Idx + uiI]);
+	//			}
+				zSent_Total += zSent;
+				uiTries++;
+			}
 		}
 		bSuccess = (zSent_Total == i_zNum_To_Send);
+		if (zSent == -1)
+			fprintf(stderr,"%s\n",strerror(errno));
 	}
 	return bSuccess;
 }
@@ -253,7 +268,7 @@ bool	COMMSOCKET::Send(const unsigned int *i_lpiData, size_t i_zNum_To_Send)
 		}
 		for (unsigned int uiI = 0; uiI < i_zNum_To_Send; uiI++)
 			g_lpiData_Container[uiI] = htonl(i_lpiData[uiI]);
-		bSuccess = Send((char *)g_lpiData_Container,i_zNum_To_Send * sizeof(int));
+		bSuccess = Send((const unsigned char *)g_lpiData_Container,i_zNum_To_Send * sizeof(int));
 	}
 	return bSuccess;
 }
@@ -272,7 +287,7 @@ bool	COMMSOCKET::Send(const unsigned short *i_lpiData, size_t i_zNum_To_Send)
 		}
 		for (unsigned int uiI = 0; uiI < i_zNum_To_Send; uiI++)
 			g_lpsData_Container[uiI] = htons(i_lpiData[uiI]);
-		bSuccess = Send(g_lpsData_Container,sizeof(short) * i_zNum_To_Send);
+		bSuccess = Send((const unsigned char *)g_lpsData_Container,sizeof(short) * i_zNum_To_Send);
 	}
 	return bSuccess;
 }
@@ -283,17 +298,30 @@ bool	COMMSOCKET::Send(const unsigned char * i_lplpcData, size_t i_zNum_To_Send)
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
 		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
-		size_t zSent;
+		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
-		while (zSent_Total < i_zNum_To_Send && uiTries < m_uiMax_Tries)
+		while (zSent != -1 && zSent_Total < i_zNum_To_Send && uiTries < m_uiMax_Tries)
 		{
 			unsigned int uiTransmit_Idx = zSent_Total;
 			zSent = send(lpSock_Info->m_iSocket_ID,&(i_lplpcData[uiTransmit_Idx]),i_zNum_To_Send - uiTransmit_Idx,0);
-			zSent_Total += zSent;
-			uiTries++;
+			if (zSent == -1)
+				lpSock_Info->m_iLast_Error = errno;
+			else
+			{
+//				printf("Sent");
+//				for (unsigned int uiI = 0; uiI < zSent; uiI++)
+//				{
+//					printf(" %x",i_lplpcData[uiTransmit_Idx + uiI]);
+//				}
+//				printf("\n");
+				zSent_Total += zSent;
+				uiTries++;
+			}
 		}
 		bSuccess = (zSent_Total == i_zNum_To_Send);
+		if (zSent == -1)
+			fprintf(stderr,"%s\n",strerror(errno));
 	}
 	return bSuccess;
 }
@@ -309,7 +337,7 @@ bool	COMMSOCKET::Receive(int * i_lpiData, size_t i_zNum_To_Receive)
 			g_lpiData_Container = new int[i_zNum_To_Receive];
 			g_zInt_Data_Container_Size = i_zNum_To_Receive;
 		}
-		bSuccess = Receive((char *)g_zInt_Data_Container_Size,i_zNum_To_Receive * sizeof(int));
+		bSuccess = Receive((char *)g_lpiData_Container,i_zNum_To_Receive * sizeof(int));
 		if (bSuccess)
 		{
 			for (unsigned int uiI = 0; uiI < i_zNum_To_Receive; uiI++)
@@ -346,16 +374,25 @@ bool	COMMSOCKET::Receive(char * i_lpcData, size_t i_zNum_To_Receive)
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
 		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
-		size_t zSent;
+		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
-		while (zSent_Total < i_zNum_To_Receive && uiTries < m_uiMax_Tries)
+		while (zSent != -1 && zSent_Total < i_zNum_To_Receive && uiTries < m_uiMax_Tries)
 		{
 			unsigned int uiTransmit_Idx = zSent_Total;
 			zSent = recv(lpSock_Info->m_iSocket_ID,&(i_lpcData[uiTransmit_Idx]),i_zNum_To_Receive - uiTransmit_Idx,0);
-			zSent_Total += zSent;
-			uiTries++;
+			if (zSent == -1)
+				lpSock_Info->m_iLast_Error = errno;
+			else
+			{
+				zSent_Total += zSent;
+				uiTries++;
+			}
 		}
+		if (zSent == -1)
+			fprintf(stderr,"%s\n",strerror(errno));
+		if (uiTries >= m_uiMax_Tries)
+			fprintf(stderr,"Receive signed: max tries exceeded\n");
 		bSuccess = (zSent_Total == i_zNum_To_Receive);
 	}
 	return bSuccess;
@@ -372,7 +409,7 @@ bool	COMMSOCKET::Receive(unsigned int * i_lpiData, size_t i_zNum_To_Receive)
 			g_lpiData_Container = new int[i_zNum_To_Receive];
 			g_zInt_Data_Container_Size = i_zNum_To_Receive;
 		}
-		bSuccess = Receive((char *)g_zInt_Data_Container_Size,i_zNum_To_Receive * sizeof(int));
+		bSuccess = Receive((unsigned char *)g_lpiData_Container,i_zNum_To_Receive * sizeof(int));
 		if (bSuccess)
 		{
 			for (unsigned int uiI = 0; uiI < i_zNum_To_Receive; uiI++)
@@ -393,7 +430,7 @@ bool	COMMSOCKET::Receive(unsigned short * i_lpsData, size_t i_zNum_To_Receive)
 			g_lpsData_Container = new short[i_zNum_To_Receive];
 			g_zShort_Data_Container_Size = i_zNum_To_Receive;
 		}
-		bSuccess = Receive((char *)g_lpsData_Container,i_zNum_To_Receive * sizeof(short));
+		bSuccess = Receive((unsigned char *)g_lpsData_Container,i_zNum_To_Receive * sizeof(short));
 		if (bSuccess)
 		{
 			for (unsigned int uiI = 0; uiI < i_zNum_To_Receive; uiI++)
@@ -409,17 +446,33 @@ bool	COMMSOCKET::Receive(unsigned char * i_lpcData, size_t i_zNum_To_Receive)
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
 		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
-		size_t zSent;
+		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
-		while (zSent_Total < i_zNum_To_Receive && uiTries < m_uiMax_Tries)
+		while (zSent_Total < i_zNum_To_Receive && uiTries < m_uiMax_Tries && zSent != -1)
 		{
 			unsigned int uiTransmit_Idx = zSent_Total;
 			zSent = recv(lpSock_Info->m_iSocket_ID,&(i_lpcData[uiTransmit_Idx]),i_zNum_To_Receive - uiTransmit_Idx,0);
-			zSent_Total += zSent;
-			uiTries++;
+			if (zSent == -1)
+				lpSock_Info->m_iLast_Error = errno;
+			else
+			{
+				zSent_Total += zSent;
+//				printf("Recv");
+//				for (unsigned int uiI = 0; uiI < zSent; uiI++)
+//				{
+//					printf(" %x",i_lpcData[uiTransmit_Idx + uiI]);
+//				}
+//				printf("\n");
+				uiTries++;
+			}
 		}
-		bSuccess = (zSent_Total == i_zNum_To_Receive);
+		if (uiTries >= m_uiMax_Tries)
+			fprintf(stderr,"Receive unsigned: max tries exceeded\n");
+		if (zSent == -1)
+			fprintf(stderr,"%s\n",strerror(errno));
+			
+		bSuccess = (zSent != -1 && zSent_Total == i_zNum_To_Receive);
 	}
 	return bSuccess;
 }
@@ -429,7 +482,16 @@ bool	COMMSOCKET::Accept_Connections(void)
 	if (m_bIs_Initialized && m_lpvSystem_Info)
 	{
 		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
-		m_bIs_Connected |= (accept(lpSock_Info->m_iSocket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, &lpSock_Info->m_lpsAddress_Info->ai_addrlen) != -1);
+		lpSock_Info->m_iSocket_ID = accept(lpSock_Info->m_iAccept_Socket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, &lpSock_Info->m_lpsAddress_Info->ai_addrlen);
+		if (lpSock_Info->m_iSocket_ID == -1)
+		{
+			if (errno != EWOULDBLOCK && errno != EAGAIN)
+			{
+				lpSock_Info->m_iLast_Error = errno;
+				fprintf(stderr,"%s\n",strerror(errno));
+			}
+		}
+		m_bIs_Connected |= (lpSock_Info->m_iSocket_ID != -1);
 	}
 	return m_bIs_Connected;
 }
@@ -440,7 +502,11 @@ bool COMMSOCKET::Close(void)
 	{
 		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
 		close(lpSock_Info->m_iSocket_ID);
+		if (lpSock_Info->m_iSocket_ID != lpSock_Info->m_iAccept_Socket_ID)
+			close(lpSock_Info->m_iAccept_Socket_ID);
+
 		m_bIs_Connected = false;
+		lpSock_Info->m_iAccept_Socket_ID = -1;
 		lpSock_Info->m_iSocket_ID = -1;
 		freeaddrinfo(lpSock_Info->m_lpsAddress_Info);
 	}
