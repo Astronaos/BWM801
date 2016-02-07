@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{68d3e8a0-4a5f-4573-915c-4471ee9fd6b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{9b2aefb2-851a-4eb8-8875-6cdccb8d55cf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core_gfx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_mapspace.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_pair.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_quad.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_sockets_linux.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core_triplet.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\winmain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Xwin_main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\core.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core_hexmap.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\core_mapbase.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
