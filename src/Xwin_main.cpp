@@ -12,6 +12,7 @@
 #include <FTGL/ftgl.h>
 #include <iostream>
 #include <dirent.h> // for working with the file tree / directories
+#include <thread>
 
 #define NIL (0)       // A name for the void pointer
 
@@ -20,6 +21,8 @@ FT_Library 		g_ftLibrary;
 Display	* g_lpdpyDisplay = NULL;
 Window		g_wWindow;
 Window 		g_wRoot;
+GLXContext g_glc;
+
 MAIN::KEYID Key_Map(unsigned int uiKey);
 MAIN::MOUSEBUTTON Mouse_Button_Map(unsigned int i_uiButton);
 void Sleep(unsigned int i_uiLength)
@@ -52,18 +55,62 @@ PAIR<unsigned int>	Fix_Coordinate_Window(const PAIR<unsigned int> &i_tPosition)
 	tRet.m_tY = (uiHeight - i_tPosition.m_tY);
 	return tRet;
 }
+
+void Gfx_Loop(void)
+{
+	bool bFirst_Draw = true;
+	while (!g_lpMain->Pending_Quit())
+	{
+		if (g_lpMain->Pending_Draw() && g_lpMain->Get_Window_Size().m_tX > 0 && g_lpMain->Get_Window_Size().m_tY > 0)
+		{
+			glXMakeCurrent(g_lpdpyDisplay, g_wWindow, g_glc);
+			if (bFirst_Draw)
+			{
+				if(FT_Init_FreeType(&g_ftLibrary))
+				{
+				  fprintf(stderr, "Could not init freetype library\n");
+				}
+				g_lpMain->gfx_init();
+				g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
+			}
+			g_lpMain->Draw();
+			glFlush();
+			glXSwapBuffers(g_lpdpyDisplay, g_wWindow);
+			bFirst_Draw = false;
+		}
+	}
+	g_lpMain->gfx_close();
+}
+
+void Main_Timer_Loop(void)
+{
+	timespec tTime_Last;
+	clock_gettime(CLOCK_MONOTONIC_RAW,&tTime_Last);
+	while (!g_lpMain->Pending_Quit())
+	{
+		timespec tTime_Curr;
+		clock_gettime(CLOCK_MONOTONIC_RAW,&tTime_Curr);
+		double	dTimestep = (tTime_Curr.tv_sec - tTime_Last.tv_sec) + (tTime_Curr.tv_nsec - tTime_Last.tv_nsec) * 1.0e-9;
+		tTime_Last = tTime_Curr;
+		g_lpMain->On_Timer(0,dTimestep);
+	}
+}
+
+
 int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 {
 	bool	bWindow_Debugging_Mode = false;
 	bool	bCtrl_Key = false;
 	bool	bShift_Key = false;
 	bool	bF12_Key = false;
+	std::vector<std::thread> vThread_List;
 
 	if (!g_lpMain)
 	{
 		std::cerr << "No main class instantiated.  Exiting." << std::endl;
 		exit(1);
 	}
+	XInitThreads();
 	//printf("%i %i %i %i %i %i %i\n",MAIN::MB_LEFT, MAIN::MB_CTR, MAIN::MB_RGT, MAIN::MB_SCROLL_V, MAIN::MB_SCROLL_H, MAIN::MB_X1, MAIN::MB_X2);
 	// Open the display
 
@@ -110,17 +157,17 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 	if (g_lpMain && g_lpMain->Get_Window_Name().size() > 0)
 		XStoreName(g_lpdpyDisplay, g_wWindow, g_lpMain->Get_Window_Name().c_str());
 //	printf("glx\n");
-	GLXContext glc = glXCreateContext(g_lpdpyDisplay, lpXVisual, 0, GL_TRUE);
-	 glXMakeCurrent(g_lpdpyDisplay, g_wWindow, glc);
+	g_glc = glXCreateContext(g_lpdpyDisplay, lpXVisual, 0, GL_TRUE);
+	 glXMakeCurrent(g_lpdpyDisplay, g_wWindow, g_glc);
 	// We want to get MapNotify events
 //	XSelectInput(g_lpdpyDisplay, g_wWindow, StructureNotifyMask|ExposureMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask||KeyPressMask|KeyReleaseMask|EnterWindowMask|LeaveWindowMask);
 
 
+	vThread_List.push_back(std::thread(Main_Timer_Loop));
+	vThread_List.push_back(std::thread(Gfx_Loop));
 
 	std::vector<XButtonEvent> veButton_Events;
 	bool	bReady_To_Process_Buttons = true;
-	timespec tTime_Last;
-	clock_gettime(CLOCK_MONOTONIC_RAW,&tTime_Last);
 	do
 	{
 		while (XEventsQueued(g_lpdpyDisplay,QueuedAfterFlush) > 0)
@@ -299,34 +346,14 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 				break;
 			}
 		}
-//		printf("Main loop\n");
-		timespec tTime_Curr;
-		clock_gettime(CLOCK_MONOTONIC_RAW,&tTime_Curr);
-		double	dTimestep = (tTime_Curr.tv_sec - tTime_Last.tv_sec) + (tTime_Curr.tv_nsec - tTime_Last.tv_nsec) * 1.0e-9;
-		tTime_Last = tTime_Curr;
-		if (!bFirst_Draw)
-			g_lpMain->On_Timer(0,dTimestep);
-		if (g_lpMain->Pending_Draw() && g_lpMain->Get_Window_Size().m_tX > 0 && g_lpMain->Get_Window_Size().m_tY > 0)
-		{
-			glXMakeCurrent(g_lpdpyDisplay, g_wWindow, glc);
-			if (bFirst_Draw)
-			{
-				if(FT_Init_FreeType(&g_ftLibrary))
-				{
-				  fprintf(stderr, "Could not init freetype library\n");
-				}
-				g_lpMain->gfx_init();
-				g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
-			}
-			g_lpMain->Draw();
-			glFlush();
-			glXSwapBuffers(g_lpdpyDisplay, g_wWindow);
-			bFirst_Draw = false;
-		}
 	}
 	while (!g_lpMain->Pending_Quit());
-	g_lpMain->gfx_close();
-	glXDestroyContext(g_lpdpyDisplay, glc);
+	for (std::vector<std::thread>::iterator cI = vThread_List.begin(); cI != vThread_List.end(); cI++)
+	{
+		cI->join();
+	}
+	
+	glXDestroyContext(g_lpdpyDisplay, g_glc);
 
 	//XFreeGC(g_lpdpyDisplay, gc);
 	XDestroyWindow(g_lpdpyDisplay,g_wWindow);
