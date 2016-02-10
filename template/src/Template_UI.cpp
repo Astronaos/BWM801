@@ -55,19 +55,22 @@ void TEMPLATE_MAIN::on_mouse_wheel(MOUSEBUTTON i_eWheel, int i_iWheel_Delta, con
 }
 void TEMPLATE_MAIN::on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
 {
-	m_csEvent_List.Set();
-	while (!m_qEvent_List.empty())
+	if (!m_qEvent_List.empty())
 	{
-		button_id eEvent = m_qEvent_List.front();
-		m_qEvent_List.pop_front();
-		switch(eEvent)
+		m_csEvent_List.Set();
+		while (!m_qEvent_List.empty())
 		{
-		case QUIT_REQUEST:
-			Request_Quit();
-			break;
+			button_id eEvent = m_qEvent_List.front();
+			m_qEvent_List.pop_front();
+			switch(eEvent)
+			{
+			case QUIT_REQUEST:
+				Request_Quit();
+				break;
+			}
 		}
+		m_csEvent_List.Unset();
 	}
-	m_csEvent_List.Unset();
 	m_dTimer += i_dDelta_Time_s;
 	bool bFlasher = fmod(m_dTimer,1.0) < 0.5;
 	m_bFlasher_1s_50p = bFlasher;
