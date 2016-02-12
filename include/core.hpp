@@ -935,7 +935,7 @@ public:
 	double Get_Isometric_Camera_Angle(void){return m_dCamera_Isometric_Angle;}
 	double Get_Camera_Rotation_Angle(void){return m_dCamera_Rotation_Angle;}
 
-	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = cos(-1.0) * 0.25; m_dCamera_Rotation_Angle = 0.0;}
+	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = 60.0;  m_dCamera_Rotation_Angle = 0.0; /* 30^deg for iso angle */}
 
 	std::deque<PAIR<int> > Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const;
 

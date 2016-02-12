@@ -46,15 +46,8 @@ void InvertList(std::vector <PAIR<double> > & io_vpVertex_List)
 	//io_vpVertex_List.push_back(*vList.begin());
 }
 
-std::vector<PAIR<double> > g_vpPushbutton_Ellipse;
-
 void Draw_Pushbutton(bool i_bState, DRAW_CALLBACK * i_vDrawing_Fn, void * i_lpvDraw_Info)
 {
-	if (g_vpPushbutton_Ellipse.empty())
-	{
-		GenerateEllipse(1.0,1.0,g_vpPushbutton_Ellipse);
-	}
-
 	PAIR<double> pShift;
 	glPushMatrix();
 		if (!i_bState)
@@ -76,14 +69,14 @@ void Draw_Pushbutton(bool i_bState, DRAW_CALLBACK * i_vDrawing_Fn, void * i_lpvD
 			glEnd();
 			glBegin(GL_TRIANGLE_FAN);
 				glVertex2d(0.0,0.0);
-				glVertexList(g_vpPushbutton_Ellipse);
+				glVertexList(g_vEllipse);
 			glEnd();
 		glPopMatrix();
 			// draw button
 		glLineWidth(3.0);
 		glColor4d(0.0,0.0,0.0,1.0); // black
 		glBegin(GL_LINE_LOOP);
-			glVertexList(g_vpPushbutton_Ellipse);
+			glVertexList(g_vEllipse);
 		glEnd();
 		// draw user portion
 		i_vDrawing_Fn(i_lpvDraw_Info);
@@ -133,6 +126,7 @@ std::vector<PAIR<double> > g_vRounded_Rectangle_TR;
 std::vector<PAIR<double> > g_vRounded_Rectangle_BR;
 std::vector<PAIR<double> > g_vRounded_Rectangle_BL;
 std::vector<PAIR<double> > g_vEllipse;
+
 GLuint i_uiFilled_RR_List = 0;
 GLuint i_uiOutline_RR_List = 0;
 
@@ -180,6 +174,7 @@ void Initialize_Circle_Vectors(void)
 			cI[0] += pOffset;
 		}
 	}
+
 }
 
 void Draw_Rounded_Rectangle(bool i_bFilled)
