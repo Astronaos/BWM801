@@ -10,8 +10,8 @@
 #include <windowsx.h>
 #endif
 #ifdef _WIN32
-	double nan(const char * i_lpszFlags);//{return NAN;}
-	bool isnan(const double & i_dValue);//{return _isnan(i_dValue);}
+//	double nan(const char * i_lpszFlags);//{return NAN;}
+//	bool isnan(const double & i_dValue);//{return _isnan(i_dValue);}
 #elif !defined __MINGW32__
 	#include <unistd.h>
 	void Sleep(unsigned int i_uiLength);
@@ -415,7 +415,8 @@ public:
 		std::map<int,unsigned int> cMap;
 		for (std::vector<PANE>::const_iterator cIter = m_tUser_Panes.begin(); cIter != m_tUser_Panes.end(); cIter++)
 		{
-			cMap[cIter->m_iLevel] = 0;
+			cMap.insert(std::pair<int, unsigned int> (cIter->m_iLevel,0));
+//			cMap[cIter->m_iLevel] = 0;
 		}
 		for (std::vector<PANE>::const_iterator cIter = m_tUser_Panes.begin(); cIter != m_tUser_Panes.end(); cIter++)
 		{
