@@ -49,7 +49,9 @@ PAIR<unsigned int>	Fix_Coordinate_Window(const PAIR<unsigned int> &i_tPosition)
 	return tRet;
 }
 
-void MainThread(void *pData)
+
+
+void Gfx_Loop(void)
 {
 	LARGE_INTEGER	cLast_Counter, cFrequency;
 	QueryPerformanceCounter(&cLast_Counter);
@@ -62,62 +64,70 @@ void MainThread(void *pData)
 	while (g_hWnd == 0) // wait until main thread has created a window
 		Sleep(20);
 	int				iPixelFormat;
-	PIXELFORMATDESCRIPTOR pfd = 
+	PIXELFORMATDESCRIPTOR pfd =
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),
-			1,
-			PFD_DRAW_TO_WINDOW |
-			PFD_SUPPORT_OPENGL |
-			PFD_DOUBLEBUFFER,
-			PFD_TYPE_RGBA,
-			24,
-			0,0,0,0,0,0,
-			0,0,
-			0,0,0,0,0,
-			32,
-			8,
-			0,
-			PFD_MAIN_PLANE,
-			0,
-			0,0,0
+		1,
+		PFD_DRAW_TO_WINDOW |
+		PFD_SUPPORT_OPENGL |
+		PFD_DOUBLEBUFFER,
+		PFD_TYPE_RGBA,
+		24,
+		0,0,0,0,0,0,
+		0,0,
+		0,0,0,0,0,
+		32,
+		8,
+		0,
+		PFD_MAIN_PLANE,
+		0,
+		0,0,0
 	};
 	g_hDC = GetDC(g_hWnd);
 
-	iPixelFormat = ChoosePixelFormat(g_hDC,&pfd);
-	SetPixelFormat(g_hDC,iPixelFormat,&pfd);
+	iPixelFormat = ChoosePixelFormat(g_hDC, &pfd);
+	SetPixelFormat(g_hDC, iPixelFormat, &pfd);
 
 	g_hRC = wglCreateContext(g_hDC);
-	wglMakeCurrent(g_hDC,g_hRC);
+	wglMakeCurrent(g_hDC, g_hRC);
 
 	g_bRC_Created = true;
-//	g_lpMain->On_Window_Move(PAIR<unsigned int>(0,0));
-//	g_lpMain->On_Window_Resize(PAIR<unsigned int>(1680 - 6,1050 - 6 - 30));
 
 	g_lpMain->gfx_init();
 	g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
+
+	std::deque<double> vFrame_Rate;
 	while (!g_lpMain->Pending_Quit())
 	{
-		LARGE_INTEGER	cCounter;
-		QueryPerformanceCounter(&cCounter);
-		double	dTimestep = (cCounter.QuadPart - cLast_Counter.QuadPart) * dInv_Freq;
-		cLast_Counter = cCounter;
-		if (!bFirst_Draw)
-			g_lpMain->On_Timer(0,dTimestep);
-		if (g_bRC_Created && g_lpMain->Pending_Draw())
+		if (g_lpMain->Pending_Draw() && g_lpMain->Get_Window_Size().m_tX > 0 && g_lpMain->Get_Window_Size().m_tY > 0)
 		{
-			wglMakeCurrent(g_hDC,g_hRC); // just in case someone did something funny
-			g_lpMain->Draw();
-			glFlush();
-			SwapBuffers(wglGetCurrentDC());
-			bFirst_Draw = false;
+			LARGE_INTEGER	cCounter;
+			QueryPerformanceCounter(&cCounter);
+			double	dTimestep = (cCounter.QuadPart - cLast_Counter.QuadPart) * dInv_Freq;
+			cLast_Counter = cCounter;
+			vFrame_Rate.push_back(dTimestep);
+			double dDraw_Time = 0.0;
+			for (unsigned int uiI = 0; uiI < vFrame_Rate.size(); uiI++)
+				dDraw_Time += vFrame_Rate[uiI];
+			g_lpMain->Set_Frame_Rate(vFrame_Rate.size() / dDraw_Time);
+			if (vFrame_Rate.size() > 10)
+				vFrame_Rate.pop_front();
+			if (g_bRC_Created && g_lpMain->Pending_Draw())
+			{
+				wglMakeCurrent(g_hDC, g_hRC); // just in case someone did something funny
+				g_lpMain->Draw();
+				glFlush();
+				SwapBuffers(wglGetCurrentDC());
+				bFirst_Draw = false;
+			}
 		}
-		Sleep(0); // pass back to Windows
+		Sleep(0);
 	}
 	g_lpMain->gfx_close();
 	g_bRC_Created = false;
 	for (unsigned int uiI = 0; uiI < 11; uiI++)
 	{
-		for (unsigned int uiJ =0; uiJ < 4; uiJ++)
+		for (unsigned int uiJ = 0; uiJ < 4; uiJ++)
 		{
 			if (g_uiFont_Glyph_Lists_Poly[uiI][uiJ] != -1)
 				glDeleteLists(g_uiFont_Glyph_Lists_Poly[uiI][uiJ], 256);
@@ -128,14 +138,30 @@ void MainThread(void *pData)
 	for (unsigned int uiI = 0; uiI < 8; uiI++)
 	{
 		if (g_cszFont_Paths[uiI][0] != 0)
-			RemoveFontResourceEx(g_cszFont_Paths[uiI].c_str(),FR_PRIVATE,0);
+			RemoveFontResourceEx(g_cszFont_Paths[uiI].c_str(), FR_PRIVATE, 0);
 	}
 
-	wglMakeCurrent(g_hDC,NULL);
- 	ReleaseDC(g_hWnd,g_hDC);
+	wglMakeCurrent(g_hDC, NULL);
+	ReleaseDC(g_hWnd, g_hDC);
 	wglDeleteContext(g_hRC);
-	SendMessage(g_hWnd,WM_DESTROY,0,0);
-	_endthread();
+}
+
+void Main_Timer_Loop(void)
+{
+	LARGE_INTEGER	cLast_Counter, cFrequency;
+	QueryPerformanceCounter(&cLast_Counter);
+	QueryPerformanceFrequency(&cFrequency);
+	double	dFreq = (double)(cFrequency.QuadPart);
+	double	dInv_Freq = 1.0 / dFreq;
+	while (!g_lpMain->Pending_Quit())
+	{
+		LARGE_INTEGER	cCounter;
+		QueryPerformanceCounter(&cCounter);
+		double	dTimestep = (cCounter.QuadPart - cLast_Counter.QuadPart) * dInv_Freq;
+		cLast_Counter = cCounter;
+		g_lpMain->On_Timer(0, dTimestep);
+		Sleep(66); // pass back to Windows
+	}
 }
 
 /* COMPILER(MINGW) - MinGW GCC */
@@ -157,6 +183,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	int iReturn;
 	if (g_lpMain)
 	{
+		std::vector<std::thread> vThread_List;
+
 		Initialize_Circle_Vectors();
 		g_lpMain->init();
 
@@ -195,6 +223,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 		ShowWindow(g_hWnd,nCmdShow);
 		UpdateWindow(g_hWnd);
+
+		vThread_List.push_back(std::thread(Main_Timer_Loop));
+		vThread_List.push_back(std::thread(Gfx_Loop));
 
 		while (iReturn = GetMessage(&msg,NULL,0,0))
 		{
@@ -521,8 +552,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
     switch (msg)
    	{
     case WM_CREATE:
-		g_hMainThread = _beginthread(MainThread,0,NULL);
-
 		// no break - set window size
 	case WM_SIZE:
 		{
