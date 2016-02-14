@@ -387,11 +387,15 @@ private:
 	bool	m_bWindow_Has_Focus;
 	QUAD<unsigned int> m_tWindow_Box;
 	std::vector< PANE > m_tUser_Panes;
+
+	double	m_dFrame_Rate;
 	
 public:
 	MAIN(void);
 	void Set_Window_Name(const std::string &i_szName) {m_szWindow_Name = i_szName;};
 	std::string Get_Window_Name(void) {return m_szWindow_Name;}
+	double	Get_Frame_Rate(void) const {return m_dFrame_Rate;}
+	void	Set_Frame_Rate(const double & i_dFrame_Rate) {m_dFrame_Rate = i_dFrame_Rate;}
 
 	void Set_Draw_Mode(DRAW_MODE i_eMode) {m_eDraw_Mode = i_eMode;}
 	pane_id Register_Pane(bool i_bVisible, unsigned int i_uiUser_ID = -1)
@@ -930,12 +934,13 @@ template <typename T> class ISOMETRIC_HEXMAP : public MAPBASE<T>
 private:
 	double m_dCamera_Isometric_Angle;
 	double m_dCamera_Rotation_Angle;
+	unsigned int m_uiMap_Grid_List;
 public:
-
+	unsigned int Get_Map_List(void){return m_uiMap_Grid_List;}
 	double Get_Isometric_Camera_Angle(void){return m_dCamera_Isometric_Angle;}
 	double Get_Camera_Rotation_Angle(void){return m_dCamera_Rotation_Angle;}
 
-	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = 60.0;  m_dCamera_Rotation_Angle = 0.0; /* 30^deg for iso angle */}
+	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = 60.0;  m_dCamera_Rotation_Angle = 0.0; /* 30^deg for iso angle */ m_uiMap_Grid_List = -1;}
 
 	std::deque<PAIR<int> > Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const;
 
@@ -948,7 +953,7 @@ public:
 	void Draw_Hex_Side(const PAIR<int> & i_tPosition, unsigned int i_uiSide) const;
 	void Draw_Hex_Outline(const PAIR<int> & i_tPosition) const;
 
-	void Draw_Grid(void) const;
+	void Draw_Grid(void);
 	void Draw_Map(void * io_lpvData) const; // void * for user defined data that needs to be sent to each space for drawing
 
 	void	Center_Map(const PAIR<int> & i_tPosition);
