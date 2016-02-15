@@ -110,7 +110,6 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 		std::cerr << "No main class instantiated.  Exiting." << std::endl;
 		exit(1);
 	}
-	Initialize_Circle_Vectors();
 	XInitThreads();
 	//printf("%i %i %i %i %i %i %i\n",MAIN::MB_LEFT, MAIN::MB_CTR, MAIN::MB_RGT, MAIN::MB_SCROLL_V, MAIN::MB_SCROLL_H, MAIN::MB_X1, MAIN::MB_X2);
 	// Open the display

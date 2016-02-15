@@ -157,7 +157,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	int iReturn;
 	if (g_lpMain)
 	{
-		Initialize_Circle_Vectors();
 		g_lpMain->init();
 
 		g_bRC_Created = false;
