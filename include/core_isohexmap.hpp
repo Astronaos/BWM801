@@ -84,6 +84,7 @@ template <typename T>PAIR<double> ISOMETRIC_HEXMAP<T>::Get_Hex_Center(const PAIR
 
 	cRet.m_tX = (i_tGrid_Position.m_tX * 1.5 + 1.0) * 0.5;
 	cRet.m_tY = (i_tGrid_Position.m_tY * 2.0 + 1.0 + iY_Offset) * 0.5;
+ //@@TODO: rotations and projection
 	return cRet;
 }
 
@@ -264,7 +265,7 @@ template <typename T> void ISOMETRIC_HEXMAP<T>::Prepare_Draw(void) const
 	glTranslated(-MAPBASE<T>::m_tScroll_Position.m_tX + 0.5 * MAPBASE<T>::m_dDisplay_Aspect_Ratio,-MAPBASE<T>::m_tScroll_Position.m_tY + 0.5,0.0);
 	glScaled(MAPBASE<T>::m_dZoom,MAPBASE<T>::m_dZoom,MAPBASE<T>::m_dZoom);
 	glScaled(MAPBASE<T>::m_dR,MAPBASE<T>::m_dR,1.0);
+	glRotated(-m_dCamera_Isometric_Angle,1.0,0.0,0.0);
 	glRotated(m_dCamera_Rotation_Angle,0.0,0.0,1.0);
-	glRotated(m_dCamera_Isometric_Angle,0.0,1.0,0.0);
 }
 

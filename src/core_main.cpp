@@ -28,6 +28,8 @@ MAIN::MAIN(void)
 	unsigned int uiNum_Keys = (unsigned int)(KEY_MAX - KEY_NOOP);
 	m_lpbKey_Status = new bool [uiNum_Keys];
 	memset(m_lpbKey_Status,0,sizeof(bool) * uiNum_Keys);
+
+	Initialize_Circle_Vectors();
 }
 
 void MAIN::On_Key_Down(MAIN::KEYID eKey_ID, unsigned char chScan_Code, unsigned int uiRepeat_Count, bool bExtended_Key, bool bPrevious_Key_State)
@@ -85,7 +87,7 @@ void MAIN::Draw(void)
 	if (m_eDraw_Mode == ORTHO)
 		glOrtho(0.0,dWindow_AR,0.0,1.0,1.0,-1.0);
 	else
-		glFrustum(0.0,dWindow_AR,0.0,1.0,0.0,10.0);
+		glFrustum(0.0,dWindow_AR,0.0,1.0,0.0,1.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	std::map<int,unsigned int> cMap;
