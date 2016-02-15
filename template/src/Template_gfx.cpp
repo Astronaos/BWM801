@@ -253,35 +253,15 @@ void TEMPLATE_MAIN::gfx_display(pane_id i_idPane) // primary display routine
 //			glVertex2d(0.0,0.0);
 //		glEnd();
 
-		// animation tutorial
-//		glPushMatrix();
-//			glColor4d(0.0,0.0,1.0,1.0);
-//			glTranslated(0.5,0.5,0.0);
-//			glScaled(0.5,0.5,0.5);
-//			glTranslated(sin(m_dTimer),cos(m_dTimer),0.0);
-//			glScaled(0.01,0.01,0.01);
-//			glBegin(GL_TRIANGLE_FAN);
-//				glVertex3d(0,0,0);
-//				glVertexList(g_vEllipse);
-//			glEnd();	
-//		glPopMatrix();
-		for (std::map<button_id,BUTTON_INFO>::const_iterator cI = m_mMain_Pane_Buttons.begin(); cI != m_mMain_Pane_Buttons.end(); cI++)
-		{
-			PAIR<double> pdPosition = cI->second.GetPosition();
-			PAIR<double> pdSize = cI->second.GetSize();
-
-			glPushMatrix();
-				glTranslated(pdPosition.m_tX,pdPosition.m_tY,0.0);
-				glScaled(pdSize.m_tX,pdSize.m_tY,1.0);
-				int iStatus = cI->second.GetStatus();
-				switch (cI->second.GetID())
-				{
-				default:
-					break;
-				}
-			glPushMatrix();
-		}
-
+		glColor4d(0.0,0.0,1.0,1.0);
+		glTranslated(0.5,0.5,0.0);
+		glScaled(0.5,0.5,0.5);
+		glTranslated(sin(m_dTimer),cos(m_dTimer),0.0);
+		glScaled(0.01,0.01,0.01);
+		glBegin(GL_TRIANGLE_FAN);
+			glVertex3d(0,0,0);
+			glVertexList(g_vEllipse);
+		glEnd();	
 	}
 }
 
