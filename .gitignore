@@ -34,7 +34,4 @@ Release
 *.suo
 *.vcxproj.user
 
-# Template
-template/bin
-template/obj
 
