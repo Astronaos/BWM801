@@ -13,6 +13,8 @@
 #include <iostream>
 #include <dirent.h> // for working with the file tree / directories
 #include <thread>
+#include <GL/glext.h>
+#include <string>
 
 #define NIL (0)       // A name for the void pointer
 
@@ -59,6 +61,9 @@ PAIR<unsigned int>	Fix_Coordinate_Window(const PAIR<unsigned int> &i_tPosition)
 void Gfx_Loop(void)
 {
 	bool bFirst_Draw = true;
+	timespec tTime_Last;
+	clock_gettime(CLOCK_MONOTONIC_RAW,&tTime_Last);
+	std::deque<double> vFrame_Rate;
 	while (!g_lpMain->Pending_Quit())
 	{
 		if (g_lpMain->Pending_Draw() && g_lpMain->Get_Window_Size().m_tX > 0 && g_lpMain->Get_Window_Size().m_tY > 0)
@@ -73,11 +78,24 @@ void Gfx_Loop(void)
 				g_lpMain->gfx_init();
 				g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
 			}
+			timespec tTime_Curr;
+			clock_gettime(CLOCK_MONOTONIC_RAW,&tTime_Curr);
+			double	dTimestep = (tTime_Curr.tv_sec - tTime_Last.tv_sec) + (tTime_Curr.tv_nsec - tTime_Last.tv_nsec) * 1.0e-9;
+			tTime_Last = tTime_Curr;
+			vFrame_Rate.push_back(dTimestep);
+			double dDraw_Time = 0.0;
+			for (unsigned int uiI = 0; uiI < vFrame_Rate.size(); uiI++)
+				dDraw_Time += vFrame_Rate[uiI];
+			g_lpMain->Set_Frame_Rate(vFrame_Rate.size() / dDraw_Time);
+			if (vFrame_Rate.size() > 10)
+				vFrame_Rate.pop_front();
 			g_lpMain->Draw();
 			glFlush();
 			glXSwapBuffers(g_lpdpyDisplay, g_wWindow);
 			bFirst_Draw = false;
 		}
+		else
+			usleep(0);
 	}
 	g_lpMain->gfx_close();
 }
@@ -93,6 +111,7 @@ void Main_Timer_Loop(void)
 		double	dTimestep = (tTime_Curr.tv_sec - tTime_Last.tv_sec) + (tTime_Curr.tv_nsec - tTime_Last.tv_nsec) * 1.0e-9;
 		tTime_Last = tTime_Curr;
 		g_lpMain->On_Timer(0,dTimestep);
+		usleep(10);
 	}
 }
 
@@ -160,6 +179,67 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 //	printf("glx\n");
 	g_glc = glXCreateContext(g_lpdpyDisplay, lpXVisual, 0, GL_TRUE);
 	 glXMakeCurrent(g_lpdpyDisplay, g_wWindow, g_glc);
+
+		printf("Vendor: %s\n",glGetString(GL_VENDOR));
+		printf("Renderer: %s\n",glGetString(GL_RENDERER));
+		printf("Version: %s\n",glGetString(GL_VERSION));
+		printf("SL Version: %s\n",glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+	std::map<std::string,int> vstrGL_Extensions_list;
+
+	std::string szExtensions = glXQueryExtensionsString(g_lpdpyDisplay,0);
+	GLint iNum_Ext;
+	PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddress((GLubyte *)"glGetStringi");
+	if (glGetStringi)
+	{
+		glGetIntegerv(GL_NUM_EXTENSIONS,&iNum_Ext);
+		unsigned int uiMax = iNum_Ext - 1;
+		for (unsigned int uiI = 0; uiI < uiMax; uiI++)
+		{
+			if (glGetStringi(GL_EXTENSIONS,uiI))
+			{
+				vstrGL_Extensions_list[std::string((char *)glGetStringi(GL_EXTENSIONS,uiI))] = 1;
+			}
+		}
+	}
+	if (!szExtensions.empty())
+	{
+		size_t sEnd = szExtensions.find_first_of(' ');
+		size_t sLast = 0;
+		while (sEnd != std::string::npos)
+		{
+			vstrGL_Extensions_list[szExtensions.substr(sLast,(sEnd - sLast))] = 1;
+			sLast = sEnd + 1;
+			sEnd = szExtensions.find_first_of(' ',sLast);
+		}
+		vstrGL_Extensions_list[szExtensions.substr(sLast,(szExtensions.size() - sLast))] = 1;
+	}
+//	for (std::vector<std::string>::iterator cI = vstrGL_Extensions_list.begin(); cI != vstrGL_Extensions_list.end(); cI++)
+//	{
+//		printf("%s\n",cI->c_str());
+//	}
+	if (vstrGL_Extensions_list.count("GLX_EXT_swap_control") > 0)
+	{
+		PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT;
+		glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC) glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT");
+		GLXDrawable drawable = glXGetCurrentDrawable();
+		if (glXSwapIntervalEXT)
+			glXSwapIntervalEXT(g_lpdpyDisplay,drawable,0);
+	}
+	else if (vstrGL_Extensions_list.count("GLX_SGI_swap_control") > 0)
+	{
+		PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalSGI;
+		glXSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC) glXGetProcAddress((GLubyte *)"glXSwapIntervalSGI");
+		glXSwapIntervalSGI(1);
+	}
+	else if (vstrGL_Extensions_list.count("MESA_swap_control") > 0)
+	{
+		PFNGLXSWAPINTERVALMESAPROC glXSwapIntervalMESA;
+		glXSwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC) glXGetProcAddress((GLubyte *)"glXSwapIntervalMESA");
+		glXSwapIntervalMESA(1);
+	}
+
+
 	// We want to get MapNotify events
 //	XSelectInput(g_lpdpyDisplay, g_wWindow, StructureNotifyMask|ExposureMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask||KeyPressMask|KeyReleaseMask|EnterWindowMask|LeaveWindowMask);
 
