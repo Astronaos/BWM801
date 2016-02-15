@@ -122,51 +122,41 @@ template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Hex_Outline(const PAIR<int> 
 		cSpace.Draw_Hex_Outline();
 	glPopMatrix();
 }
-template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void)
+template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void) const
 {
 	double dRoff = 0.5 * MAPBASE<T>::m_dR;
 	PAIR<double> tPos;
 	MAPSPACEMIN cSpace;
 	glPushMatrix();
 	ISOMETRIC_HEXMAP<T>::Prepare_Draw();
-	if (m_uiMap_Grid_List == -1)
+	/// Draw grid lines
+	for (int uiI = 0; uiI < (int)(MAPBASE<T>::m_tGrid_Size.m_tX); uiI++)
 	{
-		m_uiMap_Grid_List = glGenLists(1);
-		glNewList(m_uiMap_Grid_List,GL_COMPILE_AND_EXECUTE);
-		/// Draw grid lines
-		for (int uiI = 0; uiI < (int)(MAPBASE<T>::m_tGrid_Size.m_tX); uiI++)
+		for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
 		{
-			for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
-			{
-				glPushMatrix();
-					Get_Hex_Center(PAIR<int>(uiI,uiJ),tPos);
-					glTranslated(tPos.m_tX,tPos.m_tY,0.0);
-					if (uiI % 2 == 0)
-					{
-						if (uiJ % 2 == 0)
-							cSpace.Draw_Hex_Outline();
-						else
-						{
-							cSpace.Draw_Hex_Side(0);
-							cSpace.Draw_Hex_Side(2);
-							cSpace.Draw_Hex_Side(3);
-							cSpace.Draw_Hex_Side(5);
-						}
-					}
+			glPushMatrix();
+				Get_Hex_Center(PAIR<int>(uiI,uiJ),tPos);
+				glTranslated(tPos.m_tX,tPos.m_tY,0.0);
+				if (uiI % 2 == 0)
+				{
+					if (uiJ % 2 == 0)
+						cSpace.Draw_Hex_Outline();
 					else
 					{
-						if (uiJ != ((int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)))
-							cSpace.Draw_Hex_Side(1);
-						cSpace.Draw_Hex_Side(4);
+						cSpace.Draw_Hex_Side(0);
+						cSpace.Draw_Hex_Side(2);
+						cSpace.Draw_Hex_Side(3);
+						cSpace.Draw_Hex_Side(5);
 					}
-				glPopMatrix();
-			}
+				}
+				else
+				{
+					if (uiJ != ((int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)))
+						cSpace.Draw_Hex_Side(1);
+					cSpace.Draw_Hex_Side(4);
+				}
+			glPopMatrix();
 		}
-		glEndList();
-	}
-	else
-	{
-		glCallList(m_uiMap_Grid_List);
 	}
 	glPopMatrix();
 }
