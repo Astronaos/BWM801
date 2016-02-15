@@ -931,10 +931,6 @@ private:
 	double m_dCamera_Isometric_Angle;
 	double m_dCamera_Rotation_Angle;
 public:
-
-	double Get_Isometric_Camera_Angle(void){return m_dCamera_Isometric_Angle;}
-	double Get_Camera_Rotation_Angle(void){return m_dCamera_Rotation_Angle;}
-
 	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = cos(-1.0) * 0.25; m_dCamera_Rotation_Angle = 0.0;}
 
 	std::deque<PAIR<int> > Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const;
@@ -973,14 +969,3 @@ public:
 #include <core_isohexmap.hpp>
 
 void glLineWidth(const double &i_dLW);
-
-// common functions for drawing buttons
-extern std::vector<PAIR<double> > g_vEllipse;
-
-enum SB_DIRECTION {SBD_UP,SBD_DOWN,SBD_LEFT,SBD_RIGHT};
-void Initialize_Circle_Vectors(void);
-void Draw_Rounded_Rectangle(bool i_bFilled);
-void Draw_Rounded_Rectangle_Button(bool i_bPressed, bool i_bActive);
-void Draw_Scroll_Button(SB_DIRECTION i_eDirection, bool i_bActive);
-void Draw_Simple_Button(bool bStatus);
-
