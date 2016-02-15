@@ -56,3 +56,4 @@ template <typename T> void MAPBASE<T>::Prepare_Draw(void) const
 	glScaled(MAPBASE<T>::m_dR,MAPBASE<T>::m_dR,1.0);
 }
 
+

@@ -19,7 +19,6 @@ MAIN::MAIN(void)
 	g_lpMain = this;
 	m_bDraw_Flag = false;
 	m_bQuit_Flag = false;
-	m_eDraw_Mode = ORTHO;
 
 	unsigned int uiNum_Mouse_Buttons = (unsigned int)(MB_MAX - MB_NOOP);
 	m_lpbMouse_Button_Status = new bool [uiNum_Mouse_Buttons];
@@ -82,10 +81,7 @@ void MAIN::Draw(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_ACCUM_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	if (m_eDraw_Mode == ORTHO)
-		glOrtho(0.0,dWindow_AR,0.0,1.0,1.0,-1.0);
-	else
-		glFrustum(0.0,dWindow_AR,0.0,1.0,0.0,10.0);
+	glOrtho(0.0,dWindow_AR,0.0,1.0,1.0,-1.0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	std::map<int,unsigned int> cMap;

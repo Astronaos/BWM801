@@ -371,8 +371,6 @@ public:
 
 class MAIN
 {
-public:
-	enum DRAW_MODE	{ORTHO,PROJECTION};
 private:
 	std::string	m_szWindow_Name;
 	bool *	m_lpbMouse_Button_Status;
@@ -382,18 +380,16 @@ private:
 
 	bool	m_bDraw_Flag;
 	bool	m_bQuit_Flag;
-	DRAW_MODE	m_eDraw_Mode;
 
 	bool	m_bWindow_Has_Focus;
 	QUAD<unsigned int> m_tWindow_Box;
 	std::vector< PANE > m_tUser_Panes;
-	
+
 public:
 	MAIN(void);
 	void Set_Window_Name(const std::string &i_szName) {m_szWindow_Name = i_szName;};
 	std::string Get_Window_Name(void) {return m_szWindow_Name;}
 
-	void Set_Draw_Mode(DRAW_MODE i_eMode) {m_eDraw_Mode = i_eMode;}
 	pane_id Register_Pane(bool i_bVisible, unsigned int i_uiUser_ID = -1)
 	{
 		return Register_Pane(QUAD<unsigned int> (PAIR<unsigned int> (0,0), PAIR <unsigned int> (1,1)),i_bVisible,i_uiUser_ID);
@@ -925,47 +921,7 @@ public:
 
 };
 
-template <typename T> class ISOMETRIC_HEXMAP : public MAPBASE<T>
-{
-private:
-	double m_dCamera_Isometric_Angle;
-	double m_dCamera_Rotation_Angle;
-public:
-	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = cos(-1.0) * 0.25; m_dCamera_Rotation_Angle = 0.0;}
-
-	std::deque<PAIR<int> > Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const;
-
-	//void Determine_Hex(const PAIR<double> &i_tVitual_Coord, PAIR<int> & o_tGrid_Position) const;
-	PAIR<int> Determine_Hex(const PAIR<double> &i_tVitual_Coord) const;
-	void Get_Hex_Center(const PAIR<int> & i_tGrid_Position, PAIR<double> & o_tVitual_Coord) const;
-	PAIR<double> Get_Hex_Center(const PAIR<int> & i_tGrid_Position) const;
-
-	void Draw_Filled_Hex(const PAIR<int> & i_tPosition) const;
-	void Draw_Hex_Side(const PAIR<int> & i_tPosition, unsigned int i_uiSide) const;
-	void Draw_Hex_Outline(const PAIR<int> & i_tPosition) const;
-
-	void Draw_Grid(void) const;
-	void Draw_Map(void * io_lpvData) const; // void * for user defined data that needs to be sent to each space for drawing
-
-	void	Center_Map(const PAIR<int> & i_tPosition);
-	void	Change_Isometric_Angle(const double & i_dDelta_Angle)
-	{
-		m_dCamera_Isometric_Angle += i_dDelta_Angle;
-		if (m_dCamera_Isometric_Angle > 90.0)
-			m_dCamera_Isometric_Angle = 90.0;
-		if (m_dCamera_Isometric_Angle < 0.0)
-			m_dCamera_Isometric_Angle = 0.0;
-	}
-	void	Change_Camera_Angle(const double & i_dDelta_Angle)
-	{
-		double dAngle = fmod(m_dCamera_Rotation_Angle + i_dDelta_Angle,360.0);
-		m_dCamera_Rotation_Angle = dAngle;
-	}
-	void Prepare_Draw(void) const;
-
-};
 #include <core_mapbase.hpp>
 #include <core_hexmap.hpp>
-#include <core_isohexmap.hpp>
 
 void glLineWidth(const double &i_dLW);
