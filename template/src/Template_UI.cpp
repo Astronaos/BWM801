@@ -6,7 +6,9 @@ void TEMPLATE_MAIN::on_key_down(KEYID eKey_ID, unsigned char chScan_Code, unsign
 	{
 	case KEY_ESCAPE:
 	case KEY_Q:
+		m_csEvent_List.Set();
 		m_qEvent_List.push_back(QUIT_REQUEST);
+		m_csEvent_List.Unset();
 		break;
 	}
 }
@@ -33,7 +35,9 @@ void TEMPLATE_MAIN::on_mouse_button_down(MOUSEBUTTON i_eButton, const PAIR<unsig
 		{
 			if (cI->second.TestHit(tMouse_Scaled))
 			{
+				m_csEvent_List.Set();
 				m_qEvent_List.push_back((button_id)(cI->second.GetID()));
+				m_csEvent_List.Unset();
 				bProcessed = true;
 			}
 		}
@@ -51,6 +55,7 @@ void TEMPLATE_MAIN::on_mouse_wheel(MOUSEBUTTON i_eWheel, int i_iWheel_Delta, con
 }
 void TEMPLATE_MAIN::on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
 {
+	m_csEvent_List.Set();
 	while (!m_qEvent_List.empty())
 	{
 		button_id eEvent = m_qEvent_List.front();
@@ -62,9 +67,10 @@ void TEMPLATE_MAIN::on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_
 			break;
 		}
 	}
+	m_csEvent_List.Unset();
 	m_dTimer += i_dDelta_Time_s;
 	bool bFlasher = fmod(m_dTimer,1.0) < 0.5;
 	m_bFlasher_1s_50p = bFlasher;
-	Request_Refresh();
+//	Request_Refresh();
 }
 
