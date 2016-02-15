@@ -235,6 +235,11 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 			DispatchMessage(&msg);
 		}
 		g_lpMain->close();
+
+		for (std::vector<std::thread>::iterator cI = vThread_List.begin(); cI != vThread_List.end(); cI++)
+		{
+			cI->join();
+		}
 	}
 	return iReturn;
 }
