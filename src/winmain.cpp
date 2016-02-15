@@ -8,12 +8,12 @@
 #include <core.hpp>
 #include <ctime>
 #include <sstream>
-#include <thread>
+
 // MS Visual c++ doesn't have nan("") and isnan defined
 #ifndef __MINGW32__//_WIN32
     const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-//	double nan(const char * i_lpszFlags){float fNan = (*(const float *)__nan); return (double)fNan;}
-//	bool isnan(const double & i_dValue){return _isnan(i_dValue) != 0;}
+	double nan(const char * i_lpszFlags){float fNan = (*(const float *)__nan); return (double)fNan;}
+	bool isnan(const double & i_dValue){return _isnan(i_dValue) != 0;}
 #endif
 
 	HINSTANCE		g_hInst = 0;
@@ -153,8 +153,6 @@ void Main_Timer_Loop(void)
 	QueryPerformanceFrequency(&cFrequency);
 	double	dFreq = (double)(cFrequency.QuadPart);
 	double	dInv_Freq = 1.0 / dFreq;
-	while (g_hWnd == 0) // wait until main thread has created a window
-		Sleep(20);
 	while (!g_lpMain->Pending_Quit())
 	{
 		LARGE_INTEGER	cCounter;
