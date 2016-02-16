@@ -9,6 +9,7 @@
 #include <ctime>
 #include <sstream>
 #include <thread>
+#include <CRTDBG.H>
 // MS Visual c++ doesn't have nan("") and isnan defined
 #ifndef __MINGW32__//_WIN32
     const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
@@ -90,6 +91,42 @@ void Gfx_Loop(void)
 
 	g_hRC = wglCreateContext(g_hDC);
 	wglMakeCurrent(g_hDC, g_hRC);
+#ifdef _DEBUG
+	std::string szVendor = (char *)glGetString(GL_VENDOR);
+	std::string szRenderer = (char *)glGetString(GL_RENDERER);
+	std::string szVersion = (char *)glGetString(GL_VERSION);
+	_RPT1(_CRT_WARN, "Vendor: %s\n",szVendor.c_str());
+	_RPT1(_CRT_WARN, "Renderer: %s\n", szRenderer.c_str());
+	_RPT1(_CRT_WARN, "Version: %s\n", szVersion.c_str());
+#endif
+	std::map<std::string, int> vstrGL_Extensions_list;
+
+	std::string szExtensions = (char *)glGetString(GL_EXTENSIONS);
+	if (!szExtensions.empty())
+	{
+		size_t sEnd = szExtensions.find_first_of(' ');
+		size_t sLast = 0;
+		while (sEnd != std::string::npos)
+		{
+			vstrGL_Extensions_list[szExtensions.substr(sLast, (sEnd - sLast))] = 1;
+			sLast = sEnd + 1;
+			sEnd = szExtensions.find_first_of(' ', sLast);
+		}
+		vstrGL_Extensions_list[szExtensions.substr(sLast, (szExtensions.size() - sLast))] = 1;
+	}
+	//	for (std::vector<std::string>::iterator cI = vstrGL_Extensions_list.begin(); cI != vstrGL_Extensions_list.end(); cI++)
+	//	{
+	//		printf("%s\n",cI->c_str());
+	//	}
+	if (vstrGL_Extensions_list.count("WGL_EXT_swap_control") > 0)
+	{
+		typedef BOOL (WINAPI * PFNGLXSWAPINTERVALEXTPROC)(int);
+		PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = NULL;
+		glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+		if (glXSwapIntervalEXT)
+			glXSwapIntervalEXT(0);
+	}
+
 
 	g_bRC_Created = true;
 
@@ -234,6 +271,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		for (std::vector<std::thread>::iterator cI = vThread_List.begin(); cI != vThread_List.end(); cI++)
+			cI->join();
 		g_lpMain->close();
 
 		for (std::vector<std::thread>::iterator cI = vThread_List.begin(); cI != vThread_List.end(); cI++)
