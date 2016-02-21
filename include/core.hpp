@@ -983,6 +983,44 @@ void glLineWidth(const double &i_dLW);
 // common functions for drawing buttons
 extern std::vector<PAIR<double> > g_vEllipse;
 
+class calllist
+{
+private:
+	GLuint	m_uiList_ID;
+public:
+	bool Is_Valid(void)
+	{
+		return (m_uiList_ID != -1);
+	}
+	void Compile(void)
+	{
+		if (m_uiList_ID == -1)
+			m_uiList_ID = glGenLists(1);
+#ifdef _DEBUG
+		_RPT1(_CRT_WARN, "Call list created: %i\n", m_uiList_ID);
+#endif
+		glNewList(m_uiList_ID, GL_COMPILE);
+	}
+	void End_Compile(void)
+	{
+		glEndList();
+	}
+	void Draw(void)
+	{
+		if (m_uiList_ID != -1)
+			glCallList(m_uiList_ID);
+	}
+	void	Delete(void)
+	{
+		if (m_uiList_ID != -1)
+			glDeleteLists(m_uiList_ID, 1);
+		m_uiList_ID = -1;
+	}
+
+	calllist(void) { m_uiList_ID = -1; }
+	~calllist(void) { Delete(); }
+};
+
 enum SB_DIRECTION {SBD_UP,SBD_DOWN,SBD_LEFT,SBD_RIGHT};
 void Initialize_Circle_Vectors(void);
 void Draw_Rounded_Rectangle(bool i_bFilled);
