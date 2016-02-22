@@ -129,44 +129,66 @@ template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void)
 	MAPSPACEMIN cSpace;
 	glPushMatrix();
 	ISOMETRIC_HEXMAP<T>::Prepare_Draw();
-	if (m_uiMap_Grid_List == -1)
+	if (!m_clMap_Grid.Is_Valid())
 	{
-		m_uiMap_Grid_List = glGenLists(1);
-		glNewList(m_uiMap_Grid_List,GL_COMPILE_AND_EXECUTE);
+		m_clMap_Grid.Compile(true);
 		/// Draw grid lines
+		for (int uiI = 0; uiI < (int)(MAPBASE<T>::m_tGrid_Size.m_tX); uiI++)
+		{
+			glBegin(GL_LINE_STRIP);
+			for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
+			{
+				PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>(uiI,uiJ));
+				if (uiJ == 0)
+				{
+					if (uiI & 1 != 0)
+					{
+						PAIR<double> pdCenterOdd = Get_Hex_Center(PAIR<int>(uiI - 1,uiJ));
+						(cSpace.Get_Hex_Vertex(5) + pdCenterOdd).glVertex();
+					}
+					(cSpace.Get_Hex_Vertex(0) + pdCenter).glVertex();
+				}
+				(cSpace.Get_Hex_Vertex(1) + pdCenter).glVertex();
+				(cSpace.Get_Hex_Vertex(2) + pdCenter).glVertex();
+			}
+			if (uiI > 0 && ((uiI & 1) == 0))
+			{
+				PAIR<double> pdCenterOdd = Get_Hex_Center(PAIR<int>(uiI - 1,(int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)));
+				(cSpace.Get_Hex_Vertex(3) + pdCenterOdd).glVertex();
+			}
+			glEnd();
+		}
+		glBegin(GL_LINE_STRIP);
+		for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
+		{
+			PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>((int)(MAPBASE<T>::m_tGrid_Size.m_tX - 1),uiJ));
+			if (uiJ == 0)
+			{
+				(cSpace.Get_Hex_Vertex(5) + pdCenter).glVertex();
+			}
+			(cSpace.Get_Hex_Vertex(4) + pdCenter).glVertex();
+			(cSpace.Get_Hex_Vertex(3) + pdCenter).glVertex();
+		}
+		glEnd();
+		glBegin(GL_LINES);
 		for (int uiI = 0; uiI < (int)(MAPBASE<T>::m_tGrid_Size.m_tX); uiI++)
 		{
 			for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
 			{
-				glPushMatrix();
-					Get_Hex_Center(PAIR<int>(uiI,uiJ),tPos);
-					glTranslated(tPos.m_tX,tPos.m_tY,0.0);
-					if (uiI % 2 == 0)
-					{
-						if (uiJ % 2 == 0)
-							cSpace.Draw_Hex_Outline();
-						else
-						{
-							cSpace.Draw_Hex_Side(0);
-							cSpace.Draw_Hex_Side(2);
-							cSpace.Draw_Hex_Side(3);
-							cSpace.Draw_Hex_Side(5);
-						}
-					}
-					else
-					{
-						if (uiJ != ((int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)))
-							cSpace.Draw_Hex_Side(1);
-						cSpace.Draw_Hex_Side(4);
-					}
-				glPopMatrix();
+				PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>(uiI,uiJ));
+				(cSpace.Get_Hex_Vertex(0) + pdCenter).glVertex();
+				(cSpace.Get_Hex_Vertex(5) + pdCenter).glVertex();
 			}
+			PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>(uiI,(int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)));
+			(cSpace.Get_Hex_Vertex(2) + pdCenter).glVertex();
+			(cSpace.Get_Hex_Vertex(3) + pdCenter).glVertex();
 		}
-		glEndList();
+		glEnd();
+		m_clMap_Grid.End_Compile();
 	}
 	else
 	{
-		glCallList(m_uiMap_Grid_List);
+		m_clMap_Grid.Draw();
 	}
 	glPopMatrix();
 }

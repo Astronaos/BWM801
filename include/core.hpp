@@ -92,7 +92,7 @@ public:
 	}
 	void glVertex(void) const
 	{
-		glVertex2d((GLfloat)m_tX,(GLfloat)m_tY);
+		glVertex3d((GLfloat)m_tX,(GLfloat)m_tY,0.0);
 	}
 	void glTranslate(void) const
 	{
@@ -685,6 +685,46 @@ public:
 	int		Get_Error(void);
 	bool	Close(void);
 };
+
+
+class calllist
+{
+private:
+	GLuint	m_uiList_ID;
+public:
+	bool Is_Valid(void) const
+	{
+		return (m_uiList_ID != -1);
+	}
+	void Compile(bool i_bCompile_and_Exec = false)
+	{
+		if (m_uiList_ID == -1)
+			m_uiList_ID = glGenLists(1);
+#ifdef _DEBUG
+		_RPT1(_CRT_WARN, "Call list created: %i\n", m_uiList_ID);
+#endif
+		glNewList(m_uiList_ID, i_bCompile_and_Exec ? GL_COMPILE_AND_EXECUTE : GL_COMPILE);
+	}
+	void End_Compile(void)
+	{
+		glEndList();
+	}
+	void Draw(void)
+	{
+		if (m_uiList_ID != -1)
+			glCallList(m_uiList_ID);
+	}
+	void	Delete(void)
+	{
+		if (m_uiList_ID != -1)
+			glDeleteLists(m_uiList_ID, 1);
+		m_uiList_ID = -1;
+	}
+
+	calllist(void) { m_uiList_ID = -1; }
+	~calllist(void) { Delete(); }
+};
+
 // graphics text operations
 enum FONT{SANS,SERIF,MONO,USER_1,USER_2,USER_3,USER_4,USER_5,USER_6,USER_7,USER_8};
 typedef void DRAW_CALLBACK(void * io_lpvDraw_Info);
@@ -806,6 +846,7 @@ public:
 	void Draw_Filled_Hex(void) const;
 	void Draw_Hex_Side(unsigned int i_uiSide) const;
 	void Draw_Hex_Outline(void) const;
+	PAIR<double> Get_Hex_Vertex(unsigned int i_uiSide) const;
 
 	void Draw_Filled_Quad(void) const;
 	void Draw_Quad_Side(unsigned int i_uiSide) const;
@@ -911,6 +952,9 @@ public:
 
 template <typename T> class HEXMAP : public MAPBASE<T>
 {
+private:
+	calllist	m_clMap_Grid;
+
 public:
 	std::deque<PAIR<int> > Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const;
 
@@ -923,7 +967,7 @@ public:
 	void Draw_Hex_Side(const PAIR<int> & i_tPosition, unsigned int i_uiSide) const;
 	void Draw_Hex_Outline(const PAIR<int> & i_tPosition) const;
 
-	void Draw_Grid(void) const;
+	void Draw_Grid(void);
 	void Draw_Map(void * io_lpvData) const; // void * for user defined data that needs to be sent to each space for drawing
 
 	void	Center_Map(const PAIR<int> & i_tPosition);
@@ -935,13 +979,12 @@ template <typename T> class ISOMETRIC_HEXMAP : public MAPBASE<T>
 private:
 	double m_dCamera_Isometric_Angle;
 	double m_dCamera_Rotation_Angle;
-	unsigned int m_uiMap_Grid_List;
+	calllist	m_clMap_Grid;
 public:
-	unsigned int Get_Map_List(void){return m_uiMap_Grid_List;}
 	double Get_Isometric_Camera_Angle(void){return m_dCamera_Isometric_Angle;}
 	double Get_Camera_Rotation_Angle(void){return m_dCamera_Rotation_Angle;}
 
-	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = 60.0;  m_dCamera_Rotation_Angle = 0.0; /* 30^deg for iso angle */ m_uiMap_Grid_List = -1;}
+	ISOMETRIC_HEXMAP(void){m_dCamera_Isometric_Angle = 60.0;  m_dCamera_Rotation_Angle = 0.0; /* 30^deg for iso angle */}
 
 	std::deque<PAIR<int> > Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const;
 
@@ -982,44 +1025,6 @@ void glLineWidth(const double &i_dLW);
 
 // common functions for drawing buttons
 extern std::vector<PAIR<double> > g_vEllipse;
-
-class calllist
-{
-private:
-	GLuint	m_uiList_ID;
-public:
-	bool Is_Valid(void)
-	{
-		return (m_uiList_ID != -1);
-	}
-	void Compile(void)
-	{
-		if (m_uiList_ID == -1)
-			m_uiList_ID = glGenLists(1);
-#ifdef _DEBUG
-		_RPT1(_CRT_WARN, "Call list created: %i\n", m_uiList_ID);
-#endif
-		glNewList(m_uiList_ID, GL_COMPILE);
-	}
-	void End_Compile(void)
-	{
-		glEndList();
-	}
-	void Draw(void)
-	{
-		if (m_uiList_ID != -1)
-			glCallList(m_uiList_ID);
-	}
-	void	Delete(void)
-	{
-		if (m_uiList_ID != -1)
-			glDeleteLists(m_uiList_ID, 1);
-		m_uiList_ID = -1;
-	}
-
-	calllist(void) { m_uiList_ID = -1; }
-	~calllist(void) { Delete(); }
-};
 
 enum SB_DIRECTION {SBD_UP,SBD_DOWN,SBD_LEFT,SBD_RIGHT};
 void Initialize_Circle_Vectors(void);

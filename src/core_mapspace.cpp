@@ -114,6 +114,45 @@ void MAPSPACE::Draw_Hex_Side(unsigned int i_uiSide) const
 	else
 		glCallList(m_uiHex_Side_List[i_uiSide]);
 }
+PAIR<double> MAPSPACE::Get_Hex_Vertex(unsigned int i_uiSide) const
+{
+	PAIR<double> pdRet;
+	i_uiSide %= 6;
+
+	switch (i_uiSide)
+	{
+	case 0:
+	case 2:
+		pdRet.m_tX = -0.25;
+		break;
+	case 1:
+		pdRet.m_tX = -0.50;
+		break;
+	case 3:
+	case 5:
+		pdRet.m_tX = 0.25;
+		break;
+	case 4:
+		pdRet.m_tX = 0.50;
+		break;
+	}
+	switch (i_uiSide)
+	{
+	case 0:
+	case 5:
+		pdRet.m_tY = -0.50;
+		break;
+	case 1:
+	case 4:
+		pdRet.m_tY = 0.00;
+		break;
+	case 2:
+	case 3:
+		pdRet.m_tY = 0.50;
+		break;
+	}
+	return pdRet;
+}
 void MAPSPACE::Draw_Hex_Outline(void) const
 {
 	if (m_uiHex_Outline_List == -1)
