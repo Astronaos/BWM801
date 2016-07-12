@@ -392,24 +392,24 @@ private:
 	
 public:
 	MAIN(void);
-	void Set_Window_Name(const std::string &i_szName) {m_szWindow_Name = i_szName;};
-	std::string Get_Window_Name(void) {return m_szWindow_Name;}
-	double	Get_Frame_Rate(void) const {return m_dFrame_Rate;}
-	void	Set_Frame_Rate(const double & i_dFrame_Rate) {m_dFrame_Rate = i_dFrame_Rate;}
+	inline void Set_Window_Name(const std::string &i_szName) {m_szWindow_Name = i_szName;};
+	inline std::string Get_Window_Name(void) {return m_szWindow_Name;}
+	inline double	Get_Frame_Rate(void) const {return m_dFrame_Rate;}
+	inline void	Set_Frame_Rate(const double & i_dFrame_Rate) {m_dFrame_Rate = i_dFrame_Rate;}
 
-	void Set_Draw_Mode(DRAW_MODE i_eMode) {m_eDraw_Mode = i_eMode;}
-	pane_id Register_Pane(bool i_bVisible, unsigned int i_uiUser_ID = -1)
+	inline void Set_Draw_Mode(DRAW_MODE i_eMode) {m_eDraw_Mode = i_eMode;}
+	inline pane_id Register_Pane(bool i_bVisible, unsigned int i_uiUser_ID = -1)
 	{
 		return Register_Pane(QUAD<unsigned int> (PAIR<unsigned int> (0,0), PAIR <unsigned int> (1,1)),i_bVisible,i_uiUser_ID);
 	}
 
-	pane_id Register_Pane(const QUAD <unsigned int> & i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID = -1)
+	inline pane_id Register_Pane(const QUAD <unsigned int> & i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID = -1)
 	{
 		pane_id idID = m_tUser_Panes.size() + PANE_ID_PREFIX;
 		m_tUser_Panes.push_back(PANE(idID,i_qPosition,i_bVisible,i_uiUser_ID));
 		return idID;
 	}
-	pane_id Find_Pane(const PAIR <unsigned int> & i_tLocation, bool i_bRequire_Pane_Visible = true) const
+	inline pane_id Find_Pane(const PAIR <unsigned int> & i_tLocation, bool i_bRequire_Pane_Visible = true) const
 	{
 		pane_id idID = 0;
 		std::map<int,unsigned int> cMap;
@@ -435,7 +435,7 @@ public:
 		}
 		return idID;
 	}
-	void Move_Pane(pane_id i_idPane_ID, const QUAD <unsigned int> & i_qPosition)
+	inline void Move_Pane(pane_id i_idPane_ID, const QUAD <unsigned int> & i_qPosition)
 	{
 		if (i_idPane_ID & PANE_ID_PREFIX)
 		{
@@ -443,7 +443,7 @@ public:
 			m_tUser_Panes[uiIdx].m_qPosition = i_qPosition;
 		}
 	}
-	void Raise_Pane(pane_id i_idPane_ID)
+	inline void Raise_Pane(pane_id i_idPane_ID)
 	{
 		if (i_idPane_ID & PANE_ID_PREFIX)
 		{
@@ -451,7 +451,7 @@ public:
 			m_tUser_Panes[uiIdx].m_iLevel++;
 		}
 	}
-	void Lower_Pane(pane_id i_idPane_ID)
+	inline void Lower_Pane(pane_id i_idPane_ID)
 	{
 		if (i_idPane_ID & PANE_ID_PREFIX)
 		{
@@ -459,7 +459,7 @@ public:
 			m_tUser_Panes[uiIdx].m_iLevel--;
 		}
 	}
-	void Change_Pane_Visibility(pane_id i_idPane_ID, bool i_bVisible)
+	inline void Change_Pane_Visibility(pane_id i_idPane_ID, bool i_bVisible)
 	{
 		if (i_idPane_ID & PANE_ID_PREFIX)
 		{
@@ -467,7 +467,7 @@ public:
 			m_tUser_Panes[uiIdx].m_bVisible = i_bVisible;
 		}
 	}
-    bool Get_Pane_Visibility(pane_id i_idPane_ID)
+    inline bool Get_Pane_Visibility(pane_id i_idPane_ID)
     {
         bool bRet = false;
 		if (i_idPane_ID & PANE_ID_PREFIX)
@@ -477,7 +477,7 @@ public:
 		}
         return bRet;
     }
-	QUAD<unsigned int> Get_Pane_Position(pane_id i_idPane_ID)
+	inline QUAD<unsigned int> Get_Pane_Position(pane_id i_idPane_ID)
 	{
 		QUAD<unsigned int> cRet;
 		if (i_idPane_ID & PANE_ID_PREFIX)
@@ -487,7 +487,7 @@ public:
 		}
 		return cRet;
 	}
-	unsigned int Get_Pane_User_ID(pane_id i_idPane_ID)
+	inline unsigned int Get_Pane_User_ID(pane_id i_idPane_ID)
 	{
 		unsigned int uiRet = -1;
 		if (i_idPane_ID & PANE_ID_PREFIX)
@@ -497,7 +497,7 @@ public:
 		}
 		return uiRet;
 	}
-	double	Get_Pane_Aspect_Ratio(pane_id i_idPane_ID)
+	inline double	Get_Pane_Aspect_Ratio(pane_id i_idPane_ID)
 	{
 		double	dRet = 1.0;
 		if (i_idPane_ID & PANE_ID_PREFIX)
@@ -568,11 +568,11 @@ public:
 		m_tWindow_Box.m_tTR = m_tWindow_Box.m_tBL + i_tWindow_Size;
 		//printf("w resize %i %i\n",m_tWindow_Box.m_tTR.m_tX,m_tWindow_Box.m_tTR.m_tY);
 	}
-	void Gain_Focus(void)
+	inline void Gain_Focus(void)
 	{
 		m_bWindow_Has_Focus = true;
 	}
-	void Lose_Focus(void)
+	inline void Lose_Focus(void)
 	{
 		m_bWindow_Has_Focus = false;
 	}
@@ -610,20 +610,20 @@ public:
 		
 		return bRet;
 	}
-	PAIR<unsigned int>	Get_Previous_Mouse_Position(void) const
+	inline PAIR<unsigned int>	Get_Previous_Mouse_Position(void) const
 	{
 		return m_tMouse_Position_Last;
 	}
-	PAIR<unsigned int>	Get_Mouse_Position(void) const
+	inline PAIR<unsigned int>	Get_Mouse_Position(void) const
 	{
 		return m_tMouse_Position;
 	}
-	PAIR<unsigned int>	Get_Window_Size(void) const
+	inline PAIR<unsigned int>	Get_Window_Size(void) const
 	{
 		PAIR<unsigned int> tWindow_Size = m_tWindow_Box.m_tTR - m_tWindow_Box.m_tBL;
 		return tWindow_Size;
 	}
-	QUAD<unsigned int> Get_Window_Quad(void) const
+	inline QUAD<unsigned int> Get_Window_Quad(void) const
 	{
 		return m_tWindow_Box;
 	}
