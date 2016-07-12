@@ -7,10 +7,10 @@ OBJDIR=./obj
 WOBJDIR=./w64obj
 SRCDIR=./src
 INCDIR=./include
-CFLAGS=-I$(INCDIR) -I/usr/include/freetype2 -std=c++11 -c
-WCFLAGS=-I$(INCDIR) -std=c++11 -m64 -c
-LFLAGS=-std=c++11
-WLFLAGS=-std=c++11 -static -m64
+CFLAGS=-I$(INCDIR) -I/usr/include/freetype2 -std=c++11 -O3 -c
+WCFLAGS=-I$(INCDIR) -std=c++11 -m64 -O3 -c
+LFLAGS=-std=c++11 -O3 
+WLFLAGS=-std=c++11 -static -m64 -O3
 LIBS=-lfreetype -lftgl -lX11 -lGLU -lGL
 WLIBS= -lopengl32 -lglu32 -lgdi32
 WCC=x86_64-w64-mingw32-g++
@@ -18,10 +18,12 @@ CC=g++
 CORE_INCLUDES=$(wildcard $(INCDIR)/core*.hpp)
 CORE_SRC=$(wildcard $(SRCDIR)/core*.cpp)
 CORE_OBJ=$(subst $(SRCDIR),$(OBJDIR),$(patsubst %.cpp,%.o,$(CORE_SRC)))
+CORE_PROF_OBJ=$(subst $(SRCDIR),$(OBJDIR),$(patsubst %.cpp,%.po,$(CORE_SRC)))
 WIN_CORE_OBJ=$(subst $(SRCDIR),$(WOBJDIR),$(patsubst %.cpp,%.wo,$(CORE_SRC)))
 
 clean:
 	-rm $(OBJDIR)/*.o
+	-rm $(OBJDIR)/*.po
 	-rm $(WOBJDIR)/*.wo
 	-rm $(LIBDIR)/*.a
 	-rm $(LIBDIR)/*.wa
@@ -39,9 +41,17 @@ $(WOBJDIR)/%.wo: $(SRCDIR)/%.cpp $(CORE_INCLUDES)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(CORE_INCLUDES)
 	$(CC) $(CFLAGS) $< -o $@
 
-$(LIBDIR)/core.a: $(CORE_OBJ) $(OBJDIR)/Xwin_main.o
+$(OBJDIR)/%.po: $(SRCDIR)/%.cpp $(CORE_INCLUDES)
+	$(CC) -g $(CFLAGS) $< -o $@ -pg
+
+$(LIBDIR)/libEngineMk1.a: $(CORE_OBJ) $(OBJDIR)/Xwin_main.o
 	-rm $(LIBDIR)/libEngineMk1.a
 	ar -cvq  $(LIBDIR)/libEngineMk1.a $(CORE_OBJ) $(OBJDIR)/Xwin_main.o
 
+$(LIBDIR)/libEngineMk1P.a: $(CORE_PROF_OBJ) $(OBJDIR)/Xwin_main.po
+	-rm $(LIBDIR)/libEngineMk1P.a
+	ar -cvq  $(LIBDIR)/libEngineMk1P.a $(CORE_PROF_OBJ) $(OBJDIR)/Xwin_main.po
+
 coreWin: $(WIN_CORE_OBJ) $(WOBJDIR)/winmain.wo
-coreLinux: $(CORE_OBJ) $(OBJDIR)/Xwin_main.o $(LIBDIR)/core.a
+coreLinux: $(CORE_OBJ) $(OBJDIR)/Xwin_main.o $(LIBDIR)/libEngineMk1.a
+coreLinuxProf: $(CORE_PROF_OBJ) $(OBJDIR)/Xwin_main.po $(LIBDIR)/libEngineMk1P.a
