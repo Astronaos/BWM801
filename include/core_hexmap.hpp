@@ -131,7 +131,7 @@ template <typename T>void HEXMAP<T>::Draw_Grid(void)
 	PAIR<double> tPos;
 	MAPSPACEMIN cSpace;
 	glPushMatrix();
-	ISOMETRIC_HEXMAP<T>::Prepare_Draw();
+	HEXMAP<T>::Prepare_Draw();
 	if (!m_clMap_Grid.Is_Valid())
 	{
 		m_clMap_Grid.Compile(true);
