@@ -369,10 +369,14 @@ public:
 	}
 };
 
-class MAIN
+class main
 {
 public:
 	enum DRAW_MODE	{ORTHO,PROJECTION};
+	bool m_bEngine_Debug_Mode;
+protected:
+	std::vector<std::string> m_vszCommand_Line_Parameters;
+
 private:
 	std::string	m_szWindow_Name;
 	bool *	m_lpbMouse_Button_Status;
@@ -389,9 +393,13 @@ private:
 	std::vector< PANE > m_tUser_Panes;
 
 	double	m_dFrame_Rate;
+
+	bool m_bDraw_Pane_Grids;
+
 	
 public:
-	MAIN(void);
+	main(void);
+	void Process_Command_Line(unsigned int i_uiNum_Parameters, const char * i_lpszParameter_Values[]);
 	inline void Set_Window_Name(const std::string &i_szName) {m_szWindow_Name = i_szName;};
 	inline std::string Get_Window_Name(void) {return m_szWindow_Name;}
 	inline double	Get_Frame_Rate(void) const {return m_dFrame_Rate;}
@@ -643,12 +651,14 @@ public:
 	inline bool			Pending_Draw(void) const {return m_bDraw_Flag;}
 
 	std::vector<std::string> Get_Directory_File_List(const std::string &i_szDirectory); /// get list of all files in the given direcctory
+	void Draw_Pane_Grid(const double &dXmax);
 
 
 };
-extern MAIN * g_lpMain;
+typedef main MAIN;
+extern main * g_lpMain;
 
-class COMMSOCKET
+class commsocket
 {
 public:
 	enum	TYPE {STREAM,DATAGRAM};
@@ -661,8 +671,8 @@ private:
 	void *	m_lpvSystem_Info; // void pointer to allow for differing socket info for each OS
 	unsigned int 	m_uiMax_Tries;
 public:
-	COMMSOCKET(void){m_bIs_Initialized = m_bIs_Connected = false;m_lpvSystem_Info = NULL;m_uiMax_Tries = 20;}
-	~COMMSOCKET(void);
+	commsocket(void){m_bIs_Initialized = m_bIs_Connected = false;m_lpvSystem_Info = NULL;m_uiMax_Tries = 20;}
+	~commsocket(void);
 	//enum	TYPE	{BROADCAST,
 	bool	Initialize_Server(TYPE i_eType, unsigned short i_usPort);
 	bool	Initialize_Client(TYPE i_eType, const std::string & i_szServer_Address, unsigned short i_usPort);
@@ -685,7 +695,7 @@ public:
 	int		Get_Error(void);
 	bool	Close(void);
 };
-
+typedef commsocket COMMSOCKET;
 
 class calllist
 {

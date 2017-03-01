@@ -334,3 +334,21 @@ void Draw_Simple_Button(bool bStatus)
     glEnd();
 
 }
+
+void main::Draw_Pane_Grid(const double &dXmax)
+{
+	glLineWidth(1.0);
+	glColor4d(0.0,0.0,0.0,1.0);
+	glBegin(GL_LINES);
+	for (double dX = 0.05; dX < dXmax; dX+=0.05)
+	{
+		glVertex2d(dX,0.0);
+		glVertex2d(dX,1.0);
+	}
+	for (double dY = 0.05; dY < dXmax; dY+=0.05)
+	{
+		glVertex2d(0.0,dY);
+		glVertex2d(dXmax,dY);
+	}
+	glEnd();
+}
