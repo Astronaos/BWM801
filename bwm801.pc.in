@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+ 
+ 
+Name: @PACKAGE_NAME@
+Description: BWM801 cross-OS multithreaded game engine
+URL: http://github.com/astronaos/BWM801
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -lbwm801
+Cflags: -I${includedir}
+Requires: @AX_PACKAGE_REQUIRES@
+Requires.private: @AX_PACKAGE_REQUIRES_PRIVATE@

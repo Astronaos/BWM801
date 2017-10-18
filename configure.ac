@@ -1,4 +1,15 @@
-AC_INIT(BWM801,0.1.0,astrobit2@yahoo.com,bwm801,https://github.com/astronaos/BWM801)
+# Release version
+m4_define([package_version_major],[0])
+m4_define([package_version_minor],[3])
+m4_define([package_version_micro],[0])
+ 
+# API version
+m4_define([api_version],package_version_major)
+
+AC_INIT(BWM801,package_version_major.package_version_minor.package_version_micro,astrobit2@yahoo.com,bwm801,https://github.com/astronaos/BWM801)
+
+PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
 
 AM_INIT_AUTOMAKE
 
@@ -14,7 +25,45 @@ AX_PTHREAD #needed for anything using EngineMk1
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR]) #not sure why the ifdef is required; this is supposed to be a standard command in automake, but my implementation (v1.15) seems to not find it.
 
-AC_CONFIG_FILES([Makefile])
+AC_SUBST([PACKAGE_VERSION_MAJOR],package_version_major)
+AC_SUBST([PACKAGE_VERSION_MINOR],package_version_minor)
+AC_SUBST([PACKAGE_VERSION_MICRO],package_version_micro)
+AC_SUBST([API_VERSION],api_version)
+
+
+#AC_CHECK_HEADERS([cmath],[],[AC_MSG_ERROR[" Could not find cmath"]])
+#AC_CHECK_HEADERS([vector],[],[AC_MSG_ERROR[" Could not find vector"]])
+#AC_CHECK_HEADERS([deque],[],[AC_MSG_ERROR[" Could not find deque"]])
+#AC_CHECK_HEADERS([map],[],[AC_MSG_ERROR[" Could not find map"]])
+#AC_CHECK_HEADERS([iostream],[],[AC_MSG_ERROR[" Could not find iostream"]])
+#AC_CHECK_HEADERS([cstdio],[],[AC_MSG_ERROR[" Could not find cstdio"]])
+#AC_CHECK_HEADERS([cstdlib],[],[AC_MSG_ERROR[" Could not find cstdlib"]])
+#AC_CHECK_HEADERS([cstring],[],[AC_MSG_ERROR[" Could not find cstring"]])
+#AC_CHECK_HEADERS([sstream],[],[AC_MSG_ERROR[" Could not find sstream"]])
+#AC_CHECK_HEADERS([ctime],[],[AC_MSG_ERROR[" Could not find ctime"]])
+#AC_CHECK_HEADERS([string],[],[AC_MSG_ERROR[" Could not find string"]])
+
+AC_CHECK_HEADERS([errno.h],[],[AC_MSG_ERROR[" Could not find errno.h"]])
+AC_CHECK_HEADERS([assert.h],[],[AC_MSG_ERROR[" Could not find assert.h"]])
+
+AC_CHECK_HEADERS([thread],[],[AC_MSG_ERROR[" Could not find thread"]])
+
+#AC_CHECK_HEADERS([dirent.h],[],[AC_MSG_ERROR[" Could not find dirent.h"]])
+AC_HEADER_DIRENT
+#AC_CHECK_HEADERS([X11/Xlib.h],[],[AC_MSG_ERROR[" Could not find X11/Xlib.h.  libX11 (development version) is required for linux variant of BWM801"]])
+AC_CHECK_HEADERS([unistd.h],[],[AC_MSG_ERROR[" Could not find unistd.h"]])
+
+AC_CHECK_HEADERS([netdb.h],[],[AC_MSG_ERROR[" Could not find netdb.h"]])
+AC_CHECK_HEADERS([sys/types.h],[],[AC_MSG_ERROR[" Could not find sys/types.h"]]) #TODO update this and engine to use one of (stdint.h inttypes.h sys/types.h) when available
+AC_CHECK_HEADERS([sys/socket.h],[],[AC_MSG_ERROR[" Could not find sys/socket.h"]]) #TODO some systems may require stdlib.h and stdio.h for this to work 
+
+PKG_CHECK_MODULES([x11],[x11],[],[AC_MSG_ERROR[" Could not find X11 development package"]])
+PKG_CHECK_MODULES([gl],[gl],[],[AC_MSG_ERROR[" Could not find openGL development package"]])
+PKG_CHECK_MODULES([freetype2],[freetype2],[],[AC_MSG_ERROR[" Could not find freetype2. The freetype2 development library must be installed"]])
+PKG_CHECK_MODULES([ftgl],[ftgl],[],[AC_MSG_ERROR[" Could not find ftgl."]])
+
+AC_SUBST([AX_PACKAGE_REQUIRES],[])
+AC_SUBST([AX_PACKAGE_REQUIRES_PRIVATE],[x11 gl freetype2 ftgl])
 
 # if the user specified an installation path other that /usr/local
 AM_CONDITIONAL([NON_DEFAULT_PREFIX],[test "${prefix}" != "NONE"])
@@ -22,14 +71,14 @@ AM_CONDITIONAL([NON_DEFAULT_PREFIX],[test "${prefix}" != "NONE"])
 AC_CHECK_FILE([${HOME}/privatemodules],[AM_CONDITIONAL([PRIVMODINST],[test "1" == "1"])],[AM_CONDITIONAL([PRIVMODINST],[test "1" == "2"])])
 #if there is a modulefiles folder in share - good indicator that environment modules are installed
 AC_CHECK_FILE([/usr/share/Modules/modulefiles],[AM_CONDITIONAL([ENVMODINST],[test "1" == "1"])],[AM_CONDITIONAL([ENVMODINST],[test "1" == "2"])])
-#if LMOD_CMD is defined  - good indicator that lmod (https://www.tacc.utexas.edu/research-development/tacc-projects/lmod) is installed
-AM_CONDITIONAL([LMODINST],[test "${LMOD_CMD}" != ""])
 #if modulecmd exists - indicator that environment modules are installed
 AC_CHECK_PROG([ENVMOD],modulecmd,[1],[2])
 # create a conditional for environment modules
 AM_CONDITIONAL([ENVMODPINST],[test "${ENVMOD}" != "2"])
 
 AC_PROG_MKDIR_P
+
+AC_CONFIG_FILES([Makefile bwm801-$API_VERSION.pc:bwm801.pc.in],[],[API_VERSION='$API_VERSION'])
 
 AC_OUTPUT
 

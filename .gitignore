@@ -50,3 +50,11 @@ configure
 depcomp
 install-sh
 missing
+
+*.pc
+config.log
+config.status
+.deps
+.dirstamp
+Makefile
+
