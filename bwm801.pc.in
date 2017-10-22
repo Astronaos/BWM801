@@ -9,6 +9,6 @@ Description: BWM801 cross-OS multithreaded game engine
 URL: http://github.com/astronaos/BWM801
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lbwm801
-Cflags: -I${includedir}
-Requires: @AX_PACKAGE_REQUIRES@
-Requires.private: @AX_PACKAGE_REQUIRES_PRIVATE@
+Cflags: -I${includedir} @PTHREAD_CFLAGS@
+Requires:
+Requires.private: x11 freetype ftgl gl glu

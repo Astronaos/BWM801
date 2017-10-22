@@ -59,11 +59,12 @@ AC_CHECK_HEADERS([sys/socket.h],[],[AC_MSG_ERROR[" Could not find sys/socket.h"]
 
 PKG_CHECK_MODULES([x11],[x11],[],[AC_MSG_ERROR[" Could not find X11 development package"]])
 PKG_CHECK_MODULES([gl],[gl],[],[AC_MSG_ERROR[" Could not find openGL development package"]])
+PKG_CHECK_MODULES([glu],[glu],[],[AC_MSG_ERROR[" Could not find openGL GLU development package"]])
 PKG_CHECK_MODULES([freetype2],[freetype2],[],[AC_MSG_ERROR[" Could not find freetype2. The freetype2 development library must be installed"]])
 PKG_CHECK_MODULES([ftgl],[ftgl],[],[AC_MSG_ERROR[" Could not find ftgl."]])
 
-AC_SUBST([AX_PACKAGE_REQUIRES],[])
-AC_SUBST([AX_PACKAGE_REQUIRES_PRIVATE],[x11 gl freetype2 ftgl])
+#AC_SUBST([AX_PACKAGE_REQUIRES],[])
+#AC_SUBST([AX_PACKAGE_REQUIRES_PRIVATE],[x11 gl glu freetype2 ftgl])
 
 # if the user specified an installation path other that /usr/local
 AM_CONDITIONAL([NON_DEFAULT_PREFIX],[test "${prefix}" != "NONE"])
