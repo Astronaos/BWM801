@@ -7,9 +7,14 @@ m4_define([package_version_micro],[0])
 m4_define([api_version],package_version_major)
 
 AC_INIT(BWM801,package_version_major.package_version_minor.package_version_micro,astrobit2@yahoo.com,bwm801,https://github.com/astronaos/BWM801)
+AC_CONFIG_MACRO_DIR([m4])
+
 
 PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR
+
+MOD_PROG_ENVMOD
+MOD_INSTALLDIR
 
 AM_INIT_AUTOMAKE
 
@@ -63,23 +68,12 @@ PKG_CHECK_MODULES([glu],[glu],[],[AC_MSG_ERROR[" Could not find openGL GLU devel
 PKG_CHECK_MODULES([freetype2],[freetype2],[],[AC_MSG_ERROR[" Could not find freetype2. The freetype2 development library must be installed"]])
 PKG_CHECK_MODULES([ftgl],[ftgl],[],[AC_MSG_ERROR[" Could not find ftgl."]])
 
-#AC_SUBST([AX_PACKAGE_REQUIRES],[])
-#AC_SUBST([AX_PACKAGE_REQUIRES_PRIVATE],[x11 gl glu freetype2 ftgl])
-
-# if the user specified an installation path other that /usr/local
-AM_CONDITIONAL([NON_DEFAULT_PREFIX],[test "${prefix}" != "NONE"])
-#if there is a privatemodules folder in the user's home directory
-AC_CHECK_FILE([${HOME}/privatemodules],[AM_CONDITIONAL([PRIVMODINST],[test "1" == "1"])],[AM_CONDITIONAL([PRIVMODINST],[test "1" == "2"])])
-#if there is a modulefiles folder in share - good indicator that environment modules are installed
-AC_CHECK_FILE([/usr/share/Modules/modulefiles],[AM_CONDITIONAL([ENVMODINST],[test "1" == "1"])],[AM_CONDITIONAL([ENVMODINST],[test "1" == "2"])])
-#if modulecmd exists - indicator that environment modules are installed
-AC_CHECK_PROG([ENVMOD],modulecmd,[1],[2])
-# create a conditional for environment modules
-AM_CONDITIONAL([ENVMODPINST],[test "${ENVMOD}" != "2"])
-
-AC_PROG_MKDIR_P
-
 AC_CONFIG_FILES([Makefile bwm801-$API_VERSION.pc:bwm801.pc.in],[],[API_VERSION='$API_VERSION'])
+
+AS_IF( [test ${MODTYPE} = "LMOD"],
+	[AC_CONFIG_FILES([$PACKAGE_VERSION.lua:modfile.lua.in])],
+	[AS_IF( [test ${MODTYPE} = "ENVMOD"], [AC_CONFIG_FILES([$PACKAGE_VERSION:modfile.in])], [])])
+
 
 AC_OUTPUT
 

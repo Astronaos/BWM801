@@ -1,0 +1,7 @@
+-- Create environment variables.
+
+
+local dir = pathJoin("@prefix@","xlibs")
+
+append_path( "PKG_CONFIG_PATH",     pathJoin(dir,"lib/pkgconfig"))
+prepend_path( "PATH"           ,  pathJoin(dir,"bin"))
