@@ -16,3 +16,5 @@ set	apppath		@prefix@
 
 append-path	PATH	$apppath/bin
 append-path	PKG_CONFIG_PATH $apppath/lib/pkgconfig
+append-path     LD_LIBRARY_PATH $apppath/lib
+
