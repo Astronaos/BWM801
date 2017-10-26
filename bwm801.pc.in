@@ -10,5 +10,5 @@ URL: http://github.com/astronaos/BWM801
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lbwm801
 Cflags: -I${includedir} @PTHREAD_CFLAGS@
-Requires:
-Requires.private: x11 freetype ftgl gl glu
+Requires: x11 freetype2 ftgl gl glu
+Requires.private:
