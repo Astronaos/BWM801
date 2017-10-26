@@ -9,6 +9,7 @@ m4_define([api_version],package_version_major)
 AC_INIT(BWM801,package_version_major.package_version_minor.package_version_micro,astrobit2@yahoo.com,bwm801,https://github.com/astronaos/BWM801)
 AC_CONFIG_MACRO_DIR([m4])
 
+LT_INIT
 
 PKG_PROG_PKG_CONFIG
 PKG_INSTALLDIR
@@ -18,7 +19,7 @@ MOD_INSTALLDIR
 
 AM_INIT_AUTOMAKE
 
-AC_PROG_RANLIB
+#AC_PROG_RANLIB
 
 AC_LANG(C++)
 
@@ -28,7 +29,7 @@ AX_CXX_COMPILE_STDCXX(11,noext,mandatory) #use c++11 standard, required in a var
 
 AX_PTHREAD #needed for anything using EngineMk1
 
-m4_ifdef([AM_PROG_AR], [AM_PROG_AR]) #not sure why the ifdef is required; this is supposed to be a standard command in automake, but my implementation (v1.15) seems to not find it.
+#m4_ifdef([AM_PROG_AR], [AM_PROG_AR]) #not sure why the ifdef is required; this is supposed to be a standard command in automake, but my implementation (v1.15) seems to not find it.
 
 AC_SUBST([PACKAGE_VERSION_MAJOR],package_version_major)
 AC_SUBST([PACKAGE_VERSION_MINOR],package_version_minor)
