@@ -2,11 +2,13 @@
 m4_define([package_version_major],[0])
 m4_define([package_version_minor],[3])
 m4_define([package_version_micro],[0])
- 
+ m4_define([package_repository],[https://github.com/astronaos/BWM801])
+m4_define([package_auth_email],[bwmulligan@astronaos.com])
+
 # API version
 m4_define([api_version],package_version_major)
 
-AC_INIT(BWM801,package_version_major.package_version_minor.package_version_micro,astrobit2@yahoo.com,bwm801,https://github.com/astronaos/BWM801)
+AC_INIT(BWM801,package_version_major.package_version_minor.package_version_micro,package_auth_email,bwm801,package_repository)
 AC_CONFIG_MACRO_DIR([m4])
 
 LT_INIT
@@ -34,7 +36,13 @@ AX_PTHREAD #needed for anything using EngineMk1
 AC_SUBST([PACKAGE_VERSION_MAJOR],package_version_major)
 AC_SUBST([PACKAGE_VERSION_MINOR],package_version_minor)
 AC_SUBST([PACKAGE_VERSION_MICRO],package_version_micro)
+AC_SUBST([PACKAGE_REPOSITORY],package_repository)
+AC_SUBST([PACKAGE_AUTH_EMAIL],package_auth_email)
 AC_SUBST([API_VERSION],api_version)
+
+AC_SUBST([LIB_NAME],[bwm801])
+AC_SUBST([LIB_DESCRIPTION],["BWM801 cross-OS multithreaded game engine"])
+AC_SUBST([LIB_REQUIRES],["x11 freetype2 ftgl gl glu"])
 
 
 #AC_CHECK_HEADERS([cmath],[],[AC_MSG_ERROR[" Could not find cmath"]])
@@ -69,7 +77,7 @@ PKG_CHECK_MODULES([glu],[glu],[],[AC_MSG_ERROR[" Could not find openGL GLU devel
 PKG_CHECK_MODULES([freetype2],[freetype2],[],[AC_MSG_ERROR[" Could not find freetype2. The freetype2 development library must be installed"]])
 PKG_CHECK_MODULES([ftgl],[ftgl],[],[AC_MSG_ERROR[" Could not find ftgl."]])
 
-AC_CONFIG_FILES([Makefile bwm801-$API_VERSION.pc:bwm801.pc.in],[],[API_VERSION='$API_VERSION'])
+AC_CONFIG_FILES([Makefile $PACKAGE_NAME-$API_VERSION.pc:lib.pc.in],[],[PACKAGE_NAME='$PACKAGE_NAME' API_VERSION='$API_VERSION'])
 
 AS_IF( [test ${MODTYPE} = "LMOD"],
 	[AC_CONFIG_FILES([$PACKAGE_VERSION.lua:modfile.lua.in])],
