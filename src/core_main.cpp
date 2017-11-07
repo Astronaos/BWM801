@@ -158,6 +158,7 @@ void main::Draw(void)
 		}
 	}
 	glFlush();
+
 	if (g_cOGL_Screenshot.m_bRequest)
 	{
 		g_cOGL_Screenshot.m_bReady = false;
@@ -167,7 +168,8 @@ void main::Draw(void)
 					g_cOGL_Screenshot.m_tHeight != tWindow_Size.m_tY ||
 					g_cOGL_Screenshot.m_tColor_Depth_Bits != 24)
 			{
-				delete [] g_cOGL_Screenshot.m_lpvData;
+				unsigned char * lpData = (unsigned char *)g_cOGL_Screenshot.m_lpvData;
+				delete [] lpData;
 				g_cOGL_Screenshot.m_lpvData = nullptr;
 			}
 
@@ -182,7 +184,6 @@ void main::Draw(void)
 		g_cOGL_Screenshot.m_bRequest = false;
 		g_cOGL_Screenshot.m_bReady = true;
 	}
-
 	m_bDraw_Flag = false;
 }
 

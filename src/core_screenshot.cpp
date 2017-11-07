@@ -3,7 +3,7 @@
 #include <png.h>
 #include <sstream>
 
-extern ogl_screenshot_info g_cOGL_Screenshot;
+ogl_screenshot_info g_cOGL_Screenshot;
 
 class main_screenshot_info
 {
@@ -40,13 +40,16 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 			bool bDone = false;
 			for (auto iterI = vszDir_Files.begin(); !bDone && iterI != vszDir_Files.end(); iterI++)
 			{
-				std::string szExt = iterI->substr(iterI->size() - 4,4);
-				if (szExt == ".png" || szExt == ".PNG")
+				if (iterI->size() > 4)
 				{
-					if (iterI->substr(0,m_szScreenshot_Default_Filename.size()) == m_szScreenshot_Default_Filename)
+					std::string szExt = iterI->substr(iterI->size() - 4,4);
+					if (szExt == ".png" || szExt == ".PNG")
 					{
-						unsigned int uiCount = std::stoi(iterI->substr(m_szScreenshot_Default_Filename.size() + 1,8));
-						mapExist_Files[uiCount] = 1;
+						if (iterI->substr(0,m_szScreenshot_Default_Filename.size()) == m_szScreenshot_Default_Filename)
+						{
+							unsigned int uiCount = std::stoi(iterI->substr(m_szScreenshot_Default_Filename.size() + 1,8));
+							mapExist_Files[uiCount] = 1;
+						}
 					}
 				}
 			}
@@ -76,6 +79,7 @@ void Screenshot_Loop(void)
 {
 	do
 	{
+
 		if (g_cScreenshot.m_bRequest && g_cScreenshot.m_bRequest_Ready)
 		{
 			g_cScreenshot.m_bPending = true;
@@ -88,6 +92,7 @@ void Screenshot_Loop(void)
 			FILE *filePNG = fopen(szFilename.c_str(), "wb");
 			if (filePNG != nullptr)
 			{
+				std::cout << "Writing screenshot to " << szFilename << std::endl;
 				png_structp spngStruct = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 				if (spngStruct != nullptr)
 				{
@@ -102,14 +107,15 @@ void Screenshot_Loop(void)
 						while (!g_cOGL_Screenshot.m_bReady)
 							sleep(1); // wait on the image to be ready before procedding
 
-						png_set_IHDR(spngStruct, pspngiInfo, g_cOGL_Screenshot.m_tWidth, g_cOGL_Screenshot.m_tHeight, g_cOGL_Screenshot.m_tColor_Depth_Bits, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+						png_set_IHDR(spngStruct, pspngiInfo, g_cOGL_Screenshot.m_tWidth, g_cOGL_Screenshot.m_tHeight, g_cOGL_Screenshot.m_tColor_Depth_Bits / 3, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 						png_write_info(spngStruct, pspngiInfo);
 
 						png_byte * lpbRow_Pointers[g_cOGL_Screenshot.m_tHeight];
-						lpbRow_Pointers[0] = (png_byte *)g_cOGL_Screenshot.m_lpvData;
+						size_t tRow_Size = (g_cOGL_Screenshot.m_tColor_Depth_Bits >> 3) * g_cOGL_Screenshot.m_tWidth;
+						lpbRow_Pointers[0] = (png_byte *)(g_cOGL_Screenshot.m_lpvData) + (g_cOGL_Screenshot.m_tHeight - 1) * tRow_Size;
 						for (size_t tI = 1; tI < g_cOGL_Screenshot.m_tHeight; tI++)
 						{
-							lpbRow_Pointers[tI] = lpbRow_Pointers[tI - 1] + (g_cOGL_Screenshot.m_tColor_Depth_Bits >> 3) * g_cOGL_Screenshot.m_tWidth;
+							lpbRow_Pointers[tI] = lpbRow_Pointers[tI - 1] - tRow_Size;
 						}
 						png_write_image(spngStruct, lpbRow_Pointers);
 						png_write_end(spngStruct, pspngiInfo);
@@ -123,6 +129,7 @@ void Screenshot_Loop(void)
 				fclose(filePNG);
 			}
 		}
+
 		sleep(1);
 	}
 	while (!g_lpMain->Pending_Quit());
