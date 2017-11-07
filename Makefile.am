@@ -11,7 +11,7 @@ include_HEADERS = include/core_hexmap.hpp  include/core.hpp  include/core_isohex
 
 # Install the pkg-config file; the directory is set using
 # PKG_INSTALLDIR in configure.ac.
-pkgconfig_DATA = bwm801-${API_VERSION}.pc
+pkgconfig_DATA = ${PACKAGE_NAME}-${API_VERSION}.pc
 
 if INSTALLMOD
 if HAVEENVMOD
