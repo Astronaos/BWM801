@@ -1,6 +1,6 @@
 # Release version
 m4_define([package_version_major],[0])
-m4_define([package_version_minor],[3])
+m4_define([package_version_minor],[4])
 m4_define([package_version_micro],[0])
  m4_define([package_repository],[https://github.com/astronaos/BWM801])
 m4_define([package_auth_email],[bwmulligan@astronaos.com])
@@ -42,7 +42,7 @@ AC_SUBST([API_VERSION],api_version)
 
 AC_SUBST([LIB_NAME],[bwm801])
 AC_SUBST([LIB_DESCRIPTION],["BWM801 cross-OS multithreaded game engine"])
-AC_SUBST([LIB_REQUIRES],["x11 freetype2 ftgl gl glu"])
+AC_SUBST([LIB_REQUIRES],["x11 freetype2 ftgl gl glu libpng"])
 
 
 #AC_CHECK_HEADERS([cmath],[],[AC_MSG_ERROR[" Could not find cmath"]])
@@ -76,6 +76,7 @@ PKG_CHECK_MODULES([gl],[gl],[],[AC_MSG_ERROR[" Could not find openGL development
 PKG_CHECK_MODULES([glu],[glu],[],[AC_MSG_ERROR[" Could not find openGL GLU development package"]])
 PKG_CHECK_MODULES([freetype2],[freetype2],[],[AC_MSG_ERROR[" Could not find freetype2. The freetype2 development library must be installed"]])
 PKG_CHECK_MODULES([ftgl],[ftgl],[],[AC_MSG_ERROR[" Could not find ftgl."]])
+PKG_CHECK_MODULES([libpng],[libpng],[],[AC_MSG_ERROR[" Could not find png."]])
 
 AC_CONFIG_FILES([Makefile $PACKAGE_NAME-$API_VERSION.pc:lib.pc.in],[],[PACKAGE_NAME='$PACKAGE_NAME' API_VERSION='$API_VERSION'])
 

@@ -396,8 +396,17 @@ private:
 
 	bool m_bDraw_Pane_Grids;
 
+	std::string m_szScreenshot_Default_Filename;
+	std::string m_szScreenshot_Default_Path;
+
+
 	
 public:
+	inline void Set_Screenshot_Save_Path(std::string i_szPath){m_szScreenshot_Default_Path = i_szPath;}
+	inline std::string Get_Screenshot_Save_Path(void){return m_szScreenshot_Default_Path;}
+	inline void Set_Screenshot_Default_Filename(std::string i_szFilename){m_szScreenshot_Default_Filename = i_szFilename;}
+	inline std::string Get_Screenshot_Default_Filename(void){return m_szScreenshot_Default_Filename;}
+
 	main(void);
 	void Process_Command_Line(unsigned int i_uiNum_Parameters, const char * i_lpszParameter_Values[]);
 	inline void Set_Window_Name(const std::string &i_szName) {m_szWindow_Name = i_szName;};
@@ -652,6 +661,9 @@ public:
 
 	std::vector<std::string> Get_Directory_File_List(const std::string &i_szDirectory); /// get list of all files in the given direcctory
 	void Draw_Pane_Grid(const double &dXmax);
+	void Request_Screenshot(const std::string & i_szFilename);
+
+
 
 
 };

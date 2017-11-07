@@ -10,6 +10,7 @@
 #include <sstream>
 #include <thread>
 #include <CRTDBG.H>
+#include <core_screenshot.h>
 // MS Visual c++ doesn't have nan("") and isnan defined
 #ifndef __MINGW32__//_WIN32
     const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
@@ -263,8 +264,11 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		ShowWindow(g_hWnd,nCmdShow);
 		UpdateWindow(g_hWnd);
 
+		m_szScreenshot_Default_Path = "C:\\"; //@@TODO: make this the user's Pictures folder
 		vThread_List.push_back(std::thread(Main_Timer_Loop));
 		vThread_List.push_back(std::thread(Gfx_Loop));
+		vThread_List.push_back(std::thread(Screenshot_Loop));
+
 
 		while (iReturn = GetMessage(&msg,NULL,0,0))
 		{

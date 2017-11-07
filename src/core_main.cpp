@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <core_screenshot.h>
 // This routine contains the common main methods that are OS independant
 
 
@@ -31,6 +32,9 @@ main::main(void)
 	memset(m_lpbKey_Status,0,sizeof(bool) * uiNum_Keys);
 
 	m_bDraw_Pane_Grids = false;
+
+	m_szScreenshot_Default_Filename = "BWM801-screenshot";
+
 }
 void main::Process_Command_Line(unsigned int i_uiNum_Parameters, const char * i_lpszParameter_Values[])
 {
@@ -99,6 +103,11 @@ void main::On_Timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
 {
 	on_timer(i_uiTimer_ID,i_dDelta_Time_s);
 }
+
+
+
+
+
 void main::Draw(void)
 {
 	PAIR<unsigned int> tWindow_Size = m_tWindow_Box.Get_Size();
@@ -149,6 +158,30 @@ void main::Draw(void)
 		}
 	}
 	glFlush();
+	if (g_cOGL_Screenshot.m_bRequest)
+	{
+		g_cOGL_Screenshot.m_bReady = false;
+		if (g_cOGL_Screenshot.m_lpvData != nullptr)
+		{
+			if (g_cOGL_Screenshot.m_tWidth != tWindow_Size.m_tX ||
+					g_cOGL_Screenshot.m_tHeight != tWindow_Size.m_tY ||
+					g_cOGL_Screenshot.m_tColor_Depth_Bits != 24)
+			{
+				delete [] g_cOGL_Screenshot.m_lpvData;
+				g_cOGL_Screenshot.m_lpvData = nullptr;
+			}
+
+		}
+		g_cOGL_Screenshot.m_tWidth = (GLsizei) tWindow_Size.m_tX;
+		g_cOGL_Screenshot.m_tHeight = (GLsizei) tWindow_Size.m_tY;
+		g_cOGL_Screenshot.m_tColor_Depth_Bits = 24;
+		if (g_cOGL_Screenshot.m_lpvData == nullptr)
+			g_cOGL_Screenshot.m_lpvData = new unsigned char[g_cOGL_Screenshot.m_tWidth * g_cOGL_Screenshot.m_tWidth * 3];
+
+		glReadPixels(0, 0, (GLsizei) tWindow_Size.m_tX, (GLsizei) tWindow_Size.m_tY, GL_RGB,	GL_UNSIGNED_BYTE, g_cOGL_Screenshot.m_lpvData);
+		g_cOGL_Screenshot.m_bRequest = false;
+		g_cOGL_Screenshot.m_bReady = true;
+	}
 
 	m_bDraw_Flag = false;
 }

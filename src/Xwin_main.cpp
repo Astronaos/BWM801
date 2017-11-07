@@ -31,6 +31,9 @@
 #include <thread>
 #include <GL/glext.h>
 #include <string>
+#include <core_screenshot.h>
+#include <sstream>
+
 
 #define NIL (0)       // A name for the void pointer
 
@@ -259,9 +262,14 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 	// We want to get MapNotify events
 //	XSelectInput(g_lpdpyDisplay, g_wWindow, StructureNotifyMask|ExposureMask|PointerMotionMask|ButtonPressMask|ButtonReleaseMask||KeyPressMask|KeyReleaseMask|EnterWindowMask|LeaveWindowMask);
 
+	std::ostringstream ossPath;
+	ossPath << getenv("HOME");
+	ossPath << "/Pictures";
+	g_lpMain->Set_Screenshot_Save_Path(ossPath.str());
 
 	vThread_List.push_back(std::thread(Main_Timer_Loop));
 	vThread_List.push_back(std::thread(Gfx_Loop));
+	vThread_List.push_back(std::thread(Screenshot_Loop));
 
 	std::vector<XButtonEvent> veButton_Events;
 	bool	bReady_To_Process_Buttons = true;
