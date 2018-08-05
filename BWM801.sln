@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 14 for Windows Desktop
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineMk1", "EngineMk1.vcxproj", "{3054396B-444C-4739-B2B2-8D9F55C718C4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BWM801", "BWM801.vcxproj", "{3054396B-444C-4739-B2B2-8D9F55C718C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
