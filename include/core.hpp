@@ -758,6 +758,9 @@ class texture
 private:
 	GLuint m_uiTexture_ID;
 
+	size_t m_tWidth;
+	size_t m_tHeight;
+
 	GLint m_iParam_Wrap_S;
 	GLint m_iParam_Wrap_T;
 	GLint m_iParam_Min_Filter;
@@ -767,12 +770,15 @@ private:
 public:
 	texture(void);
 	~texture(void);
+	size_t Get_Width(void) const;
+	size_t Get_Height(void) const;
+
 	void Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level);
-	void Apply(void);
+	void Apply(void)  const;
 	void Delete(void);
 
 	void Set_Border_Color(const GLfloat & i_fRed, const GLfloat & i_fGreen, const GLfloat & i_fBlue, const GLfloat & i_fAlpha);
-	void Set_Paramete(GLenum i_eParam, GLint i_iValue);
+	void Set_Parameter(GLenum i_eParam, GLint i_iValue);
 };
 
 // graphics text operations

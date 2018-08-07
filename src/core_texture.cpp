@@ -26,7 +26,8 @@ public:
 	{
 		if (i_tDesired_Size > m_tTexture_Buffer_Size)
 		{
-			delete[] m_chTexture_Buffer;
+			if (m_chTexture_Buffer != nullptr)
+				delete[] m_chTexture_Buffer;
 			m_tTexture_Buffer_Size = (i_tDesired_Size / ASSUMED_PAGE_SIZE);
 			if ((i_tDesired_Size % ASSUMED_PAGE_SIZE) != 0)
 				m_tTexture_Buffer_Size++;
@@ -72,7 +73,7 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 						pngsEnd_Info_Struct = png_create_info_struct(pngsRead_Struct);
 						if (pngsEnd_Info_Struct != nullptr)
 						{
-							if (setjmp(png_jmpbuf(pngsRead_Struct)) != 0)
+							if (setjmp(png_jmpbuf(pngsRead_Struct)) == 0)
 							{
 								png_init_io(pngsRead_Struct, fileImage);
 								png_read_png(pngsRead_Struct, pngsInfo_Struct, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, nullptr);
@@ -103,7 +104,7 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 									tData_Size = o_iNum_Colors * uiWidth * uiHeight;
 									g_cCore_Texture_Buffer.realloc(tData_Size);
 									size_t tIdx = 0;
-									for (size_t tI = uiHeight; tI <= uiHeight; tI--)
+									for (size_t tI = uiHeight - 1; tI < uiHeight; tI--)
 									{
 										memcpy(g_cCore_Texture_Buffer.m_chTexture_Buffer + tIdx, lpRow_Pointers[tI], tRow_Len);
 										tIdx += tRow_Len;
@@ -111,7 +112,6 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 									o_tWidth = uiWidth;
 									o_tHeight = uiHeight;
 									bRet = true; // success
-
 								}
 							}
 						}
@@ -129,10 +129,12 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 texture::texture(void)
 {
 	m_uiTexture_ID = -1;
+	m_tWidth = -1;
+	m_tHeight = -1;
 
 	m_iParam_Wrap_S = GL_CLAMP_TO_EDGE;
 	m_iParam_Wrap_T = GL_CLAMP_TO_EDGE;
-	m_iParam_Min_Filter = GL_LINEAR_MIPMAP_NEAREST;
+	m_iParam_Min_Filter = GL_LINEAR;
 	m_iParam_Mag_Filter = GL_LINEAR;
 	m_lpfParam_Border_Color[0] = 0.0;
 	m_lpfParam_Border_Color[1] = 0.0;
@@ -164,48 +166,69 @@ void texture::Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level)
 		{
 			std::cerr << ".jpg file format not currently supported (" << i_sFile_Path << ")" << std::endl;
 		}
+		
 		if (bSuccess)
 		{
+			m_tWidth = tWidth;
+			m_tHeight = tHeight;
+
 			if (m_uiTexture_ID == -1)
 				glGenTextures(1, &m_uiTexture_ID);
 			glBindTexture(GL_TEXTURE_2D, m_uiTexture_ID);
 			// set the texture wrapping/filtering options (on the currently bound texture object)
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_iParam_Wrap_S);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_iParam_Wrap_T);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_iParam_Min_Filter);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_iParam_Mag_Filter);
+			if (m_iParam_Wrap_S == GL_CLAMP_TO_BORDER || m_iParam_Wrap_T == GL_CLAMP_TO_BORDER)
+				glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, m_lpfParam_Border_Color);
+
+			GLenum eColor;
+			switch (tColors)
+			{
+			case 1:
+				eColor = GL_RED;
+				break;
+			case 3:
+				eColor = GL_RGB;
+				break;
+			case 4:
+				eColor = GL_RGBA;
+				break;
+			}
+
 			// load and generate the texture
 			if (g_cCore_Texture_Buffer.m_chTexture_Buffer != nullptr)
 			{
 				if (i_iMipmap_Level == -1)
 				{
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tWidth, tHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, g_cCore_Texture_Buffer.m_chTexture_Buffer);
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tWidth, tHeight, 0, eColor, GL_UNSIGNED_BYTE, g_cCore_Texture_Buffer.m_chTexture_Buffer);
 					glGenerateMipmap(GL_TEXTURE_2D);
 				}
 				else
 				{
-					glTexImage2D(GL_TEXTURE_2D, i_iMipmap_Level, GL_RGB, tWidth, tHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, g_cCore_Texture_Buffer.m_chTexture_Buffer);
+					glTexImage2D(GL_TEXTURE_2D, i_iMipmap_Level, GL_RGBA, tWidth, tHeight, 0, eColor, GL_UNSIGNED_BYTE, g_cCore_Texture_Buffer.m_chTexture_Buffer);
 				}
 			}
 		}
 		else
 		{
-			std::cout << "Failed to load texture" << std::endl;
+			std::cerr << "Failed to load texture " << i_sFile_Path << std::endl;
 		}
 	}
 }
-void texture::Apply(void)
+void texture::Apply(void) const
 {
-	if (m_uiTexture_ID == -1)
+	if (m_uiTexture_ID != -1)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_uiTexture_ID);
 		// set the texture wrapping/filtering options (on the currently bound texture object)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_iParam_Wrap_S);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_iParam_Wrap_T);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_iParam_Min_Filter);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_iParam_Mag_Filter);
-		if (m_iParam_Wrap_S == GL_CLAMP_TO_BORDER || m_iParam_Wrap_T == GL_CLAMP_TO_BORDER)
-			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, m_lpfParam_Border_Color);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, m_iParam_Wrap_S);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, m_iParam_Wrap_T);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_iParam_Min_Filter);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, m_iParam_Mag_Filter);
+//		if (m_iParam_Wrap_S == GL_CLAMP_TO_BORDER || m_iParam_Wrap_T == GL_CLAMP_TO_BORDER)
+//			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, m_lpfParam_Border_Color);
 	}
 }
 void texture::Delete(void)
@@ -216,4 +239,41 @@ void texture::Delete(void)
 		m_uiTexture_ID = -1;
 	}
 }
+
+void texture::Set_Border_Color(const GLfloat & i_fRed, const GLfloat & i_fGreen, const GLfloat & i_fBlue, const GLfloat & i_fAlpha)
+{
+	m_lpfParam_Border_Color[0] = i_fRed;
+	m_lpfParam_Border_Color[1] = i_fGreen;
+	m_lpfParam_Border_Color[2] = i_fBlue;
+	m_lpfParam_Border_Color[3] = i_fAlpha;
+
+}
+void texture::Set_Parameter(GLenum i_eParam, GLint i_iValue)
+{
+	switch (i_eParam)
+	{
+	case GL_TEXTURE_WRAP_S:
+		m_iParam_Wrap_S = i_iValue;
+		break;
+	case GL_TEXTURE_WRAP_T:
+		m_iParam_Wrap_T = i_iValue;
+		break;
+	case GL_TEXTURE_MIN_FILTER:
+		m_iParam_Min_Filter = i_iValue;
+		break;
+	case GL_TEXTURE_MAG_FILTER:
+		m_iParam_Mag_Filter = i_iValue;
+		break;
+	}
+}
+
+size_t texture::Get_Width(void) const
+{
+	return m_tWidth;
+}
+size_t texture::Get_Height(void) const
+{
+	return m_tHeight;
+}
+
 
