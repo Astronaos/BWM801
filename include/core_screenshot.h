@@ -1,3 +1,5 @@
+#pragma once
+
 
 class ogl_screenshot_info
 {

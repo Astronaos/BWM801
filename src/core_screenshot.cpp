@@ -68,11 +68,10 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 	}
 }
 
-#include <png.h>
 void write_row_callback(png_structrp i_ppPng_Ptr, png_uint_32 i_uiRow, int i_iPass)
 {
 	if (g_cScreenshot.m_bPending && g_cOGL_Screenshot.m_bReady)
-		g_cScreenshot.m_fProgress += 1.0 / g_cOGL_Screenshot.m_tHeight; // or something
+		g_cScreenshot.m_fProgress += (float)(1.0 / g_cOGL_Screenshot.m_tHeight); // or something
 }
 
 void Screenshot_Loop(void)
@@ -105,12 +104,12 @@ void Screenshot_Loop(void)
 						png_set_write_status_fn(spngStruct, write_row_callback);
 
 						while (!g_cOGL_Screenshot.m_bReady)
-							sleep(1); // wait on the image to be ready before procedding
+							Sleep(1); // wait on the image to be ready before procedding
 
 						png_set_IHDR(spngStruct, pspngiInfo, g_cOGL_Screenshot.m_tWidth, g_cOGL_Screenshot.m_tHeight, g_cOGL_Screenshot.m_tColor_Depth_Bits / 3, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 						png_write_info(spngStruct, pspngiInfo);
 
-						png_byte * lpbRow_Pointers[g_cOGL_Screenshot.m_tHeight];
+						png_byte ** lpbRow_Pointers = new png_byte *[g_cOGL_Screenshot.m_tHeight];
 						size_t tRow_Size = (g_cOGL_Screenshot.m_tColor_Depth_Bits >> 3) * g_cOGL_Screenshot.m_tWidth;
 						lpbRow_Pointers[0] = (png_byte *)(g_cOGL_Screenshot.m_lpvData) + (g_cOGL_Screenshot.m_tHeight - 1) * tRow_Size;
 						for (size_t tI = 1; tI < g_cOGL_Screenshot.m_tHeight; tI++)
@@ -121,6 +120,7 @@ void Screenshot_Loop(void)
 						png_write_end(spngStruct, pspngiInfo);
 
 						png_destroy_write_struct(&spngStruct,&pspngiInfo);
+						delete[] lpbRow_Pointers;
 					}
 					else
 						png_destroy_write_struct(&spngStruct,nullptr);
@@ -130,7 +130,7 @@ void Screenshot_Loop(void)
 			}
 		}
 
-		sleep(1);
+		Sleep(1);
 	}
 	while (!g_lpMain->Pending_Quit());
 

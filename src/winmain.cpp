@@ -1,9 +1,8 @@
 #include <windows.h>
 #include <windowsx.h>
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 #include <GL/gl.h>
-#include <math.h>
 #include <process.h>    /* _beginthread, _endthread */
 #include <core.hpp>
 #include <ctime>
@@ -17,8 +16,9 @@
 //	double nan(const char * i_lpszFlags){float fNan = (*(const float *)__nan); return (double)fNan;}
 //	bool isnan(const double & i_dValue){return _isnan(i_dValue) != 0;}
 #endif
+#include <bwm801_glext.h>
 
-	HINSTANCE		g_hInst = 0;
+HINSTANCE		g_hInst = 0;
 HGLRC			g_hRC = 0;
 HWND			g_hWnd = 0;
 bool			g_bRC_Created = false;
@@ -51,6 +51,12 @@ PAIR<unsigned int>	Fix_Coordinate_Window(const PAIR<unsigned int> &i_tPosition)
 	return tRet;
 }
 
+
+void Load_OGL_Extensions(void)
+{
+	g_lpf_glGenerateMipmap = reinterpret_cast<oglve>(wglGetProcAddress("glGenerateMipmap"));
+	g_lpf_glGenerateTextureMipmap = reinterpret_cast<oglvui>(wglGetProcAddress("glGenerateTextureMipmap"));
+}
 
 
 void Gfx_Loop(void)
@@ -231,6 +237,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		g_bRC_Created = false;
 		g_hInst = hInstance;
 
+		 // load opengl extensions
+		Load_OGL_Extensions();
+
 		if(!hPrevInstance)
    		{
 			wndclass.style = 0;
@@ -264,7 +273,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		ShowWindow(g_hWnd,nCmdShow);
 		UpdateWindow(g_hWnd);
 
-		m_szScreenshot_Default_Path = "C:\\"; //@@TODO: make this the user's Pictures folder
+		std::string szScreenshot_Default_Path = "C:\\"; //@@TODO: make this the user's Pictures folder
+		g_lpMain->Set_Screenshot_Save_Path(szScreenshot_Default_Path);
+
 		vThread_List.push_back(std::thread(Main_Timer_Loop));
 		vThread_List.push_back(std::thread(Gfx_Loop));
 		vThread_List.push_back(std::thread(Screenshot_Loop));
@@ -976,3 +987,5 @@ bool criticalsection::Get(void) const
 	CRITICAL_SECTION * lpbPtr = (CRITICAL_SECTION  *) m_lpvCS_Data; 
 	return (TryEnterCriticalSection(lpbPtr) != 0);
 }
+
+
