@@ -1,6 +1,7 @@
 #include <core.hpp>
 #include <string>
 #include <png.h>
+#include <cstring>
 // for now, assume pages are 4096 bytes each. @@TODO implement per machine page sizing
 #define ASSUMED_PAGE_SIZE 4096
 
@@ -65,56 +66,59 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 				if (pngsRead_Struct != nullptr)
 				{
 					png_infop pngsInfo_Struct = png_create_info_struct(pngsRead_Struct);
+					png_infop pngsEnd_Info_Struct = nullptr;
 					if (pngsInfo_Struct != nullptr)
 					{
-						return (ERROR);
-					}
-					png_infop pngsEnd_Info_Struct = png_create_info_struct(pngsRead_Struct);
-					if (pngsEnd_Info_Struct != nullptr)
-					{
-						if (setjmp(png_jmpbuf(pngsRead_Struct)) != 0)
+						pngsEnd_Info_Struct = png_create_info_struct(pngsRead_Struct);
+						if (pngsEnd_Info_Struct != nullptr)
 						{
-							png_init_io(pngsRead_Struct, fileImage);							png_read_png(pngsRead_Struct, pngsInfo_Struct, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, nullptr);
-							png_bytepp lpRow_Pointers = png_get_rows(pngsRead_Struct, pngsInfo_Struct);
-							if (lpRow_Pointers != nullptr)
+							if (setjmp(png_jmpbuf(pngsRead_Struct)) != 0)
 							{
-								png_uint_32 uiWidth, uiHeight;
-								int iBit_Depth, iColor_Type, iInterlace_Type;
-								png_get_IHDR(pngsRead_Struct, pngsInfo_Struct, &uiWidth, &uiHeight, &iBit_Depth, &iColor_Type, &iInterlace_Type, nullptr, nullptr);
-								// we now have all of the data that we need for creating the texture
-								size_t tData_Size;
-								switch (iColor_Type)
+								png_init_io(pngsRead_Struct, fileImage);
+								png_read_png(pngsRead_Struct, pngsInfo_Struct, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, nullptr);
+								png_bytepp lpRow_Pointers = png_get_rows(pngsRead_Struct, pngsInfo_Struct);
+								if (lpRow_Pointers != nullptr)
 								{
-								case PNG_COLOR_TYPE_GRAY:
-									o_iNum_Colors = 1;
-									break;
-								case PNG_COLOR_TYPE_GRAY_ALPHA:
-									o_iNum_Colors = 2;
-									break;
-								case PNG_COLOR_TYPE_RGB:
-									o_iNum_Colors = 3;
-									break;
-								case PNG_COLOR_TYPE_RGB_ALPHA:
-									o_iNum_Colors = 4;
-									break;
-								}
-								size_t tRow_Len = o_iNum_Colors * uiWidth;
-								tData_Size = o_iNum_Colors * uiWidth * uiHeight;
-								g_cCore_Texture_Buffer.realloc(tData_Size);
-								size_t tIdx = 0;
-								for (size_t tI = uiHeight; tI <= uiHeight; tI--)
-								{
-									memcpy(g_cCore_Texture_Buffer.m_chTexture_Buffer + tIdx, lpRow_Pointers[tI], tRow_Len);
-									tIdx += tRow_Len;
-								}
-								o_tWidth = uiWidth;
-								o_tHeight = uiHeight;
-								bRet = true; // success
+									png_uint_32 uiWidth, uiHeight;
+									int iBit_Depth, iColor_Type, iInterlace_Type;
+									png_get_IHDR(pngsRead_Struct, pngsInfo_Struct, &uiWidth, &uiHeight, &iBit_Depth, &iColor_Type, &iInterlace_Type, nullptr, nullptr);
+									// we now have all of the data that we need for creating the texture
+									size_t tData_Size;
+									switch (iColor_Type)
+									{
+									case PNG_COLOR_TYPE_GRAY:
+										o_iNum_Colors = 1;
+										break;
+									case PNG_COLOR_TYPE_GRAY_ALPHA:
+										o_iNum_Colors = 2;
+										break;
+									case PNG_COLOR_TYPE_RGB:
+										o_iNum_Colors = 3;
+										break;
+									case PNG_COLOR_TYPE_RGB_ALPHA:
+										o_iNum_Colors = 4;
+										break;
+									}
+									size_t tRow_Len = o_iNum_Colors * uiWidth;
+									tData_Size = o_iNum_Colors * uiWidth * uiHeight;
+									g_cCore_Texture_Buffer.realloc(tData_Size);
+									size_t tIdx = 0;
+									for (size_t tI = uiHeight; tI <= uiHeight; tI--)
+									{
+										memcpy(g_cCore_Texture_Buffer.m_chTexture_Buffer + tIdx, lpRow_Pointers[tI], tRow_Len);
+										tIdx += tRow_Len;
+									}
+									o_tWidth = uiWidth;
+									o_tHeight = uiHeight;
+									bRet = true; // success
 
+								}
 							}
 						}
-					}					png_destroy_read_struct(&pngsRead_Struct, &pngsInfo_Struct, &pngsEnd_Info_Struct);
-				}			}
+					}
+					png_destroy_read_struct(&pngsRead_Struct, &pngsInfo_Struct, &pngsEnd_Info_Struct);
+				}
+			}
 			fclose(fileImage);
 			fileImage = nullptr;
 		}
