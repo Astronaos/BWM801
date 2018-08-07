@@ -1,4 +1,8 @@
 #pragma once
+#ifndef WIN32
+#define WINAPI
+#endif
+
 typedef void (WINAPI * oglve) (GLenum  eEnum);
 typedef void (WINAPI * oglvui) (GLuint   uiUint);
 
@@ -10,3 +14,9 @@ typedef void (WINAPI * oglvui) (GLuint   uiUint);
 
 EXTERN oglve g_lpf_glGenerateMipmap;
 EXTERN oglvui g_lpf_glGenerateTextureMipmap;
+
+#undef EXTERN
+#ifndef WIN32
+#undef WINAPI
+#endif
+
