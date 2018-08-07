@@ -496,7 +496,7 @@ bool	COMMSOCKET::Accept_Connections(void)
 	return m_bIs_Connected;
 }
 
-bool COMMSOCKET::Close(void)
+void COMMSOCKET::Close(void)
 {
 	if (m_bIs_Connected)
 	{
