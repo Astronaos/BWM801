@@ -33,6 +33,7 @@
 #include <string>
 #include <core_screenshot.h>
 #include <sstream>
+#include <bwm801_glext.h>
 
 
 #define NIL (0)       // A name for the void pointer
@@ -135,6 +136,17 @@ void Main_Timer_Loop(void)
 }
 
 
+
+void Load_OGL_Extensions(void)
+{
+	GLubyte sglGenerateMipmap[] = {"sglGenerateMipmap"};
+	GLubyte sglGenerateTextureMipmap[] = {"glGenerateTextureMipmap"};
+
+	g_lpf_glGenerateMipmap = reinterpret_cast<oglve>(glXGetProcAddress(sglGenerateMipmap));
+	g_lpf_glGenerateTextureMipmap = reinterpret_cast<oglvui>(glXGetProcAddress(sglGenerateTextureMipmap));
+}
+
+
 int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 {
 	bool	bCtrl_Key = false;
@@ -148,6 +160,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 		exit(1);
 	}
 	g_lpMain->Process_Command_Line(i_iArg_Count, i_lpszArg_Values);
+	Load_OGL_Extensions();
 	Initialize_Circle_Vectors();
 	XInitThreads();
 	//printf("%i %i %i %i %i %i %i\n",main::MB_LEFT, main::MB_CTR, main::MB_RGT, main::MB_SCROLL_V, main::MB_SCROLL_H, main::MB_X1, main::MB_X2);
