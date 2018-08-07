@@ -37,6 +37,8 @@ Release
 *.sdf
 *.suo
 *.vcxproj.user
+.vs
+
 
 # Template
 template/bin
