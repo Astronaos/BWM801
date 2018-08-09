@@ -16,6 +16,7 @@ void user_template_main::gfx_init(void) // initialization routine; rendering con
 
 	SelectFontFace(SANS,true,false);
 
+	// load textures here
 	glEnable(GL_TEXTURE_2D);
 	m_cTexture.Load_Image("spectrum.png",-1);
 	glDisable(GL_TEXTURE_2D);
@@ -45,6 +46,8 @@ void user_template_main::gfx_reshape(const pair<unsigned int> & i_tNew_Size) // 
 }
 void user_template_main::gfx_close(void) // graphics exiting; rendering context still active
 {
+// best place to delete any calllists or textures.
+	m_cTexture.Delete();
 }
 
 void user_template_main::gfx_display(pane_id i_idPane) // primary display routine
@@ -56,6 +59,7 @@ void user_template_main::gfx_display(pane_id i_idPane) // primary display routin
 	if (i_idPane == m_idPane)
 	{
 		double dSize = Get_Pane_Aspect_Ratio(m_idPane);
+		// draw a white rectangle, filling the pane
 		glColor4f(1.0,1.0,1.0,1.0);
 		glBegin(GL_QUADS);
 			glVertex2f(0.0,1.0);
@@ -63,8 +67,9 @@ void user_template_main::gfx_display(pane_id i_idPane) // primary display routin
 			glVertex2f(dSize,0.0);
 			glVertex2f(0.0,0.0);
 		glEnd();
+		// draw rectangle that is covered with the texture
 		glPushMatrix();
-			glTranslatef(m_dTimer * 0.1,m_dTimer * 0.1,0.0);
+			glTranslatef(m_dTimer * 0.1,m_dTimer * 0.1,0.0); // make it move slowly
 			glColor4f(0.0,0.0,0.0,1.0);
 			glEnable(GL_TEXTURE_2D);
 			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);

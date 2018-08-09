@@ -47,4 +47,10 @@ private:
 	virtual void close(void); // program exiting; rendering context destroyed
 };
 
+// for Windows compilation, export the main class
+#ifdef WIN32
+	__declspec(dllexport) extern user_template_main g_cMain;
+#endif
+
+
 

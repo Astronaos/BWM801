@@ -9,27 +9,27 @@ void user_template_main::on_key_down(keyid eKey_ID, unsigned char chScan_Code, u
 	switch (eKey_ID)
 	{
 	case key_escape:
-	case key_q:
+	case key_q: // handle a request to exit
 		m_qEvent_List.push_back(quit_request);
 		break;
-	case key_p:
+	case key_p: // produce a screenshot when the user selects ctrl-p
 		if (Get_Key_State(key_lctrl) || Get_Key_State(key_rctrl) || Get_Key_State(key_control))
 			Request_Screenshot(std::string());
 		break;
-	case key_prscrn:
+	case key_prscrn: // produce a screenshow when the user selected the prt sc button
 		Request_Screenshot(std::string());
 		break;
 	}
 }
 
 void user_template_main::on_key_up(keyid eKey_ID, unsigned char chScan_Code, unsigned int uiRepeat_Count, bool bExtended_Key, bool bPrevious_Key_State)
-{
+{ // handle any key releases
 }
 void user_template_main::on_mouse_button_double_click(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
-{
+{ // handle double click
 }
 void user_template_main::on_mouse_button_down(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
-{
+{ // handle clicking on something
 	pair<unsigned int> tMouse = i_tMouse_Position;
 	pane_id idMouse_Pane = Find_Pane(tMouse);
 	quad<unsigned int> qPane_Position = Get_Pane_Position(idMouse_Pane);
@@ -62,16 +62,16 @@ void user_template_main::on_mouse_button_down(mousebutton i_eButton, const pair<
 	}
 }
 void user_template_main::on_mouse_button_up(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
-{
+{ // handle mouse button release
 }
 void user_template_main::on_mousemove(const pair<unsigned int> &i_tMouse_Position)
-{
+{ // handle moving the mouse
 }
 void user_template_main::on_mouse_wheel(mousebutton i_eWheel, int i_iWheel_Delta, const pair<unsigned int> &i_tMouse_Position)
-{
+{ // handle using the mouse wheel (scroll wheel)
 }
 void user_template_main::on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
-{
+{ // handle real-time processing
 //	if (!m_vsError_Info.empty())
 //	{
 //		Change_Pane_Visibility(m_idError_Pane,true);
@@ -95,10 +95,10 @@ void user_template_main::on_timer(unsigned int i_uiTimer_ID, const double & i_dD
 
 	if (m_bQuit_Request_Pending)
 	{
-		Request_Quit();
+		Request_Quit(); // the if user requested an exit, pass that on to bwm801::main
 	}
-	m_dTimer += i_dDelta_Time_s;
-	Request_Refresh();
+	m_dTimer += i_dDelta_Time_s; // internal timer
+	Request_Refresh(); // reqest a refresh
 
 }
 
