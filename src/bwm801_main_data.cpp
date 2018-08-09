@@ -1,5 +1,6 @@
 #include <bwm801.h>
 #include <bwm801_main_data.h>
+#include <cstring> // for memcpy
 using namespace bwm801;
 
 extern main * g_lpMain;

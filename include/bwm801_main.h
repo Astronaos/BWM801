@@ -25,7 +25,10 @@ namespace bwm801
 
 		virtual void Initializer(void);
 		virtual void Initializer(const main &);
-		virtual void main::Destructor(void);
+		virtual void Destructor(void);
+
+		virtual bool Is_Debug_Mode_Enabled(void) const;
+		virtual void Set_Debug_Mode(bool i_bDebug_Enabled);
 
 		main(void) { m_lpvData = nullptr; Initializer(); }
 		main(const main & i_cRHO) { m_lpvData = nullptr; Initializer(i_cRHO); }

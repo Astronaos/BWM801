@@ -31,6 +31,7 @@
 #include <GL/glext.h>
 #include <string>
 #include <bwm801_screenshot.h>
+#include <bwm801_main_data.h>
 #include <sstream>
 #include <bwm801_glext.h>
 #include <deque>
@@ -297,7 +298,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 			switch (evEvent.type)
 			{
 			case KeyRelease:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Key %i \n",evEvent.xkey.keycode);
 				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
 				{
@@ -326,7 +327,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 					bF12_Key = true;
 					break;
 				}
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Key %i \n",evEvent.xkey.keycode);
 
 				g_lpMain->On_Key_Down(Key_Map(XLookupKeysym(&evEvent.xkey,0)),0,0, 0, 0);
@@ -334,7 +335,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 		// Mouse operations
 			case ButtonPress:
 			case ButtonRelease:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Button %i (%i,%i)\n",Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tX,Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tY);
 				bReady_To_Process_Buttons = (XEventsQueued(g_lpdpyDisplay,QueuedAfterFlush) == 0);
 				if (!bReady_To_Process_Buttons)
@@ -392,7 +393,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 				}
 				break;
 			case MotionNotify:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Motion\n");
 				g_lpMain->On_Mousemove(Fix_Coordinate_Window(pair<unsigned int>(evEvent.xmotion.x, evEvent.xmotion.y)));
 				break;
@@ -405,7 +406,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 	//			break;
 			case Expose:
 			case GraphicsExpose:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Expose\n");
 				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>(evEvent.xexpose.x,evEvent.xexpose.y)));
 				g_lpMain->On_Window_Resize(pair<unsigned int>(evEvent.xexpose.width,evEvent.xexpose.height));
@@ -414,7 +415,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 				g_lpMain->Request_Refresh();
 				break;
 		    case ConfigureNotify:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Configure %i %i\n",evEvent.xconfigure.event, evEvent.xconfigure.window);
 				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>(evEvent.xconfigure.x,evEvent.xconfigure.y)));
 				g_lpMain->On_Window_Resize(pair<unsigned int>(evEvent.xconfigure.width,evEvent.xconfigure.height));
@@ -423,12 +424,12 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 				g_lpMain->Request_Refresh();
 		        break;
 	 		case DestroyNotify:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Destroy\n");
 				g_lpMain->Request_Quit();
 				break;
 			case MapNotify:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Map Notify\n");
 				g_lpMain->Request_Refresh();
 				break;
@@ -444,7 +445,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 				//printf("Keymap %i %i\n",evEvent.xkeymap.key_vector[0],evEvent.xkeymap.key_vector[1]);
 				break;
 			case ClientMessage:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Client Message\n");
 				if ((Atom)evEvent.xclient.data.l[0] == aWM_Delete_Window)
 					g_lpMain->Request_Quit();
@@ -456,7 +457,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 				g_lpMain->Lose_Focus();
 				break;
 			default:
-				if (g_lpMain->m_bEngine_Debug_Mode)
+				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event %i\n",evEvent.type);
 				break;
 			}
@@ -707,7 +708,7 @@ main::mousebutton Mouse_Button_Map(unsigned int i_uiButton)
 FTFont * g_lpcCurrent_Face = nullptr;
 FTFont * g_lpdFontFaces[11][4] = {{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr}};
 
-void LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, bool i_bItalics)
+void bwm801::LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, bool i_bItalics)
 {
 	if (i_eFont >= USER_1 && i_eFont <= USER_8)
 	{
@@ -722,7 +723,7 @@ void LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, b
 	}
 }
 
-void SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
+void bwm801::SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 {
 	unsigned int uiFont = (i_eFont - SANS);
 	unsigned int uiFace = (i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0);
@@ -793,7 +794,7 @@ void SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 }
 
 
-void glPrint(const double & i_dSize, const double & i_dX, const double & i_dY, const double & i_dZ, const char * i_lpszString)
+void bwm801::glPrint(const float & i_dSize, const float & i_dX, const float & i_dY, const float & i_dZ, const char * i_lpszString)
 {
 	if (g_lpcCurrent_Face)
 	{
@@ -810,7 +811,7 @@ void glPrint(const double & i_dSize, const double & i_dX, const double & i_dY, c
 	}
 }
 
-void TextBBox(const double & i_dSize, const char * i_lpszString, pair<float> & o_cBot_Left, pair<float> & o_cTop_Right)
+void bwm801::TextBBox(const float & i_dSize, const char * i_lpszString, pair<float> & o_cBot_Left, pair<float> & o_cTop_Right)
 {
 	FTBBox	cBBox;
 	if (g_lpcCurrent_Face)

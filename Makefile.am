@@ -2,7 +2,8 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 AM_CPPFLAGS = -I${srcdir}/include ${x11_CFLAGS} ${gl_CFLAGS} ${freetype2_CFLAGS} ${ftgl_CFLAGS} ${libpng_CFLAGS}
 
 lib_LTLIBRARIES = libbwm801.la
-libbwm801_la_SOURCES = src/bwm801_gfx.cpp src/bwm801_mapspace.cpp src/bwm801_quad.cpp src/bwm801_triplet.cpp src/Xwin_main.cpp src/bwm801_main.cpp src/bwm801_pair.cpp src/linux_bwm801_sockets.cpp src/bwm801_screenshot.cpp src/bwm801_texture.cpp src/bwm801_glext.cpp src/Xwin_bwm801_date_time.cpp src/Xwin_bwm801_crit_section.cpp src/bwm801_button_info.cpp  src/bwm801_calllist.cpp src/bwm801_pane.cpp src/bwm801_sockets.cpp
+libbwm801_la_SOURCES = src/bwm801_gfx.cpp src/bwm801_mapspace.cpp src/bwm801_quad.cpp src/bwm801_triplet.cpp src/Xwin_main.cpp src/bwm801_main.cpp src/bwm801_pair.cpp src/linux_bwm801_sockets.cpp src/bwm801_screenshot.cpp src/bwm801_texture.cpp src/bwm801_glext.cpp src/Xwin_bwm801_date_time.cpp src/Xwin_bwm801_crit_section.cpp src/bwm801_button_info.cpp  src/bwm801_calllist.cpp src/bwm801_pane.cpp src/bwm801_sockets.cpp src/bwm801_button_info_data.cpp src/bwm801_main_data.cpp src/bwm801_pane_data.cpp
+
 libbwm801_la_LDFLAGS = -version-info 1:0:0
 
 

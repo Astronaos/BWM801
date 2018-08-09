@@ -27,6 +27,16 @@ void main::Destructor(void)
 	m_lpvData = nullptr;
 }
 
+
+bool main::Is_Debug_Mode_Enabled(void) const
+{
+	return ((main_data *)m_lpvData)->m_bEngine_Debug_Mode;
+}
+void main::Set_Debug_Mode(bool i_bDebug_Enabled)
+{
+	((main_data *)m_lpvData)->m_bEngine_Debug_Mode = i_bDebug_Enabled;
+}
+
 void main::Process_Command_Line(unsigned int i_uiNum_Parameters, const char * i_lpszParameter_Values[])
 {
 	for (unsigned int uiI = 1; uiI < i_uiNum_Parameters; uiI++)
