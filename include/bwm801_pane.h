@@ -12,24 +12,23 @@
 namespace bwm801
 {
 	typedef unsigned int pane_id;
-
 	class EXPORT pane
 	{
 	private:
-		pane_id				m_idID;
-		quad<unsigned int> 	m_qPosition;
-		bool				m_bVisible;
-		unsigned int 		m_uiUser_ID;
-		int					m_iLevel;
+		void *				m_lpvPane_Data;
 	public:
 
-		pane(void) {Initializer();}
-		pane(pane_id i_idID) {Initializer(i_idID);}
-		pane(pane_id i_idID, const quad<unsigned int> i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID) {Initializer(i_idID,i_qPosition,i_bVisible,i_uiUser_ID);}
-
+		pane(void) { m_lpvPane_Data = nullptr;  Initializer(); }
+		pane(const pane & i_cRHO) { m_lpvPane_Data = nullptr;  Initializer(i_cRHO); }
+		pane(pane_id i_idID) { m_lpvPane_Data = nullptr; Initializer(i_idID);}
+		pane(pane_id i_idID, const quad<unsigned int> i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID) { m_lpvPane_Data = nullptr; Initializer(i_idID,i_qPosition,i_bVisible,i_uiUser_ID);}
+		~pane(void) {Destructor();}
 		virtual void 	Initializer(void);
+		virtual void 	Initializer(const pane & i_cRHO);
 		virtual void 	Initializer(pane_id i_idID);
 		virtual void 	Initializer(pane_id i_idID, const quad<unsigned int> i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID);
+		virtual void	Destructor(void);
+
 		virtual pane_id Get_ID(void) const;
 
 		virtual bool	Is_In_Pane(const pair<unsigned int> &i_tLocation) const;

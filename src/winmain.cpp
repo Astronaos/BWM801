@@ -9,7 +9,7 @@
 #include <sstream>
 #include <thread>
 #include <CRTDBG.H>
-#include <core_screenshot.h>
+#include <bwm801_screenshot.h>
 // MS Visual c++ doesn't have nan("") and isnan defined
 #ifndef __MINGW32__//_WIN32
     const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
@@ -17,6 +17,8 @@
 //	bool isnan(const double & i_dValue){return _isnan(i_dValue) != 0;}
 #endif
 #include <bwm801_glext.h>
+#include <map>
+#include <deque>
 
 using namespace bwm801;
 
@@ -26,8 +28,8 @@ HGLRC			g_hRC = 0;
 HWND			g_hWnd = 0;
 bool			g_bRC_Created = false;
 HDC				g_hDC = 0;
-GLuint			g_uiFont_Glyph_Lists_Poly[11][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};
-GLuint			g_uiFont_Glyph_Lists_Lines[11][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};
+GLuint			g_uiFont_Glyph_Lists_Poly[11][4] = {{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1}};
+GLuint			g_uiFont_Glyph_Lists_Lines[11][4] = {{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1},{(GLuint)-1,(GLuint)-1,(GLuint)-1,(GLuint)-1}};
 GLuint *		g_lpuiCurrent_Font_Poly =  NULL;
 GLuint *		g_lpuiCurrent_Font_Lines =  NULL;
 GLYPHMETRICSFLOAT g_gmfGlyph_Metrics[11][4][256]; 
@@ -90,7 +92,7 @@ void Gfx_Loop(void)
 		32,
 		8,
 		0,
-		PFD_main_PLANE,
+		PFD_MAIN_PLANE,
 		0,
 		0,0,0
 	};
@@ -304,172 +306,172 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 uintptr_t g_hMainThread = 0;
 
-main::KEYID Key_Map(UINT wParam)
+main::keyid Key_Map(UINT wParam)
 {
-	main::KEYID		eKey = main::KEY_NOOP;
+	main::keyid		eKey = main::key_noop;
 	switch (wParam)
 	{
-	case VK_LBUTTON: eKey = main::KEY_MB_LEFT; break;
-	case VK_RBUTTON: eKey = main::KEY_MB_RGT; break;
-	case VK_CANCEL: eKey = main::KEY_CANCEL; break;
-	case VK_MBUTTON: eKey = main::KEY_MB_CTR; break;
+	case VK_LBUTTON: eKey = main::key_mb_left; break;
+	case VK_RBUTTON: eKey = main::key_mb_rgt; break;
+	case VK_CANCEL: eKey = main::key_cancel; break;
+	case VK_MBUTTON: eKey = main::key_mb_ctr; break;
 
 #if(_WIN32_WINNT >= 0x0500)
-	case VK_XBUTTON1: eKey = main::KEY_MB_X1; break;
-	case VK_XBUTTON2: eKey = main::KEY_MB_X2; break;
+	case VK_XBUTTON1: eKey = main::key_mb_x1; break;
+	case VK_XBUTTON2: eKey = main::key_mb_x2; break;
 #endif /* _WIN32_WINNT >= 0x0500 */
 
 /*
  * 0x07 : unassigned
  */
 
-	case VK_BACK: eKey = main::KEY_BACKSPACE; break;
-	case VK_TAB: eKey = main::KEY_TAB; break;
+	case VK_BACK: eKey = main::key_backspace; break;
+	case VK_TAB: eKey = main::key_tab; break;
 
 /*
  * 0x0A - 0x0B : reserved
  */
 
-	case VK_CLEAR: eKey = main::KEY_CLEAR; break;
-	case VK_RETURN: eKey = main::KEY_ENTER; break;
+	case VK_CLEAR: eKey = main::key_clear; break;
+	case VK_RETURN: eKey = main::key_enter; break;
 
-	case VK_SHIFT: eKey = main::KEY_SHIFT; break;
-	case VK_CONTROL: eKey = main::KEY_CONTROL; break;
-	case VK_MENU: eKey = main::KEY_ALT; break;
-	case VK_PAUSE: eKey = main::KEY_PAUSE; break;
-	case VK_CAPITAL: eKey = main::KEY_CAPSLOCK; break;
+	case VK_SHIFT: eKey = main::key_shift; break;
+	case VK_CONTROL: eKey = main::key_control; break;
+	case VK_MENU: eKey = main::key_alt; break;
+	case VK_PAUSE: eKey = main::key_pause; break;
+	case VK_CAPITAL: eKey = main::key_capslock; break;
 
-//	case VK_KANA: eKey = main::KEY_KANA; break;
-	case VK_HANGUL: eKey = main::KEY_HANGUL; break;
-	case VK_JUNJA: eKey = main::KEY_JUNJA; break;
-	case VK_FINAL: eKey = main::KEY_FINAL; break;
-//	case VK_HANJA: eKey = main::KEY_HANJA; break;
-	case VK_KANJI: eKey = main::KEY_KANJI; break;
+//	case VK_KANA: eKey = main::key_kana; break;
+	case VK_HANGUL: eKey = main::key_hangul; break;
+	case VK_JUNJA: eKey = main::key_junja; break;
+	case VK_FINAL: eKey = main::key_final; break;
+//	case VK_HANJA: eKey = main::key_hanja; break;
+	case VK_KANJI: eKey = main::key_kanji; break;
 
-	case VK_ESCAPE: eKey = main::KEY_ESCAPE; break;
+	case VK_ESCAPE: eKey = main::key_escape; break;
 
-	case VK_CONVERT: eKey = main::KEY_CONVERT; break;
-	case VK_NONCONVERT: eKey = main::KEY_NONCONVERT; break;
-	case VK_ACCEPT: eKey = main::KEY_ACCEPT; break;
-	case VK_MODECHANGE: eKey = main::KEY_MODECHANGE; break;
+	case VK_CONVERT: eKey = main::key_convert; break;
+	case VK_NONCONVERT: eKey = main::key_nonconvert; break;
+	case VK_ACCEPT: eKey = main::key_accept; break;
+	case VK_MODECHANGE: eKey = main::key_modechange; break;
 
-	case VK_SPACE: eKey = main::KEY_SPACE; break;
-	case VK_PRIOR: eKey = main::KEY_PGUP; break;
-	case VK_NEXT: eKey = main::KEY_PGDN; break;
-	case VK_END: eKey = main::KEY_END; break;
-	case VK_HOME: eKey = main::KEY_HOME; break;
-	case VK_LEFT: eKey = main::KEY_LEFT; break;
-	case VK_UP: eKey = main::KEY_UP; break;
-	case VK_RIGHT: eKey = main::KEY_RIGHT; break;
-	case VK_DOWN: eKey = main::KEY_DOWN; break;
-	case VK_SELECT: eKey = main::KEY_SELECT; break;
-	case VK_PRINT: eKey = main::KEY_PRINT; break;
-	case VK_EXECUTE: eKey = main::KEY_EXEC; break;
-	case VK_SNAPSHOT: eKey = main::KEY_PRSCRN; break;
-	case VK_INSERT: eKey = main::KEY_INSERT; break;
-	case VK_DELETE: eKey = main::KEY_DELETE; break;
-	case VK_HELP: eKey = main::KEY_HELP; break;
+	case VK_SPACE: eKey = main::key_space; break;
+	case VK_PRIOR: eKey = main::key_pgup; break;
+	case VK_NEXT: eKey = main::key_pgdn; break;
+	case VK_END: eKey = main::key_end; break;
+	case VK_HOME: eKey = main::key_home; break;
+	case VK_LEFT: eKey = main::key_left; break;
+	case VK_UP: eKey = main::key_up; break;
+	case VK_RIGHT: eKey = main::key_right; break;
+	case VK_DOWN: eKey = main::key_down; break;
+	case VK_SELECT: eKey = main::key_select; break;
+	case VK_PRINT: eKey = main::key_print; break;
+	case VK_EXECUTE: eKey = main::key_exec; break;
+	case VK_SNAPSHOT: eKey = main::key_prscrn; break;
+	case VK_INSERT: eKey = main::key_insert; break;
+	case VK_DELETE: eKey = main::key_delete; break;
+	case VK_HELP: eKey = main::key_help; break;
 
 /*
  * VK_0 - VK_9 are the same as ASCII '0' - '9' (0x30 - 0x39)
  * 0x40 : unassigned
  * VK_A - VK_Z are the same as ASCII 'A' - 'Z' (0x41 - 0x5A)
  */
-	case 0x30:	eKey = main::KEY_0; break;
-	case 0x31:	eKey = main::KEY_1; break;
-	case 0x32:	eKey = main::KEY_2; break;
-	case 0x33:	eKey = main::KEY_3; break;
-	case 0x34:	eKey = main::KEY_4; break;
-	case 0x35:	eKey = main::KEY_5; break;
-	case 0x36:	eKey = main::KEY_6; break;
-	case 0x37:	eKey = main::KEY_7; break;
-	case 0x38:	eKey = main::KEY_8; break;
-	case 0x39:	eKey = main::KEY_9; break;
+	case 0x30:	eKey = main::key_0; break;
+	case 0x31:	eKey = main::key_1; break;
+	case 0x32:	eKey = main::key_2; break;
+	case 0x33:	eKey = main::key_3; break;
+	case 0x34:	eKey = main::key_4; break;
+	case 0x35:	eKey = main::key_5; break;
+	case 0x36:	eKey = main::key_6; break;
+	case 0x37:	eKey = main::key_7; break;
+	case 0x38:	eKey = main::key_8; break;
+	case 0x39:	eKey = main::key_9; break;
 
-	case 0x41:	eKey = main::KEY_A; break;
-	case 0x42:	eKey = main::KEY_B; break;
-	case 0x43:	eKey = main::KEY_C; break;
-	case 0x44:	eKey = main::KEY_D; break;
-	case 0x45:	eKey = main::KEY_E; break;
-	case 0x46:	eKey = main::KEY_F; break;
-	case 0x47:	eKey = main::KEY_G; break;
-	case 0x48:	eKey = main::KEY_H; break;
-	case 0x49:	eKey = main::KEY_I; break;
-	case 0x4a:	eKey = main::KEY_J; break;
-	case 0x4b:	eKey = main::KEY_K; break;
-	case 0x4c:	eKey = main::KEY_L; break;
-	case 0x4d:	eKey = main::KEY_M; break;
-	case 0x4e:	eKey = main::KEY_N; break;
-	case 0x4f:	eKey = main::KEY_O; break;
-	case 0x50:	eKey = main::KEY_P; break;
-	case 0x51:	eKey = main::KEY_Q; break;
-	case 0x52:	eKey = main::KEY_R; break;
-	case 0x53:	eKey = main::KEY_S; break;
-	case 0x54:	eKey = main::KEY_T; break;
-	case 0x55:	eKey = main::KEY_U; break;
-	case 0x56:	eKey = main::KEY_V; break;
-	case 0x57:	eKey = main::KEY_W; break;
-	case 0x58:	eKey = main::KEY_X; break;
-	case 0x59:	eKey = main::KEY_Y; break;
-	case 0x5a:	eKey = main::KEY_Z; break;
+	case 0x41:	eKey = main::key_a; break;
+	case 0x42:	eKey = main::key_b; break;
+	case 0x43:	eKey = main::key_c; break;
+	case 0x44:	eKey = main::key_d; break;
+	case 0x45:	eKey = main::key_e; break;
+	case 0x46:	eKey = main::key_f; break;
+	case 0x47:	eKey = main::key_g; break;
+	case 0x48:	eKey = main::key_h; break;
+	case 0x49:	eKey = main::key_i; break;
+	case 0x4a:	eKey = main::key_j; break;
+	case 0x4b:	eKey = main::key_k; break;
+	case 0x4c:	eKey = main::key_l; break;
+	case 0x4d:	eKey = main::key_m; break;
+	case 0x4e:	eKey = main::key_n; break;
+	case 0x4f:	eKey = main::key_o; break;
+	case 0x50:	eKey = main::key_p; break;
+	case 0x51:	eKey = main::key_q; break;
+	case 0x52:	eKey = main::key_r; break;
+	case 0x53:	eKey = main::key_s; break;
+	case 0x54:	eKey = main::key_t; break;
+	case 0x55:	eKey = main::key_u; break;
+	case 0x56:	eKey = main::key_v; break;
+	case 0x57:	eKey = main::key_w; break;
+	case 0x58:	eKey = main::key_x; break;
+	case 0x59:	eKey = main::key_y; break;
+	case 0x5a:	eKey = main::key_z; break;
 
-	case VK_LWIN: eKey = main::KEY_LWIN; break;
-	case VK_RWIN: eKey = main::KEY_RWIN; break;
-	case VK_APPS: eKey = main::KEY_APPS; break;
+	case VK_LWIN: eKey = main::key_lwin; break;
+	case VK_RWIN: eKey = main::key_rwin; break;
+	case VK_APPS: eKey = main::key_apps; break;
 
 /*
  * 0x5E : reserved
  */
 
-	case VK_SLEEP: eKey = main::KEY_SLEEP; break;
+	case VK_SLEEP: eKey = main::key_sleep; break;
 
-	case VK_NUMPAD0: eKey = main::KEY_NUMPD_0; break;
-	case VK_NUMPAD1: eKey = main::KEY_NUMPD_1; break;
-	case VK_NUMPAD2: eKey = main::KEY_NUMPD_2; break;
-	case VK_NUMPAD3: eKey = main::KEY_NUMPD_3; break;
-	case VK_NUMPAD4: eKey = main::KEY_NUMPD_4; break;
-	case VK_NUMPAD5: eKey = main::KEY_NUMPD_5; break;
-	case VK_NUMPAD6: eKey = main::KEY_NUMPD_6; break;
-	case VK_NUMPAD7: eKey = main::KEY_NUMPD_7; break;
-	case VK_NUMPAD8: eKey = main::KEY_NUMPD_8; break;
-	case VK_NUMPAD9: eKey = main::KEY_NUMPD_9; break;
-	case VK_MULTIPLY: eKey = main::KEY_NUMPD_TIMES; break;
-	case VK_ADD: eKey = main::KEY_NUMPD_PLUS; break;
-	case VK_SEPARATOR: eKey = main::KEY_NUMPD_ENTER; break;
-	case VK_SUBTRACT: eKey = main::KEY_NUMPD_MINUS; break;
-	case VK_DECIMAL: eKey = main::KEY_NUMPD_DOT; break;
-	case VK_DIVIDE: eKey = main::KEY_NUMPD_DIV; break;
-	case VK_F1: eKey = main::KEY_F1; break;
-	case VK_F2: eKey = main::KEY_F2; break;
-	case VK_F3: eKey = main::KEY_F3; break;
-	case VK_F4: eKey = main::KEY_F4; break;
-	case VK_F5: eKey = main::KEY_F5; break;
-	case VK_F6: eKey = main::KEY_F6; break;
-	case VK_F7: eKey = main::KEY_F7; break;
-	case VK_F8: eKey = main::KEY_F8; break;
-	case VK_F9: eKey = main::KEY_F9; break;
-	case VK_F10: eKey = main::KEY_F10; break;
-	case VK_F11: eKey = main::KEY_F11; break;
-	case VK_F12: eKey = main::KEY_F12; break;
-	case VK_F13: eKey = main::KEY_F13; break;
-	case VK_F14: eKey = main::KEY_F14; break;
-	case VK_F15: eKey = main::KEY_F15; break;
-	case VK_F16: eKey = main::KEY_F16; break;
-	case VK_F17: eKey = main::KEY_F17; break;
-	case VK_F18: eKey = main::KEY_F18; break;
-	case VK_F19: eKey = main::KEY_F19; break;
-	case VK_F20: eKey = main::KEY_F20; break;
-	case VK_F21: eKey = main::KEY_F21; break;
-	case VK_F22: eKey = main::KEY_F22; break;
-	case VK_F23: eKey = main::KEY_F23; break;
-	case VK_F24: eKey = main::KEY_F24; break;
+	case VK_NUMPAD0: eKey = main::key_numpd_0; break;
+	case VK_NUMPAD1: eKey = main::key_numpd_1; break;
+	case VK_NUMPAD2: eKey = main::key_numpd_2; break;
+	case VK_NUMPAD3: eKey = main::key_numpd_3; break;
+	case VK_NUMPAD4: eKey = main::key_numpd_4; break;
+	case VK_NUMPAD5: eKey = main::key_numpd_5; break;
+	case VK_NUMPAD6: eKey = main::key_numpd_6; break;
+	case VK_NUMPAD7: eKey = main::key_numpd_7; break;
+	case VK_NUMPAD8: eKey = main::key_numpd_8; break;
+	case VK_NUMPAD9: eKey = main::key_numpd_9; break;
+	case VK_MULTIPLY: eKey = main::key_numpd_times; break;
+	case VK_ADD: eKey = main::key_numpd_plus; break;
+	case VK_SEPARATOR: eKey = main::key_numpd_enter; break;
+	case VK_SUBTRACT: eKey = main::key_numpd_minus; break;
+	case VK_DECIMAL: eKey = main::key_numpd_dot; break;
+	case VK_DIVIDE: eKey = main::key_numpd_div; break;
+	case VK_F1: eKey = main::key_f1; break;
+	case VK_F2: eKey = main::key_f2; break;
+	case VK_F3: eKey = main::key_f3; break;
+	case VK_F4: eKey = main::key_f4; break;
+	case VK_F5: eKey = main::key_f5; break;
+	case VK_F6: eKey = main::key_f6; break;
+	case VK_F7: eKey = main::key_f7; break;
+	case VK_F8: eKey = main::key_f8; break;
+	case VK_F9: eKey = main::key_f9; break;
+	case VK_F10: eKey = main::key_f10; break;
+	case VK_F11: eKey = main::key_f11; break;
+	case VK_F12: eKey = main::key_f12; break;
+	case VK_F13: eKey = main::key_f13; break;
+	case VK_F14: eKey = main::key_f14; break;
+	case VK_F15: eKey = main::key_f15; break;
+	case VK_F16: eKey = main::key_f16; break;
+	case VK_F17: eKey = main::key_f17; break;
+	case VK_F18: eKey = main::key_f18; break;
+	case VK_F19: eKey = main::key_f19; break;
+	case VK_F20: eKey = main::key_f20; break;
+	case VK_F21: eKey = main::key_f21; break;
+	case VK_F22: eKey = main::key_f22; break;
+	case VK_F23: eKey = main::key_f23; break;
+	case VK_F24: eKey = main::key_f24; break;
 
 /*
  * 0x88 - 0x8F : unassigned
  */
 
-	case VK_NUMLOCK: eKey = main::KEY_NMLCK; break;
-	case VK_SCROLL: eKey = main::KEY_SCROLLLOCK; break;
+	case VK_NUMLOCK: eKey = main::key_nmlck; break;
+	case VK_SCROLL: eKey = main::key_scrolllock; break;
 		// ----------------------------
 		// OEM specific keys.
 		// Not mapped
@@ -477,16 +479,16 @@ main::KEYID Key_Map(UINT wParam)
 //
 // NEC PC-9800 kbd definitions
 //
-	case VK_OEM_NEC_EQUAL: eKey = main::KEY_OEM; break;
+	case VK_OEM_NEC_EQUAL: eKey = main::key_oem; break;
 
 //
 // Fujitsu/OASYS kbd definitions
 //
-//	case VK_OEM_FJ_JISHO: eKey = main::KEY_OEM; break;
-	case VK_OEM_FJ_MASSHOU: eKey = main::KEY_OEM; break;
-	case VK_OEM_FJ_TOUROKU: eKey = main::KEY_OEM; break;
-	case VK_OEM_FJ_LOYA: eKey = main::KEY_OEM; break;
-	case VK_OEM_FJ_ROYA: eKey = main::KEY_OEM; break;
+//	case VK_OEM_FJ_JISHO: eKey = main::key_oem; break;
+	case VK_OEM_FJ_MASSHOU: eKey = main::key_oem; break;
+	case VK_OEM_FJ_TOUROKU: eKey = main::key_oem; break;
+	case VK_OEM_FJ_LOYA: eKey = main::key_oem; break;
+	case VK_OEM_FJ_ROYA: eKey = main::key_oem; break;
 
 /*
  * 0x97 - 0x9F : unassigned
@@ -497,33 +499,33 @@ main::KEYID Key_Map(UINT wParam)
  * Used only as parameters to GetAsyncKeyState() and GetKeyState().
  * No other API or message will distinguish left and right keys in this way.
  */
-	case VK_LSHIFT: eKey = main::KEY_LSHIFT; break;
-	case VK_RSHIFT: eKey = main::KEY_RSHIFT; break;
-	case VK_LCONTROL: eKey = main::KEY_LCTRL; break;
-	case VK_RCONTROL: eKey = main::KEY_RCTRL; break;
-	case VK_LMENU: eKey = main::KEY_LALT; break;
-	case VK_RMENU: eKey = main::KEY_RALT; break;
+	case VK_LSHIFT: eKey = main::key_lshift; break;
+	case VK_RSHIFT: eKey = main::key_rshift; break;
+	case VK_LCONTROL: eKey = main::key_lctrl; break;
+	case VK_RCONTROL: eKey = main::key_rctrl; break;
+	case VK_LMENU: eKey = main::key_lalt; break;
+	case VK_RMENU: eKey = main::key_ralt; break;
 
 #if(_WIN32_WINNT >= 0x0500)
-	case VK_BROWSER_BACK: eKey = main::KEY_BRSR_BACK; break;
-	case VK_BROWSER_FORWARD: eKey = main::KEY_BRSR_FWD; break;
-	case VK_BROWSER_REFRESH: eKey = main::KEY_BRSR_REFRESH; break;
-	case VK_BROWSER_STOP: eKey = main::KEY_BRSR_STOP; break;
-	case VK_BROWSER_SEARCH: eKey = main::KEY_BRSR_SEARCH; break;
-	case VK_BROWSER_FAVORITES: eKey = main::KEY_BRSR_FAV; break;
-	case VK_BROWSER_HOME: eKey = main::KEY_BRSR_HOME; break;
+	case VK_BROWSER_BACK: eKey = main::key_brsr_back; break;
+	case VK_BROWSER_FORWARD: eKey = main::key_brsr_fwd; break;
+	case VK_BROWSER_REFRESH: eKey = main::key_brsr_refresh; break;
+	case VK_BROWSER_STOP: eKey = main::key_brsr_stop; break;
+	case VK_BROWSER_SEARCH: eKey = main::key_brsr_search; break;
+	case VK_BROWSER_FAVORITES: eKey = main::key_brsr_fav; break;
+	case VK_BROWSER_HOME: eKey = main::key_brsr_home; break;
 
-	case VK_VOLUME_MUTE: eKey = main::KEY_VOLMUTE; break;
-	case VK_VOLUME_DOWN: eKey = main::KEY_VOLDN; break;
-	case VK_VOLUME_UP: eKey = main::KEY_VOLUP; break;
-	case VK_MEDIA_NEXT_TRACK: eKey = main::KEY_MEDIA_NEXT; break;
-	case VK_MEDIA_PREV_TRACK: eKey = main::KEY_MEDIA_PREV; break;
-	case VK_MEDIA_STOP: eKey = main::KEY_MEDIA_STOP; break;
-	case VK_MEDIA_PLAY_PAUSE: eKey = main::KEY_MEDIA_PLAY; break;
-	case VK_LAUNCH_MAIL: eKey = main::KEY_EMAIL; break;
-	case VK_LAUNCH_MEDIA_SELECT: eKey = main::KEY_MEDIA_SELECT; break;
-	case VK_LAUNCH_APP1: eKey = main::KEY_APP_1; break;
-	case VK_LAUNCH_APP2: eKey = main::KEY_APP_2; break;
+	case VK_VOLUME_MUTE: eKey = main::key_volmute; break;
+	case VK_VOLUME_DOWN: eKey = main::key_voldn; break;
+	case VK_VOLUME_UP: eKey = main::key_volup; break;
+	case VK_MEDIA_NEXT_TRACK: eKey = main::key_media_next; break;
+	case VK_MEDIA_PREV_TRACK: eKey = main::key_media_prev; break;
+	case VK_MEDIA_STOP: eKey = main::key_media_stop; break;
+	case VK_MEDIA_PLAY_PAUSE: eKey = main::key_media_play; break;
+	case VK_LAUNCH_MAIL: eKey = main::key_email; break;
+	case VK_LAUNCH_MEDIA_SELECT: eKey = main::key_media_select; break;
+	case VK_LAUNCH_APP1: eKey = main::key_app_1; break;
+	case VK_LAUNCH_APP2: eKey = main::key_app_2; break;
 
 #endif /* _WIN32_WINNT >= 0x0500 */
 
@@ -531,13 +533,13 @@ main::KEYID Key_Map(UINT wParam)
  * 0xB8 - 0xB9 : reserved
  */
 
-	case VK_OEM_1: eKey = main::KEY_SEMICOLON; break; //warning: should do this as region / keyboard specific
-	case VK_OEM_PLUS: eKey = main::KEY_EQUALS; break;
-	case VK_OEM_COMMA: eKey = main::KEY_COMMA; break;
-	case VK_OEM_MINUS: eKey = main::KEY_MINUS; break;
-	case VK_OEM_PERIOD: eKey = main::KEY_PERIOD; break;
-	case VK_OEM_2: eKey = main::KEY_SLASH; break; // warning: depends on region 
-	case VK_OEM_3: eKey = main::KEY_TILDE; break; // warning: depends on region 
+	case VK_OEM_1: eKey = main::key_semicolon; break; //warning: should do this as region / keyboard specific
+	case VK_OEM_PLUS: eKey = main::key_equals; break;
+	case VK_OEM_COMMA: eKey = main::key_comma; break;
+	case VK_OEM_MINUS: eKey = main::key_minus; break;
+	case VK_OEM_PERIOD: eKey = main::key_period; break;
+	case VK_OEM_2: eKey = main::key_slash; break; // warning: depends on region 
+	case VK_OEM_3: eKey = main::key_tilde; break; // warning: depends on region 
 
 /*
  * 0xC1 - 0xD7 : reserved
@@ -547,11 +549,11 @@ main::KEYID Key_Map(UINT wParam)
  * 0xD8 - 0xDA : unassigned
  */
 
-	case VK_OEM_4: eKey = main::KEY_LSQBRKT; break; // warning: depends on region 
-	case VK_OEM_5: eKey = main::KEY_BACKSLASH; break; // warning: depends on region 
-	case VK_OEM_6: eKey = main::KEY_RSQBRKT; break; // warning: depends on region 
-	case VK_OEM_7: eKey = main::KEY_SQUOTE; break; // warning: depends on region 
-	case VK_OEM_8: eKey = main::KEY_OEM; break;
+	case VK_OEM_4: eKey = main::key_lsqbrkt; break; // warning: depends on region 
+	case VK_OEM_5: eKey = main::key_backslash; break; // warning: depends on region 
+	case VK_OEM_6: eKey = main::key_rsqbrkt; break; // warning: depends on region 
+	case VK_OEM_7: eKey = main::key_squote; break; // warning: depends on region 
+	case VK_OEM_8: eKey = main::key_oem; break;
 
 /*
  * 0xE0 : reserved
@@ -560,20 +562,20 @@ main::KEYID Key_Map(UINT wParam)
 /*
  * Various extended or enhanced keyboards
  */
-	case VK_OEM_AX: eKey = main::KEY_OEM; break;
-	case VK_OEM_102: eKey = main::KEY_OEM; break;
-	case VK_ICO_HELP: eKey = main::KEY_OEM; break;
-	case VK_ICO_00: eKey = main::KEY_OEM; break;
+	case VK_OEM_AX: eKey = main::key_oem; break;
+	case VK_OEM_102: eKey = main::key_oem; break;
+	case VK_ICO_HELP: eKey = main::key_oem; break;
+	case VK_ICO_00: eKey = main::key_oem; break;
 
 #if(WINVER >= 0x0400)
-	case VK_PROCESSKEY: eKey = main::KEY_OEM; break;
+	case VK_PROCESSKEY: eKey = main::key_oem; break;
 #endif /* WINVER >= 0x0400 */
 
-case VK_ICO_CLEAR: eKey = main::KEY_OEM; break;
+case VK_ICO_CLEAR: eKey = main::key_oem; break;
 
 
 #if(_WIN32_WINNT >= 0x0500)
-	case VK_PACKET: eKey = main::KEY_OEM; break;
+	case VK_PACKET: eKey = main::key_oem; break;
 #endif /* _WIN32_WINNT >= 0x0500 */
 
 /*
@@ -583,29 +585,29 @@ case VK_ICO_CLEAR: eKey = main::KEY_OEM; break;
 /*
  * Nokia/Ericsson definitions
  */
-	case VK_OEM_RESET: eKey = main::KEY_OEM; break;
-	case VK_OEM_JUMP: eKey = main::KEY_OEM; break;
-	case VK_OEM_PA1: eKey = main::KEY_OEM; break;
-	case VK_OEM_PA2: eKey = main::KEY_OEM; break;
-	case VK_OEM_PA3: eKey = main::KEY_OEM; break;
-	case VK_OEM_WSCTRL: eKey = main::KEY_OEM; break;
-	case VK_OEM_CUSEL: eKey = main::KEY_OEM; break;
-	case VK_OEM_ATTN: eKey = main::KEY_OEM; break;
-	case VK_OEM_FINISH: eKey = main::KEY_OEM; break;
-	case VK_OEM_COPY: eKey = main::KEY_OEM; break;
-	case VK_OEM_AUTO: eKey = main::KEY_OEM; break;
-	case VK_OEM_ENLW: eKey = main::KEY_OEM; break;
-	case VK_OEM_BACKTAB: eKey = main::KEY_OEM; break;
+	case VK_OEM_RESET: eKey = main::key_oem; break;
+	case VK_OEM_JUMP: eKey = main::key_oem; break;
+	case VK_OEM_PA1: eKey = main::key_oem; break;
+	case VK_OEM_PA2: eKey = main::key_oem; break;
+	case VK_OEM_PA3: eKey = main::key_oem; break;
+	case VK_OEM_WSCTRL: eKey = main::key_oem; break;
+	case VK_OEM_CUSEL: eKey = main::key_oem; break;
+	case VK_OEM_ATTN: eKey = main::key_oem; break;
+	case VK_OEM_FINISH: eKey = main::key_oem; break;
+	case VK_OEM_COPY: eKey = main::key_oem; break;
+	case VK_OEM_AUTO: eKey = main::key_oem; break;
+	case VK_OEM_ENLW: eKey = main::key_oem; break;
+	case VK_OEM_BACKTAB: eKey = main::key_oem; break;
 
-	case VK_ATTN: eKey = main::KEY_ATTN; break;
-	case VK_CRSEL: eKey = main::KEY_CRSEL; break;
-	case VK_EXSEL: eKey = main::KEY_EXSEL; break;
-	case VK_EREOF: eKey = main::KEY_EREOF; break;
-	case VK_PLAY: eKey = main::KEY_PLAY; break;
-	case VK_ZOOM: eKey = main::KEY_ZOOM; break;
-	case VK_NONAME: eKey = main::KEY_NONAME; break;
-	case VK_PA1: eKey = main::KEY_PA1; break;
-	case VK_OEM_CLEAR: eKey = main::KEY_OEM; break;
+	case VK_ATTN: eKey = main::key_attn; break;
+	case VK_CRSEL: eKey = main::key_crsel; break;
+	case VK_EXSEL: eKey = main::key_exsel; break;
+	case VK_EREOF: eKey = main::key_ereof; break;
+	case VK_PLAY: eKey = main::key_play; break;
+	case VK_ZOOM: eKey = main::key_zoom; break;
+	case VK_NONAME: eKey = main::key_noname; break;
+	case VK_PA1: eKey = main::key_pa1; break;
+	case VK_OEM_CLEAR: eKey = main::key_oem; break;
 	}
 	return eKey;
 }
@@ -636,41 +638,41 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
 		break;
 // Mouse operations
 	case WM_MBUTTONDBLCLK:
-		g_lpMain->On_Mouse_Button_Double_Click(main::MB_CTR, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Double_Click(main::mb_ctr, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_MBUTTONDOWN:
-		g_lpMain->On_Mouse_Button_Down(main::MB_CTR, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Down(main::mb_ctr, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_MBUTTONUP:
-		g_lpMain->On_Mouse_Button_Up(main::MB_CTR, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Up(main::mb_ctr, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_RBUTTONDBLCLK:
-		g_lpMain->On_Mouse_Button_Double_Click(main::MB_RGT, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Double_Click(main::mb_rgt, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_RBUTTONDOWN:
-		g_lpMain->On_Mouse_Button_Down(main::MB_RGT, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Down(main::mb_rgt, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_RBUTTONUP:
-		g_lpMain->On_Mouse_Button_Up(main::MB_RGT,  Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Up(main::mb_rgt,  Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_LBUTTONDBLCLK:
-		g_lpMain->On_Mouse_Button_Double_Click(main::MB_LEFT, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Double_Click(main::mb_left, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_LBUTTONDOWN:
-		g_lpMain->On_Mouse_Button_Down(main::MB_LEFT, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Down(main::mb_left, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_LBUTTONUP:
-		g_lpMain->On_Mouse_Button_Up(main::MB_LEFT, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Button_Up(main::mb_left, Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_MOUSEMOVE:
 		g_lpMain->On_Mousemove(Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 	case WM_MOUSEWHEEL:
-		g_lpMain->On_Mouse_Wheel(main::MB_SCROLL_V, GET_WHEEL_DELTA_WPARAM(wParam), Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Wheel(main::mb_scroll_v, GET_WHEEL_DELTA_WPARAM(wParam), Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 #if !defined(__MINGW64__) && !defined(__MINGW32__)
 	case WM_MOUSEHWHEEL:
-		g_lpMain->On_Mouse_Wheel(main::MB_SCROLL_V, GET_WHEEL_DELTA_WPARAM(wParam), Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
+		g_lpMain->On_Mouse_Wheel(main::mb_scroll_v, GET_WHEEL_DELTA_WPARAM(wParam), Fix_Coordinate_Window(pair<unsigned int>(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam))));
 		break;
 #endif
 	case WM_TIMER:
@@ -691,7 +693,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
 }
 
 std::string Read_TTF_Font_Name(const char * i_lpszPath_To_Font);
-void LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, bool i_bItalics)
+void bwm801::LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, bool i_bItalics)
 {
 	if (i_eFont >= USER_1 && i_eFont <= USER_8)
 	{
@@ -714,7 +716,7 @@ void LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, b
 	}
 }
 
-void SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
+void bwm801::SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 {
 	unsigned int uiFont = (i_eFont - SANS);
 	unsigned int uiFace = (i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0);
@@ -749,7 +751,7 @@ void SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 	g_lpgmfCurrent_Font_Glyphs = g_gmfGlyph_Metrics[uiFont][uiFace];
 }
 
-void glPrint(const double & i_dSize, const double & i_dX, const double & i_dY, const double & i_dZ, const char * i_lpszString)
+void bwm801::glPrint(const float & i_dSize, const float & i_dX, const float & i_dY, const float & i_dZ, const char * i_lpszString)
 {
 	if (g_lpuiCurrent_Font_Poly[0] != -1)
 	{
@@ -777,7 +779,7 @@ void glPrint(const double & i_dSize, const double & i_dX, const double & i_dY, c
 	}
 }
 
-void TextBBox(const double & i_dSize, const char * i_lpszString, pair<double> & o_cBot_Left, pair<double> & o_cTop_Right)
+void bwm801::TextBBox(const float & i_dSize, const char * i_lpszString, pair<float> & o_cBot_Left, pair<float> & o_cTop_Right)
 {
 	o_cBot_Left.m_tX = o_cBot_Left.m_tY = o_cTop_Right.m_tX = o_cTop_Right.m_tY = 0.0;
 	const char * lpszCursor = i_lpszString;
@@ -793,7 +795,7 @@ void TextBBox(const double & i_dSize, const char * i_lpszString, pair<double> & 
 			o_cTop_Right.m_tY = g_lpgmfCurrent_Font_Glyphs[lpszCursor[0]].gmfBlackBoxY;
 		lpszCursor++;
 	}
-	double dTemp = o_cBot_Left.m_tY;
+	float dTemp = o_cBot_Left.m_tY;
 	//o_cTop_Right.m_tX -= o_cBot_Left.m_tX
 	o_cBot_Left.m_tY = dTemp - o_cTop_Right.m_tY;
 	o_cTop_Right.m_tY = dTemp;

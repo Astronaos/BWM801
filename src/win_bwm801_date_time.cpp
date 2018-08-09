@@ -1,5 +1,6 @@
 #include <bwm801.h>
 
+#include <ctime>
 
 using namespace bwm801;
 

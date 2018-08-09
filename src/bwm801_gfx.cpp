@@ -3,30 +3,30 @@
 
 std::vector<bwm801::pair<float> > bwm801::g_vEllipse;
 
-double	g_dTwoPi = 2.0 * std::acos(-1.0);
-void bwm801::GenerateEllipse(const double & i_dRx, const double & i_dRy, std::vector<bwm801::pair<float> > &o_vpResult, const unsigned int i_uiNum_Points)
+float	g_dTwoPi = 2.0f * std::acos(-1.0f);
+void bwm801::GenerateEllipse(const float & i_dRx, const float & i_dRy, std::vector<bwm801::pair<float> > &o_vpResult, const unsigned int i_uiNum_Points)
 {
 	for (unsigned int uiI = 0; uiI < i_uiNum_Points; uiI++)
 	{
-		double dTheta = g_dTwoPi - uiI / (i_uiNum_Points - 1.0) * g_dTwoPi;
-		double dX = std::cos(dTheta) * i_dRx;
-		double	dY = std::sin(dTheta) * i_dRy;
+		float dTheta = g_dTwoPi - uiI / (i_uiNum_Points - 1.0f) * g_dTwoPi;
+		float dX = std::cos(dTheta) * i_dRx;
+		float	dY = std::sin(dTheta) * i_dRy;
 		o_vpResult.push_back(pair<float>(dX,dY));
 	}
 }
-void bwm801::GenerateArc(const double & i_dRx, const double & i_dRy, const double & i_dStart_Angle_Deg, const double & i_dEnd_Angle_Deg, std::vector<bwm801::pair<float> > &o_vpResult, const unsigned int i_uiNum_Points)
+void bwm801::GenerateArc(const float & i_dRx, const float & i_dRy, const float & i_dStart_Angle_Deg, const float & i_dEnd_Angle_Deg, std::vector<bwm801::pair<float> > &o_vpResult, const unsigned int i_uiNum_Points)
 {
-	double dStart_Angle_Rad = i_dStart_Angle_Deg * g_dTwoPi / 360.0;
-	double dEnd_Angle_Rad = i_dEnd_Angle_Deg * g_dTwoPi / 360.0;
+	float dStart_Angle_Rad = i_dStart_Angle_Deg * g_dTwoPi / 360.0f;
+	float dEnd_Angle_Rad = i_dEnd_Angle_Deg * g_dTwoPi / 360.0f;
 	while (dEnd_Angle_Rad < dStart_Angle_Rad)
 		dEnd_Angle_Rad += g_dTwoPi;
-	double dDelta_Angle = dEnd_Angle_Rad - dStart_Angle_Rad;
+	float dDelta_Angle = dEnd_Angle_Rad - dStart_Angle_Rad;
 //	printf("(%f,%f), %f-%f\n",i_dRx,i_dRy,i_dStart_Angle_Deg,i_dEnd_Angle_Deg);
 	for (unsigned int uiI = 0; uiI < i_uiNum_Points; uiI++)
 	{
-		double dTheta = dEnd_Angle_Rad - uiI / (i_uiNum_Points - 1.0) * dDelta_Angle;
-		double dX = std::cos(dTheta) * i_dRx;
-		double	dY = std::sin(dTheta) * i_dRy;
+		float dTheta = dEnd_Angle_Rad - uiI / (i_uiNum_Points - 1.0f) * dDelta_Angle;
+		float dX = std::cos(dTheta) * i_dRx;
+		float	dY = std::sin(dTheta) * i_dRy;
 		o_vpResult.push_back(pair<float>(dX,dY));
 //	printf("(%f,%f)\n",dX,dY);
 	}
@@ -55,9 +55,9 @@ void bwm801::Draw_Pushbutton(bool i_bState, draw_callback i_vDrawing_Fn, void * 
 	bwm801::pair<float> pShift;
 	glPushMatrix();
 		if (!i_bState)
-			pShift = pair<float>(0.1,-0.4);
+			pShift = pair<float>(0.1f,-0.4f);
 		else
-			pShift = pair<float>(0.04,-0.16);
+			pShift = pair<float>(0.04f,-0.16f);
 	
 		// draw shadow of button
 		glPushMatrix();
@@ -65,11 +65,11 @@ void bwm801::Draw_Pushbutton(bool i_bState, draw_callback i_vDrawing_Fn, void * 
 			glColor4f(0.0,0.0,0.0,0.75); // black
 			glBegin(GL_TRIANGLES);
 				glVertex2f(-1.0,0.0);
-				glVertex2f(-1.0 - pShift.m_tX,-pShift.m_tY);
+				glVertex2f(-1.0f - pShift.m_tX,-pShift.m_tY);
 				glVertex2f(-pShift.m_tX,-pShift.m_tY);
-				glVertex2f(1.0,0.0);
+				glVertex2f(1.0f,0.0);
 				glVertex2f(-pShift.m_tX,-pShift.m_tY);
-				glVertex2f(1.0 - pShift.m_tX,-pShift.m_tY);
+				glVertex2f(1.0f - pShift.m_tX,-pShift.m_tY);
 			glEnd();
 			glBegin(GL_TRIANGLE_FAN);
 				glVertex2f(0.0,0.0);
@@ -87,18 +87,18 @@ void bwm801::Draw_Pushbutton(bool i_bState, draw_callback i_vDrawing_Fn, void * 
 	glPopMatrix();
 }
 
-void bwm801::glPrintJustified(const double & i_dSize, const double & i_dX, const double & i_dY, const double & i_dZ, const char * i_lpszString,bwm801::horiz_justification i_eHorizontal_Justification, bwm801::vert_justification i_eVertical_Justification)
+void bwm801::glPrintJustified(const float & i_dSize, const float & i_dX, const float & i_dY, const float & i_dZ, const char * i_lpszString,bwm801::horiz_justification i_eHorizontal_Justification, bwm801::vert_justification i_eVertical_Justification)
 {
 	pair<float> pBL,pTR;
 	TextBBox(i_dSize,i_lpszString,pBL,pTR);
-	double dX = 0.0, dY = 0.0;
+	float dX = 0.0, dY = 0.0;
 	pTR -= pBL;
 	switch (i_eHorizontal_Justification)
 	{
 	case hj_left:
 		break;
 	case hj_center:
-		dX = -pTR.m_tX * 0.5;
+		dX = -pTR.m_tX * 0.5f;
 		break;
 	case hj_right:
 		dX = -pTR.m_tX;
@@ -109,19 +109,13 @@ void bwm801::glPrintJustified(const double & i_dSize, const double & i_dX, const
 	case vj_bottom:
 		break;
 	case vj_middle:
-		dY = -pTR.m_tY * 0.5;
+		dY = -pTR.m_tY * 0.5f;
 		break;
 	case vj_top:
 		dY = -pTR.m_tY;
 		break;
 	}
 	glPrint(i_dSize,i_dX + dX, i_dY + dY, i_dZ, i_lpszString);
-}
-
-
-void bwm801::glLineWidth(const double & i_dX)
-{
-	glLineWidth((GLfloat) i_dX);
 }
 
 
@@ -139,8 +133,8 @@ void bwm801::Initialize_Circle_Vectors(void)
 	{
 		GenerateEllipse(1.0,1.0,g_vEllipse);
 	}
-	double	dEdge_Radius = 0.20;
-	double	dEdge_Center = 0.50 - dEdge_Radius;
+	float	dEdge_Radius = 0.20f;
+	float	dEdge_Center = 0.50f - dEdge_Radius;
 	if (g_vRounded_Rectangle_TL.empty())
 	{
 		bwm801::pair<float> pOffset(-dEdge_Center,dEdge_Center);
@@ -251,18 +245,18 @@ void bwm801::Draw_Rounded_Rectangle(bool i_bFilled)
 void bwm801::Draw_Rounded_Rectangle_Button(bool i_bPressed, bool i_bActive)
 {
 	glPushMatrix();
-		glColor4f(0.0,0.0,0.0,0.25);
+		glColor4f(0.0,0.0,0.0,0.25f);
 		if (i_bPressed)
-			glTranslatef(0.02,-0.04,0.0);
+			glTranslatef(0.02f,-0.04f,0.0);
 		else
-			glTranslatef(0.10,-0.20,0.0);
+			glTranslatef(0.10f,-0.20f,0.0);
 		Draw_Rounded_Rectangle(true);
 	glPopMatrix();
 
 	if (i_bActive)
 		glColor4f(0.0,1.0,0.0,1.0); // green
 	else
-		glColor4f(0.0,0.1,0.0,1.0); // green
+		glColor4f(0.0,0.1f,0.0,1.0); // green
 
 	Draw_Rounded_Rectangle(true);
 	glColor4f(0.0,0.0,0.0,1.0);
@@ -338,20 +332,20 @@ void bwm801::Draw_Simple_Button(bool bStatus)
 
 }
 
-void bwm801::main::Draw_Pane_Grid(const double &dXmax)
+void bwm801::main::Draw_Pane_Grid(const float &i_dXmax)
 {
 	glLineWidth(1.0);
 	glColor4f(0.0,0.0,0.0,1.0);
 	glBegin(GL_LINES);
-	for (float dX = 0.05; dX < dXmax; dX+=0.05)
+	for (float dX = 0.05f; dX < i_dXmax; dX+=0.05f)
 	{
 		glVertex2f(dX,0.0);
 		glVertex2f(dX,1.0);
 	}
-	for (float dY = 0.05; dY < dXmax; dY+=0.05)
+	for (float dY = 0.05f; dY < i_dXmax; dY+=0.05f)
 	{
 		glVertex2f(0.0,dY);
-		glVertex2f(dXmax,dY);
+		glVertex2f(i_dXmax,dY);
 	}
 	glEnd();
 }

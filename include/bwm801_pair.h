@@ -1,7 +1,12 @@
 #pragma once
+#ifdef WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 namespace bwm801
 {
-	template <typename T> class pair
+	template <typename T> class EXPORT pair
 	{
 	public:
 		T m_tX;
@@ -94,10 +99,11 @@ namespace bwm801
 			return tRet;
 		}
 	};
-	pair<float> operator *(const pair<float> & i_cLHO, const double &i_dRHO);
-	pair<float> operator *=(pair<float> & io_cLHO, const double &i_dRHO);
-	pair<float> operator /(const pair<float> & i_cLHO, const double &i_dRHO);
-	pair<float> operator /=(pair<float> & io_cLHO, const double &i_dRHO);
-	pair<float> operator *(const double &i_dRHO, const pair<float> & i_cLHO );
+	pair<float> operator *(const pair<float> & i_cLHO, const float &i_dRHO);
+	pair<float> operator *=(pair<float> & io_cLHO, const float &i_dRHO);
+	pair<float> operator /(const pair<float> & i_cLHO, const float &i_dRHO);
+	pair<float> operator /=(pair<float> & io_cLHO, const float &i_dRHO);
+	pair<float> operator *(const float &i_dRHO, const pair<float> & i_cLHO );
 };
 
+#undef EXPORT

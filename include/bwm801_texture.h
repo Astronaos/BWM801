@@ -1,12 +1,11 @@
 #pragma once
+#include <string>
+
 #ifdef WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
-
-#include <GL/gl.h>
-#include <string>
 
 #ifndef GL_MIRRORED_REPEAT
 #define GL_MIRRORED_REPEAT                0x8370

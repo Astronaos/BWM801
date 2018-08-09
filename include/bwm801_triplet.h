@@ -1,8 +1,12 @@
 #pragma once
-
+#ifdef WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 namespace bwm801
 {
-	template <typename T> class triplet
+	template <typename T> class EXPORT triplet
 	{
 	public:
 		T m_tX;
@@ -96,9 +100,9 @@ namespace bwm801
 		triplet <float> ScaleTriplet(const triplet <double> &i_tScalar) const
 		{
 			triplet<float> tRet;
-			tRet.m_tX = m_tX * i_tScalar.m_tX;
-			tRet.m_tY = m_tY * i_tScalar.m_tY;
-			tRet.m_tZ = m_tZ * i_tScalar.m_tZ;
+			tRet.m_tX = (float)(m_tX * i_tScalar.m_tX);
+			tRet.m_tY = (float)(m_tY * i_tScalar.m_tY);
+			tRet.m_tZ = (float)(m_tZ * i_tScalar.m_tZ);
 			return tRet;
 		}
 		void glColor(const double & i_dAlpha = 1.0) const
@@ -106,10 +110,11 @@ namespace bwm801
 			glColor4f((GLfloat) m_tX, (GLfloat) m_tY, (GLfloat) m_tZ, (GLfloat)i_dAlpha);
 		}
 	};
-	triplet<float> operator *(const triplet<float> & i_cLHO, const double &i_dRHO);
-	triplet<float> operator *=(triplet<float> & io_cLHO, const double &i_dRHO);
-	triplet<float> operator /(const triplet<float> & i_cLHO, const double &i_dRHO);
-	triplet<float> operator /=(triplet<float> & io_cLHO, const double &i_dRHO);
-	triplet<float> operator *(const double &i_dRHO, const triplet<float> & i_cLHO );
+	triplet<float> operator *(const triplet<float> & i_cLHO, const float &i_dRHO);
+	triplet<float> operator *=(triplet<float> & io_cLHO, const float &i_dRHO);
+	triplet<float> operator /(const triplet<float> & i_cLHO, const float &i_dRHO);
+	triplet<float> operator /=(triplet<float> & io_cLHO, const float &i_dRHO);
+	triplet<float> operator *(const float &i_dRHO, const triplet<float> & i_cLHO );
 };
 
+#undef EXPORT

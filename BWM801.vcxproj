@@ -130,23 +130,44 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\core_gfx.cpp" />
-    <ClCompile Include="src\core_glext.cpp" />
-    <ClCompile Include="src\core_main.cpp" />
-    <ClCompile Include="src\core_mapspace.cpp" />
-    <ClCompile Include="src\core_pair.cpp" />
-    <ClCompile Include="src\core_quad.cpp" />
-    <ClCompile Include="src\core_screenshot.cpp" />
-    <ClCompile Include="src\core_sockets_linux.cpp">
+    <ClCompile Include="src\bwm801_button_info.cpp" />
+    <ClCompile Include="src\bwm801_button_info_data.cpp" />
+    <ClCompile Include="src\bwm801_calllist.cpp" />
+    <ClCompile Include="src\bwm801_gfx.cpp" />
+    <ClCompile Include="src\bwm801_glext.cpp" />
+    <ClCompile Include="src\bwm801_main.cpp" />
+    <ClCompile Include="src\bwm801_main_data.cpp" />
+    <ClCompile Include="src\bwm801_mapspace.cpp" />
+    <ClCompile Include="src\bwm801_pair.cpp" />
+    <ClCompile Include="src\bwm801_pane.cpp" />
+    <ClCompile Include="src\bwm801_pane_data.cpp" />
+    <ClCompile Include="src\bwm801_quad.cpp" />
+    <ClCompile Include="src\bwm801_screenshot.cpp" />
+    <ClCompile Include="src\bwm801_sockets.cpp" />
+    <ClCompile Include="src\bwm801_texture.cpp" />
+    <ClCompile Include="src\bwm801_triplet.cpp" />
+    <ClCompile Include="src\linux_bwm801_sockets.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\core_sockets_win.cpp" />
-    <ClCompile Include="src\core_texture.cpp" />
-    <ClCompile Include="src\core_triplet.cpp" />
     <ClCompile Include="src\winmain.cpp" />
+    <ClCompile Include="src\win_bwm801_crit_section.cpp" />
+    <ClCompile Include="src\win_bwm801_date_time.cpp" />
+    <ClCompile Include="src\win_bwm801_sockets.cpp" />
+    <ClCompile Include="src\Xwin_bwm801_crit_section.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\Xwin_bwm801_date_time.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\Xwin_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -155,11 +176,30 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\bwm801.h" />
+    <ClInclude Include="include\bwm801_button_info.h" />
+    <ClInclude Include="include\bwm801_button_info_data.h" />
+    <ClInclude Include="include\bwm801_calllist.h" />
+    <ClInclude Include="include\bwm801_comm.h" />
+    <ClInclude Include="include\bwm801_critsec.h" />
+    <ClInclude Include="include\bwm801_datetime.h" />
     <ClInclude Include="include\bwm801_glext.h" />
-    <ClInclude Include="include\core.hpp" />
-    <ClInclude Include="include\core_hexmap.hpp" />
-    <ClInclude Include="include\core_isohexmap.hpp" />
-    <ClInclude Include="include\core_mapbase.hpp" />
+    <ClInclude Include="include\bwm801_hexmap.h" />
+    <ClInclude Include="include\bwm801_hexmap_inst.h" />
+    <ClInclude Include="include\bwm801_isohexmap.h" />
+    <ClInclude Include="include\bwm801_isohexmap_inst.h" />
+    <ClInclude Include="include\bwm801_main.h" />
+    <ClInclude Include="include\bwm801_main_data.h" />
+    <ClInclude Include="include\bwm801_mapbase.h" />
+    <ClInclude Include="include\bwm801_mapbase_inst.h" />
+    <ClInclude Include="include\bwm801_mapspace.h" />
+    <ClInclude Include="include\bwm801_pair.h" />
+    <ClInclude Include="include\bwm801_pane.h" />
+    <ClInclude Include="include\bwm801_pane_data.h" />
+    <ClInclude Include="include\bwm801_quad.h" />
+    <ClInclude Include="include\bwm801_screenshot.h" />
+    <ClInclude Include="include\bwm801_texture.h" />
+    <ClInclude Include="include\bwm801_triplet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

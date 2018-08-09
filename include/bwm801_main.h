@@ -1,49 +1,22 @@
 #pragma once
+#include <vector>
+#include <string>
+
 #ifdef WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
 
-#include <vector>
-#include <bwm801_pair.h>
-#include <string>
-#include <bwm801_quad.h>
 
 namespace bwm801
 {
 	class EXPORT main
 	{
-	public:
-		enum draw_mode	{ortho,projection};
-		bool 					m_bEngine_Debug_Mode;
-	protected:
-		std::vector<std::string> m_vszCommand_Line_Parameters;
-
 	private:
-		std::string				m_szWindow_Name;
-		bool *					m_lpbMouse_Button_Status;
-		bool *					m_lpbKey_Status;
-		pair<unsigned int>		m_tMouse_Position;
-		pair<unsigned int>		m_tMouse_Position_Last;
-
-		bool					m_bDraw_Flag;
-		bool					m_bQuit_Flag;
-		draw_mode				m_eDraw_Mode;
-
-		bool					m_bWindow_Has_Focus;
-		quad<unsigned int> 		m_tWindow_Box;
-		std::vector< pane > 	m_tUser_Panes;
-
-		double					m_dFrame_Rate;
-
-		bool 					m_bDraw_Pane_Grids;
-
-		std::string 			m_szScreenshot_Default_Filename;
-		std::string 			m_szScreenshot_Default_Path;
-
-
-	
+		void * m_lpvData;
+	public:
+		enum draw_mode { ortho, projection };
 	public:
 		virtual void Set_Screenshot_Save_Path(std::string i_szPath);
 		virtual std::string Get_Screenshot_Save_Path(void);
@@ -51,7 +24,12 @@ namespace bwm801
 		virtual std::string Get_Screenshot_Default_Filename(void);
 
 		virtual void Initializer(void);
-		main(void){Initializer();}
+		virtual void Initializer(const main &);
+		virtual void main::Destructor(void);
+
+		main(void) { m_lpvData = nullptr; Initializer(); }
+		main(const main & i_cRHO) { m_lpvData = nullptr; Initializer(i_cRHO); }
+		~main(void) { Destructor(); }
 
 		virtual void Process_Command_Line(unsigned int i_uiNum_Parameters, const char * i_lpszParameter_Values[]);
 		virtual void Set_Window_Name(const std::string &i_szName);
@@ -154,7 +132,7 @@ namespace bwm801
 		virtual bool			Pending_Draw(void) const;
 
 		virtual std::vector<std::string> Get_Directory_File_List(const std::string &i_szDirectory); /// get list of all files in the given direcctory
-		virtual void Draw_Pane_Grid(const double &dXmax);
+		virtual void Draw_Pane_Grid(const float &i_dXmax);
 		virtual void Request_Screenshot(const std::string & i_szFilename);
 
 	};

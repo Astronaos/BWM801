@@ -546,10 +546,6 @@ void commsocket::Close(void)
 	}
 }
 
-commsocket::~commsocket(void)
-{
-	Close();
-}
 
 int commsocket::Get_Error(void)
 {

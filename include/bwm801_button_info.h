@@ -13,11 +13,7 @@ namespace bwm801
 	public:
 		enum shape {ellipse,rectangle};
 	private:
-		shape			m_eShape;
-		pair<double>	m_pdPosition;
-		pair<double>	m_pdSize;
-		unsigned int 	m_uiID;
-		int				m_iStatus;
+		void * m_lpvData;
 	public:
 		virtual shape GetShape(void) const;
 		virtual pair<double> GetPosition(void) const;
@@ -25,11 +21,16 @@ namespace bwm801
 		virtual unsigned int GetID(void) const;
 		virtual int	GetStatus(void) const;
 		virtual void	SetStatus(int i_iStatus);
-		virtual bool TestHit(const pair<double> &i_pdPosition) const;
+		virtual bool TestHit(const pair<float> &i_pdPosition) const;
 		virtual void Initializer(void);
-		virtual void Initializer(shape i_eShape, const pair<double> i_pdPosition, const pair<double> i_pdSize, unsigned int i_uiID, unsigned int i_uiStatus = 0);
-		button_info(void) {Initializer();}
-		button_info(shape i_eShape, const pair<double> i_pdPosition, const pair<double> i_pdSize, unsigned int i_uiID, unsigned int i_uiStatus = 0) {Initializer(i_eShape, i_pdPosition, i_pdSize, i_uiID, i_uiStatus);}
+		virtual void Initializer(const button_info & i_cRHO);
+		virtual void Initializer(shape i_eShape, const pair<float> i_pdPosition, const pair<float> i_pdSize, unsigned int i_uiID, unsigned int i_uiStatus = 0);
+		virtual void Destructor(void);
+
+		button_info(void) { m_lpvData = nullptr;  Initializer(); }
+		button_info(const button_info & i_cRHO) { m_lpvData = nullptr;  Initializer(i_cRHO); }
+		button_info(shape i_eShape, const pair<float> i_pdPosition, const pair<float> i_pdSize, unsigned int i_uiID, unsigned int i_uiStatus = 0) { m_lpvData = nullptr; Initializer(i_eShape, i_pdPosition, i_pdSize, i_uiID, i_uiStatus); }
+		~button_info(void) { Destructor(); }
 	};
 };
 

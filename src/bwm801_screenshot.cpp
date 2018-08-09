@@ -1,5 +1,6 @@
 #include <bwm801.h>
 #include <bwm801_screenshot.h>
+#include <bwm801_main_data.h>
 #include <png.h>
 #include <sstream>
 #include <map>
@@ -61,7 +62,7 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 			g_cScreenshot.m_szFilename = i_szFilename;
 		else
 		{
-			std::vector<std::string> vszDir_Files = Get_Directory_File_List(m_szScreenshot_Default_Path);
+			std::vector<std::string> vszDir_Files = Get_Directory_File_List(((main_data*)m_lpvData)->m_szScreenshot_Default_Path);
 			std::map<unsigned int, bool> mapExist_Files;
 			bool bDone = false;
 			for (auto iterI = vszDir_Files.begin(); !bDone && iterI != vszDir_Files.end(); iterI++)
@@ -71,9 +72,9 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 					std::string szExt = iterI->substr(iterI->size() - 4,4);
 					if (szExt == ".png" || szExt == ".PNG")
 					{
-						if (iterI->substr(0,m_szScreenshot_Default_Filename.size()) == m_szScreenshot_Default_Filename)
+						if (iterI->substr(0, ((main_data*)m_lpvData)->m_szScreenshot_Default_Filename.size()) == ((main_data*)m_lpvData)->m_szScreenshot_Default_Filename)
 						{
-							unsigned int uiCount = std::stoi(iterI->substr(m_szScreenshot_Default_Filename.size() + 1,8));
+							unsigned int uiCount = std::stoi(iterI->substr(((main_data*)m_lpvData)->m_szScreenshot_Default_Filename.size() + 1,8));
 							mapExist_Files[uiCount] = 1;
 						}
 					}
@@ -84,9 +85,9 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 				uiI++;
 			
 			std::ostringstream ossFilename;
-			ossFilename << m_szScreenshot_Default_Path;
+			ossFilename << ((main_data*)m_lpvData)->m_szScreenshot_Default_Path;
 			ossFilename << "/";
-			ossFilename << m_szScreenshot_Default_Filename;
+			ossFilename << ((main_data*)m_lpvData)->m_szScreenshot_Default_Filename;
 			ossFilename << "-" << uiI << ".png";
 			g_cScreenshot.m_szFilename = ossFilename.str();
 		}

@@ -1,9 +1,14 @@
 #pragma once
+#ifdef WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 //@@TODO: create volume class from triplets
 namespace bwm801
 {
-	template <typename T> class quad
+	template <typename T> class EXPORT quad
 	{
 	public:
 		pair<T> m_tBL; // bottom left
@@ -79,10 +84,11 @@ namespace bwm801
 			glEnd();
 		}
 	};
-	quad<double> operator *(const quad<double> & i_cLHO, const double &i_dRHO);
-	quad<double> operator *=(quad<double> & io_cLHO, const double &i_dRHO);
-	quad<double> operator /(const quad<double> & i_cLHO, const double &i_dRHO);
-	quad<double> operator /=(quad<double> & io_cLHO, const double &i_dRHO);
-	quad<double> operator *(const double &i_dRHO, const quad<double> & i_cLHO );
+	quad<float> operator *(const quad<float> & i_cLHO, const float &i_dRHO);
+	quad<float> operator *=(quad<float> & io_cLHO, const float &i_dRHO);
+	quad<float> operator /(const quad<float> & i_cLHO, const float &i_dRHO);
+	quad<float> operator /=(quad<float> & io_cLHO, const float &i_dRHO);
+	quad<float> operator *(const float &i_dRHO, const quad<float> & i_cLHO );
 
 };
+#undef EXPORT
