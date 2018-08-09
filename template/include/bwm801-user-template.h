@@ -1,3 +1,5 @@
+#pragma once
+
 #include <bwm801.h>
 #include <thread>
 #include <deque>
@@ -10,7 +12,13 @@ enum button_id
 
 using namespace bwm801;
 
-class user_template_main : public bwm801::main
+#ifdef WIN32
+# define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
+class EXPORT user_template_main : public bwm801::main
 {
 private:
 	pane_id	m_idPane;

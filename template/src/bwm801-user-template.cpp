@@ -4,7 +4,7 @@
 
 using namespace bwm801;
 
-user_template_main	g_cUser_Template_Main;
+user_template_main	g_cMain; // there must be an instantiation of your main class somewhere, this is a good place to do it. 
 
 void user_template_main::init(void) // initialization routine; rendering context not created
 {
@@ -17,5 +17,6 @@ void user_template_main::init(void) // initialization routine; rendering context
 }
 void user_template_main::close(void) // program exiting; rendering context destroyed
 {
+	// a good place to do any deallocations of your data
 }
 
