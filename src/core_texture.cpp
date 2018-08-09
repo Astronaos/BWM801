@@ -1,9 +1,12 @@
-#include <core.hpp>
+#include <bwm801.h>
 #include <string>
 #include <png.h>
 #include <cstring>
+#include <iostream>
+
 // for now, assume pages are 4096 bytes each. @@TODO implement per machine page sizing
 #define ASSUMED_PAGE_SIZE 4096
+using namespace bwm801;
 
 
 class tex_buffer
@@ -126,7 +129,7 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 	return bRet;
 }
 
-texture::texture(void)
+void texture::Initializer(void)
 {
 	m_uiTexture_ID = -1;
 	m_tWidth = -1;
@@ -143,7 +146,7 @@ texture::texture(void)
 
 }
 
-texture::~texture(void)
+void texture::Destructor(void)
 {
 	Delete();
 }

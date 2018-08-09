@@ -1,9 +1,35 @@
-#include <core.hpp>
-#include <core_screenshot.h>
+#include <bwm801.h>
+#include <bwm801_screenshot.h>
 #include <png.h>
 #include <sstream>
+#include <map>
+#include <iostream>
+
+#if !defined WIN32 && !defined __MINGW32__
+#include <unistd.h>
+namespace bwm801
+{
+	void Sleep(unsigned int i_uiLength)
+	{
+		usleep(i_uiLength * 1000);
+	}
+};
+#endif
+
+using namespace bwm801;
+
 
 ogl_screenshot_info g_cOGL_Screenshot;
+
+void ogl_screenshot_info::Initializer (void)
+{
+	m_bRequest = false;
+	m_bReady = false;
+	m_tWidth = 0;
+	m_tHeight = 0;
+	m_tColor_Depth_Bits = 0;
+	m_lpvData = nullptr;
+}
 
 class main_screenshot_info
 {

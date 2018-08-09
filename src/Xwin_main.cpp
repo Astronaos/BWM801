@@ -6,9 +6,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <GL/gl.h>
 #include <GL/glx.h>
-#include <core.hpp>
+#include <bwm801.h>
 #include <FTGL/ftgl.h>
 #include <iostream>
 #include <sys/types.h>
@@ -31,31 +30,34 @@
 #include <thread>
 #include <GL/glext.h>
 #include <string>
-#include <core_screenshot.h>
+#include <bwm801_screenshot.h>
 #include <sstream>
 #include <bwm801_glext.h>
+#include <deque>
+#include <map>
+using namespace bwm801;
 
 
 #define NIL (0)       // A name for the void pointer
 
 FT_Library 		g_ftLibrary;
 
-Display	* g_lpdpyDisplay = NULL;
+Display	* g_lpdpyDisplay = nullptr;
 Window		g_wWindow;
 Window 		g_wRoot;
 GLXContext g_glc;
 
-main::KEYID Key_Map(unsigned int uiKey);
-main::MOUSEBUTTON Mouse_Button_Map(unsigned int i_uiButton);
+main::keyid Key_Map(unsigned int uiKey);
+main::mousebutton Mouse_Button_Map(unsigned int i_uiButton);
 void Sleep(unsigned int i_uiLength)
 {
 	usleep(i_uiLength * 1000);
 }
 
 // X11 uses display coordinates that have (0,0) as the top left corner.  
-PAIR<unsigned int>	Fix_Coordinate_Global(const PAIR<unsigned int> &i_tPosition)
+pair<unsigned int>	Fix_Coordinate_Global(const pair<unsigned int> &i_tPosition)
 {
-	PAIR<unsigned int> tRet;
+	pair<unsigned int> tRet;
 	Window wRoot;
 	int iX,iY;
 	unsigned int uiWidth,uiHeight,uiBorder_Width,uiDepth;
@@ -65,9 +67,9 @@ PAIR<unsigned int>	Fix_Coordinate_Global(const PAIR<unsigned int> &i_tPosition)
 	tRet.m_tY = (uiHeight - i_tPosition.m_tY);
 	return tRet;
 }
-PAIR<unsigned int>	Fix_Coordinate_Window(const PAIR<unsigned int> &i_tPosition)
+pair<unsigned int>	Fix_Coordinate_Window(const pair<unsigned int> &i_tPosition)
 {
-	PAIR<unsigned int> tRet;
+	pair<unsigned int> tRet;
 	Window wRoot;
 	int iX,iY;
 	unsigned int uiWidth,uiHeight,uiBorder_Width,uiDepth;
@@ -299,13 +301,13 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 					printf("Event loop Key %i \n",evEvent.xkey.keycode);
 				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
 				{
-				case main::KEY_RCTRL:
+				case main::key_rctrl:
 					bCtrl_Key = false;
 					break;
-				case main::KEY_RSHIFT:
+				case main::key_rshift:
 					bShift_Key = false;
 					break;
-				case main::KEY_F12:
+				case main::key_f12:
 					bF12_Key = false;
 					break;
 				}
@@ -314,13 +316,13 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 			case KeyPress:
 				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
 				{
-				case main::KEY_RCTRL:
+				case main::key_rctrl:
 					bCtrl_Key = true;
 					break;
-				case main::KEY_RSHIFT:
+				case main::key_rshift:
 					bShift_Key = true;
 					break;
-				case main::KEY_F12:
+				case main::key_f12:
 					bF12_Key = true;
 					break;
 				}
@@ -333,7 +335,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 			case ButtonPress:
 			case ButtonRelease:
 				if (g_lpMain->m_bEngine_Debug_Mode)
-					printf("Event loop Button %i (%i,%i)\n",Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(PAIR<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tX,Fix_Coordinate_Window(PAIR<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tY);
+					printf("Event loop Button %i (%i,%i)\n",Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tX,Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tY);
 				bReady_To_Process_Buttons = (XEventsQueued(g_lpdpyDisplay,QueuedAfterFlush) == 0);
 				if (!bReady_To_Process_Buttons)
 				{
@@ -361,7 +363,7 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 							veButton_Events[0].button == veButton_Events[3].button &&
 							(veButton_Events[3].time - veButton_Events[0].time) < 500) //@@TODO make this user selectable
 						{ // double click detected
-							g_lpMain->On_Mouse_Button_Double_Click(Mouse_Button_Map(veButton_Events[0].button), Fix_Coordinate_Window(PAIR<unsigned int>(veButton_Events[0].x, veButton_Events[0].y)));
+							g_lpMain->On_Mouse_Button_Double_Click(Mouse_Button_Map(veButton_Events[0].button), Fix_Coordinate_Window(pair<unsigned int>(veButton_Events[0].x, veButton_Events[0].y)));
 						}
 						else
 						{
@@ -369,11 +371,11 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 							{
 								if (cI->type == ButtonPress)
 								{
-									g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(PAIR<unsigned int>(cI->x, cI->y)));
+									g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(pair<unsigned int>(cI->x, cI->y)));
 								}
 								else
 								{
-									g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(PAIR<unsigned int>(cI->x, cI->y)));
+									g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(pair<unsigned int>(cI->x, cI->y)));
 								}
 							}
 						}
@@ -381,18 +383,18 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 					}
 					else if (evEvent.type == ButtonPress)
 					{
-						g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(PAIR<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)));
+						g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)));
 					}
 					else
 					{
-						g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(PAIR<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)));
+						g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)));
 					}
 				}
 				break;
 			case MotionNotify:
 				if (g_lpMain->m_bEngine_Debug_Mode)
 					printf("Event loop Motion\n");
-				g_lpMain->On_Mousemove(Fix_Coordinate_Window(PAIR<unsigned int>(evEvent.xmotion.x, evEvent.xmotion.y)));
+				g_lpMain->On_Mousemove(Fix_Coordinate_Window(pair<unsigned int>(evEvent.xmotion.x, evEvent.xmotion.y)));
 				break;
 	// Mouse wheel events not supported under X windows
 	//		case WM_MOUSEWHEEL:
@@ -405,8 +407,8 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 			case GraphicsExpose:
 				if (g_lpMain->m_bEngine_Debug_Mode)
 					printf("Event loop Expose\n");
-				g_lpMain->On_Window_Move(Fix_Coordinate_Global(PAIR<unsigned int>(evEvent.xexpose.x,evEvent.xexpose.y)));
-				g_lpMain->On_Window_Resize(PAIR<unsigned int>(evEvent.xexpose.width,evEvent.xexpose.height));
+				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>(evEvent.xexpose.x,evEvent.xexpose.y)));
+				g_lpMain->On_Window_Resize(pair<unsigned int>(evEvent.xexpose.width,evEvent.xexpose.height));
 				if (!bFirst_Draw)
 					g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
 				g_lpMain->Request_Refresh();
@@ -414,8 +416,8 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 		    case ConfigureNotify:
 				if (g_lpMain->m_bEngine_Debug_Mode)
 					printf("Event loop Configure %i %i\n",evEvent.xconfigure.event, evEvent.xconfigure.window);
-				g_lpMain->On_Window_Move(Fix_Coordinate_Global(PAIR<unsigned int>(evEvent.xconfigure.x,evEvent.xconfigure.y)));
-				g_lpMain->On_Window_Resize(PAIR<unsigned int>(evEvent.xconfigure.width,evEvent.xconfigure.height));
+				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>(evEvent.xconfigure.x,evEvent.xconfigure.y)));
+				g_lpMain->On_Window_Resize(pair<unsigned int>(evEvent.xconfigure.width,evEvent.xconfigure.height));
 				if (!bFirst_Draw)
 					g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
 				g_lpMain->Request_Refresh();
@@ -475,226 +477,226 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 }
 
 
-main::KEYID Key_Map(unsigned int i_uiKey)
+main::keyid Key_Map(unsigned int i_uiKey)
 {
-	main::KEYID		eKey = main::KEY_NOOP;
+	main::keyid		eKey = main::key_noop;
 	switch (i_uiKey)
 	{
-	case XK_BackSpace: eKey = main::KEY_BACKSPACE; break;
-	case XK_Tab: eKey = main::KEY_TAB; break;
-	case XK_Linefeed: eKey = main::KEY_ENTER; break;
-	case XK_Clear: eKey = main::KEY_CLEAR; break;
-	case XK_Return: eKey = main::KEY_ENTER; break;
-	case XK_Pause: eKey = main::KEY_PAUSE; break;
-	case XK_Scroll_Lock: eKey = main::KEY_SCROLLLOCK; break;
-//	case XK_Sys_Req: eKey = main::KEY_SYSRQ; break;
-	case XK_Escape: eKey = main::KEY_ESCAPE; break;
-	case XK_Delete: eKey = main::KEY_DELETE; break;
-	case XK_Home: eKey = main::KEY_HOME; break;
-	case XK_Left: eKey = main::KEY_LEFT; break;
-	case XK_Up: eKey = main::KEY_UP; break;
-	case XK_Right: eKey = main::KEY_RIGHT; break;
-	case XK_Down: eKey = main::KEY_DOWN; break;
-	case XK_Prior: eKey = main::KEY_PGUP; break;
-	case XK_Next: eKey = main::KEY_PGDN; break;
-	case XK_End: eKey = main::KEY_END; break;
-	case XK_Select: eKey = main::KEY_SELECT; break;
-	case XK_Print: eKey = main::KEY_PRINT; break;
-	case XK_Execute: eKey = main::KEY_EXEC; break;
-	case XK_Insert: eKey = main::KEY_INSERT; break;
-	case XK_Cancel: eKey = main::KEY_CANCEL; break;
-	case XK_Help: eKey = main::KEY_HELP; break;
-//	case XK_Break: eKey = main::KEY_BREAK; break;
-	case XK_Num_Lock: eKey = main::KEY_NMLCK; break;
-	case XK_KP_Enter: eKey = main::KEY_NUMPD_ENTER; break;
-	case XK_KP_Home: eKey = main::KEY_NUMPD_7; break;
-	case XK_KP_Left: eKey = main::KEY_NUMPD_4; break;
-	case XK_KP_Up: eKey = main::KEY_NUMPD_8; break;
-	case XK_KP_Right: eKey = main::KEY_NUMPD_6; break;
-	case XK_KP_Down: eKey = main::KEY_NUMPD_2; break;
-//	case XK_KP_Prior: eKey = main::KEY_NUMPD_9; break;
-	case XK_KP_Page_Up: eKey = main::KEY_NUMPD_9; break;
-//	case XK_KP_Next: eKey = main::KEY_NUMPD_; break;
-	case XK_KP_Page_Down: eKey = main::KEY_NUMPD_3; break;
-	case XK_KP_End: eKey = main::KEY_NUMPD_1; break;
-	case XK_KP_Begin: eKey = main::KEY_NUMPD_5; break;
-	case XK_KP_Insert: eKey = main::KEY_NUMPD_0; break;
-	case XK_KP_Delete: eKey = main::KEY_NUMPD_DOT; break;
-//	case XK_KP_Equal: eKey = main::KEY_ESCAPE; break;
-	case XK_KP_Multiply: eKey = main::KEY_NUMPD_TIMES; break;
-	case XK_KP_Add: eKey = main::KEY_NUMPD_PLUS; break;
-	case XK_KP_Separator: eKey = main::KEY_NUMPD_ENTER; break;
-	case XK_KP_Subtract: eKey = main::KEY_NUMPD_MINUS; break;
-	case XK_KP_Decimal: eKey = main::KEY_NUMPD_DOT; break;
-	case XK_KP_Divide: eKey = main::KEY_NUMPD_DIV; break;
-	case XK_KP_0: eKey = main::KEY_NUMPD_0; break;
-	case XK_KP_1: eKey = main::KEY_NUMPD_1; break;
-	case XK_KP_2: eKey = main::KEY_NUMPD_2; break;
-	case XK_KP_3: eKey = main::KEY_NUMPD_3; break;
-	case XK_KP_4: eKey = main::KEY_NUMPD_4; break;
-	case XK_KP_5: eKey = main::KEY_NUMPD_5; break;
-	case XK_KP_6: eKey = main::KEY_NUMPD_6; break;
-	case XK_KP_7: eKey = main::KEY_NUMPD_7; break;
-	case XK_KP_8: eKey = main::KEY_NUMPD_8; break;
-	case XK_KP_9: eKey = main::KEY_NUMPD_9; break;
-	case XK_F1: eKey = main::KEY_F1; break;
-	case XK_F2: eKey = main::KEY_F2; break;
-	case XK_F3: eKey = main::KEY_F3; break;
-	case XK_F4: eKey = main::KEY_F4; break;
-	case XK_F5: eKey = main::KEY_F5; break;
-	case XK_F6: eKey = main::KEY_F6; break;
-	case XK_F7: eKey = main::KEY_F7; break;
-	case XK_F8: eKey = main::KEY_F8; break;
-	case XK_F9: eKey = main::KEY_F9; break;
-	case XK_F10: eKey = main::KEY_F10; break;
-	case XK_F11: eKey = main::KEY_F11; break;
-	case XK_F12: eKey = main::KEY_F12; break;
-	case XK_F13: eKey = main::KEY_F13; break;
-	case XK_F14: eKey = main::KEY_F14; break;
-	case XK_F15: eKey = main::KEY_F15; break;
-	case XK_F16: eKey = main::KEY_F16; break;
-	case XK_F17: eKey = main::KEY_F17; break;
-	case XK_F18: eKey = main::KEY_F18; break;
-	case XK_F19: eKey = main::KEY_F19; break;
-	case XK_F20: eKey = main::KEY_F20; break;
-	case XK_F21: eKey = main::KEY_F21; break;
-	case XK_F22: eKey = main::KEY_F22; break;
-	case XK_F23: eKey = main::KEY_F23; break;
-	case XK_F24: eKey = main::KEY_F24; break;
-//	case XK_F25: eKey = main::KEY_ESCAPE; break;
-//	case XK_F26: eKey = main::KEY_ESCAPE; break;
-//	case XK_F27: eKey = main::KEY_ESCAPE; break;
-//	case XK_F28: eKey = main::KEY_ESCAPE; break;
-//	case XK_F29: eKey = main::KEY_ESCAPE; break;
-//	case XK_F30: eKey = main::KEY_ESCAPE; break;
-//	case XK_F31: eKey = main::KEY_ESCAPE; break;
-//	case XK_F32: eKey = main::KEY_ESCAPE; break;
-//	case XK_F33: eKey = main::KEY_ESCAPE; break;
-//	case XK_F34: eKey = main::KEY_ESCAPE; break;
-//	case XK_F35: eKey = main::KEY_ESCAPE; break;
-	case XK_Shift_L: eKey = main::KEY_LSHIFT; break;
-	case XK_Shift_R: eKey = main::KEY_RSHIFT; break;
-	case XK_Control_L: eKey = main::KEY_LCTRL; break;
-	case XK_Control_R: eKey = main::KEY_RCTRL; break;
-	case XK_Caps_Lock: eKey = main::KEY_CAPSLOCK; break;
-	case XK_Shift_Lock: eKey = main::KEY_SCROLLLOCK; break;
-	case XK_Alt_L: eKey = main::KEY_LALT; break;
-	case XK_Alt_R: eKey = main::KEY_RALT; break;
-	case XK_space: eKey = main::KEY_SPACE; break;
-//	case XK_exclam: eKey = main::KEY_ESCAPE; break;
-//	case XK_quotedbl: eKey = main::KEY_SQUOTE; break;
-//	case XK_numbersign: eKey = main::KEY_ESCAPE; break;
-//	case XK_dollar: eKey = main::KEY_ESCAPE; break;
-//	case XK_percent: eKey = main::KEY_ESCAPE; break;
-//	case XK_ampersand: eKey = main::KEY_ESCAPE; break;
-//	case XK_apostrophe: eKey = main::KEY_ESCAPE; break;
-	case XK_quoteright: eKey = main::KEY_SQUOTE; break;
-//	case XK_parenleft: eKey = main::KEY_ESCAPE; break;
-//	case XK_parenright: eKey = main::KEY_ESCAPE; break;
-//	case XK_asterisk: eKey = main::KEY_ESCAPE; break;
-	case XK_plus: eKey = main::KEY_ESCAPE; break;
-	case XK_comma: eKey = main::KEY_COMMA; break;
-	case XK_minus: eKey = main::KEY_MINUS; break;
-	case XK_period: eKey = main::KEY_PERIOD; break;
-	case XK_slash: eKey = main::KEY_SLASH; break;
-	case XK_0: eKey = main::KEY_0; break;
-	case XK_1: eKey = main::KEY_1; break;
-	case XK_2: eKey = main::KEY_2; break;
-	case XK_3: eKey = main::KEY_3; break;
-	case XK_4: eKey = main::KEY_4; break;
-	case XK_5: eKey = main::KEY_5; break;
-	case XK_6: eKey = main::KEY_6; break;
-	case XK_7: eKey = main::KEY_7; break;
-	case XK_8: eKey = main::KEY_8; break;
-	case XK_9: eKey = main::KEY_9; break;
-//	case XK_colon: eKey = main::KEY_ESCAPE; break;
-	case XK_semicolon: eKey = main::KEY_SEMICOLON; break;
-//	case XK_less: eKey = main::KEY_ESCAPE; break;
-	case XK_equal: eKey = main::KEY_EQUALS; break;
-//	case XK_greater: eKey = main::KEY_ESCAPE; break;
-//	case XK_question: eKey = main::KEY_ESCAPE; break;
-//	case XK_at: eKey = main::KEY_ESCAPE; break;
-	case XK_A: eKey = main::KEY_A; break;
-	case XK_B: eKey = main::KEY_B; break;
-	case XK_C: eKey = main::KEY_C; break;
-	case XK_D: eKey = main::KEY_D; break;
-	case XK_E: eKey = main::KEY_E; break;
-	case XK_F: eKey = main::KEY_F; break;
-	case XK_G: eKey = main::KEY_G; break;
-	case XK_H: eKey = main::KEY_H; break;
-	case XK_I: eKey = main::KEY_I; break;
-	case XK_J: eKey = main::KEY_J; break;
-	case XK_K: eKey = main::KEY_K; break;
-	case XK_L: eKey = main::KEY_L; break;
-	case XK_M: eKey = main::KEY_M; break;
-	case XK_N: eKey = main::KEY_N; break;
-	case XK_O: eKey = main::KEY_O; break;
-	case XK_P: eKey = main::KEY_P; break;
-	case XK_Q: eKey = main::KEY_Q; break;
-	case XK_R: eKey = main::KEY_R; break;
-	case XK_S: eKey = main::KEY_S; break;
-	case XK_T: eKey = main::KEY_T; break;
-	case XK_U: eKey = main::KEY_U; break;
-	case XK_V: eKey = main::KEY_V; break;
-	case XK_W: eKey = main::KEY_W; break;
-	case XK_X: eKey = main::KEY_X; break;
-	case XK_Y: eKey = main::KEY_Y; break;
-	case XK_Z: eKey = main::KEY_Z; break;
-	case XK_bracketleft: eKey = main::KEY_LSQBRKT; break;
-	case XK_backslash: eKey = main::KEY_BACKSLASH; break;
-	case XK_bracketright: eKey = main::KEY_RSQBRKT; break;
-//	case XK_asciicircum: eKey = main::KEY_ESCAPE; break;
-//	case XK_underscore: eKey = main::KEY_ESCAPE; break;
-//	case XK_grave: eKey = main::KEY_ESCAPE; break;
-	case XK_quoteleft: eKey = main::KEY_TILDE; break;
-	case XK_a: eKey = main::KEY_A; break;
-	case XK_b: eKey = main::KEY_B; break;
-	case XK_c: eKey = main::KEY_C; break;
-	case XK_d: eKey = main::KEY_D; break;
-	case XK_e: eKey = main::KEY_E; break;
-	case XK_f: eKey = main::KEY_F; break;
-	case XK_g: eKey = main::KEY_G; break;
-	case XK_h: eKey = main::KEY_H; break;
-	case XK_i: eKey = main::KEY_I; break;
-	case XK_j: eKey = main::KEY_J; break;
-	case XK_k: eKey = main::KEY_K; break;
-	case XK_l: eKey = main::KEY_L; break;
-	case XK_m: eKey = main::KEY_M; break;
-	case XK_n: eKey = main::KEY_N; break;
-	case XK_o: eKey = main::KEY_O; break;
-	case XK_p: eKey = main::KEY_P; break;
-	case XK_q: eKey = main::KEY_Q; break;
-	case XK_r: eKey = main::KEY_R; break;
-	case XK_s: eKey = main::KEY_S; break;
-	case XK_t: eKey = main::KEY_T; break;
-	case XK_u: eKey = main::KEY_U; break;
-	case XK_v: eKey = main::KEY_V; break;
-	case XK_w: eKey = main::KEY_W; break;
-	case XK_x: eKey = main::KEY_X; break;
-	case XK_y: eKey = main::KEY_Y; break;
-	case XK_z: eKey = main::KEY_Z; break;
-//	case XK_braceleft: eKey = main::KEY_ESCAPE; break;
-//	case XK_bar: eKey = main::KEY_ESCAPE; break;
-//	case XK_braceright: eKey = main::KEY_ESCAPE; break;
-//	case XK_asciitilde: eKey = main::KEY_TILDE; break;
+	case XK_BackSpace: eKey = main::key_backspace; break;
+	case XK_Tab: eKey = main::key_tab; break;
+	case XK_Linefeed: eKey = main::key_enter; break;
+	case XK_Clear: eKey = main::key_clear; break;
+	case XK_Return: eKey = main::key_enter; break;
+	case XK_Pause: eKey = main::key_pause; break;
+	case XK_Scroll_Lock: eKey = main::key_scrolllock; break;
+//	case XK_Sys_Req: eKey = main::key_sysrq; break;
+	case XK_Escape: eKey = main::key_escape; break;
+	case XK_Delete: eKey = main::key_delete; break;
+	case XK_Home: eKey = main::key_home; break;
+	case XK_Left: eKey = main::key_left; break;
+	case XK_Up: eKey = main::key_up; break;
+	case XK_Right: eKey = main::key_right; break;
+	case XK_Down: eKey = main::key_down; break;
+	case XK_Prior: eKey = main::key_pgup; break;
+	case XK_Next: eKey = main::key_pgdn; break;
+	case XK_End: eKey = main::key_end; break;
+	case XK_Select: eKey = main::key_select; break;
+	case XK_Print: eKey = main::key_print; break;
+	case XK_Execute: eKey = main::key_exec; break;
+	case XK_Insert: eKey = main::key_insert; break;
+	case XK_Cancel: eKey = main::key_cancel; break;
+	case XK_Help: eKey = main::key_help; break;
+//	case XK_Break: eKey = main::key_break; break;
+	case XK_Num_Lock: eKey = main::key_nmlck; break;
+	case XK_KP_Enter: eKey = main::key_numpd_enter; break;
+	case XK_KP_Home: eKey = main::key_numpd_7; break;
+	case XK_KP_Left: eKey = main::key_numpd_4; break;
+	case XK_KP_Up: eKey = main::key_numpd_8; break;
+	case XK_KP_Right: eKey = main::key_numpd_6; break;
+	case XK_KP_Down: eKey = main::key_numpd_2; break;
+//	case XK_KP_Prior: eKey = main::key_numpd_9; break;
+	case XK_KP_Page_Up: eKey = main::key_numpd_9; break;
+//	case XK_KP_Next: eKey = main::key_numpd_; break;
+	case XK_KP_Page_Down: eKey = main::key_numpd_3; break;
+	case XK_KP_End: eKey = main::key_numpd_1; break;
+	case XK_KP_Begin: eKey = main::key_numpd_5; break;
+	case XK_KP_Insert: eKey = main::key_numpd_0; break;
+	case XK_KP_Delete: eKey = main::key_numpd_dot; break;
+//	case XK_KP_Equal: eKey = main::key_escape; break;
+	case XK_KP_Multiply: eKey = main::key_numpd_times; break;
+	case XK_KP_Add: eKey = main::key_numpd_plus; break;
+	case XK_KP_Separator: eKey = main::key_numpd_enter; break;
+	case XK_KP_Subtract: eKey = main::key_numpd_minus; break;
+	case XK_KP_Decimal: eKey = main::key_numpd_dot; break;
+	case XK_KP_Divide: eKey = main::key_numpd_div; break;
+	case XK_KP_0: eKey = main::key_numpd_0; break;
+	case XK_KP_1: eKey = main::key_numpd_1; break;
+	case XK_KP_2: eKey = main::key_numpd_2; break;
+	case XK_KP_3: eKey = main::key_numpd_3; break;
+	case XK_KP_4: eKey = main::key_numpd_4; break;
+	case XK_KP_5: eKey = main::key_numpd_5; break;
+	case XK_KP_6: eKey = main::key_numpd_6; break;
+	case XK_KP_7: eKey = main::key_numpd_7; break;
+	case XK_KP_8: eKey = main::key_numpd_8; break;
+	case XK_KP_9: eKey = main::key_numpd_9; break;
+	case XK_F1: eKey = main::key_f1; break;
+	case XK_F2: eKey = main::key_f2; break;
+	case XK_F3: eKey = main::key_f3; break;
+	case XK_F4: eKey = main::key_f4; break;
+	case XK_F5: eKey = main::key_f5; break;
+	case XK_F6: eKey = main::key_f6; break;
+	case XK_F7: eKey = main::key_f7; break;
+	case XK_F8: eKey = main::key_f8; break;
+	case XK_F9: eKey = main::key_f9; break;
+	case XK_F10: eKey = main::key_f10; break;
+	case XK_F11: eKey = main::key_f11; break;
+	case XK_F12: eKey = main::key_f12; break;
+	case XK_F13: eKey = main::key_f13; break;
+	case XK_F14: eKey = main::key_f14; break;
+	case XK_F15: eKey = main::key_f15; break;
+	case XK_F16: eKey = main::key_f16; break;
+	case XK_F17: eKey = main::key_f17; break;
+	case XK_F18: eKey = main::key_f18; break;
+	case XK_F19: eKey = main::key_f19; break;
+	case XK_F20: eKey = main::key_f20; break;
+	case XK_F21: eKey = main::key_f21; break;
+	case XK_F22: eKey = main::key_f22; break;
+	case XK_F23: eKey = main::key_f23; break;
+	case XK_F24: eKey = main::key_f24; break;
+//	case XK_F25: eKey = main::key_escape; break;
+//	case XK_F26: eKey = main::key_escape; break;
+//	case XK_F27: eKey = main::key_escape; break;
+//	case XK_F28: eKey = main::key_escape; break;
+//	case XK_F29: eKey = main::key_escape; break;
+//	case XK_F30: eKey = main::key_escape; break;
+//	case XK_F31: eKey = main::key_escape; break;
+//	case XK_F32: eKey = main::key_escape; break;
+//	case XK_F33: eKey = main::key_escape; break;
+//	case XK_F34: eKey = main::key_escape; break;
+//	case XK_F35: eKey = main::key_escape; break;
+	case XK_Shift_L: eKey = main::key_lshift; break;
+	case XK_Shift_R: eKey = main::key_rshift; break;
+	case XK_Control_L: eKey = main::key_lctrl; break;
+	case XK_Control_R: eKey = main::key_rctrl; break;
+	case XK_Caps_Lock: eKey = main::key_capslock; break;
+	case XK_Shift_Lock: eKey = main::key_scrolllock; break;
+	case XK_Alt_L: eKey = main::key_lalt; break;
+	case XK_Alt_R: eKey = main::key_ralt; break;
+	case XK_space: eKey = main::key_space; break;
+//	case XK_exclam: eKey = main::key_escape; break;
+//	case XK_quotedbl: eKey = main::key_squote; break;
+//	case XK_numbersign: eKey = main::key_escape; break;
+//	case XK_dollar: eKey = main::key_escape; break;
+//	case XK_percent: eKey = main::key_escape; break;
+//	case XK_ampersand: eKey = main::key_escape; break;
+//	case XK_apostrophe: eKey = main::key_escape; break;
+	case XK_quoteright: eKey = main::key_squote; break;
+//	case XK_parenleft: eKey = main::key_escape; break;
+//	case XK_parenright: eKey = main::key_escape; break;
+//	case XK_asterisk: eKey = main::key_escape; break;
+	case XK_plus: eKey = main::key_escape; break;
+	case XK_comma: eKey = main::key_comma; break;
+	case XK_minus: eKey = main::key_minus; break;
+	case XK_period: eKey = main::key_period; break;
+	case XK_slash: eKey = main::key_slash; break;
+	case XK_0: eKey = main::key_0; break;
+	case XK_1: eKey = main::key_1; break;
+	case XK_2: eKey = main::key_2; break;
+	case XK_3: eKey = main::key_3; break;
+	case XK_4: eKey = main::key_4; break;
+	case XK_5: eKey = main::key_5; break;
+	case XK_6: eKey = main::key_6; break;
+	case XK_7: eKey = main::key_7; break;
+	case XK_8: eKey = main::key_8; break;
+	case XK_9: eKey = main::key_9; break;
+//	case XK_colon: eKey = main::key_escape; break;
+	case XK_semicolon: eKey = main::key_semicolon; break;
+//	case XK_less: eKey = main::key_escape; break;
+	case XK_equal: eKey = main::key_equals; break;
+//	case XK_greater: eKey = main::key_escape; break;
+//	case XK_question: eKey = main::key_escape; break;
+//	case XK_at: eKey = main::key_escape; break;
+	case XK_A: eKey = main::key_a; break;
+	case XK_B: eKey = main::key_b; break;
+	case XK_C: eKey = main::key_c; break;
+	case XK_D: eKey = main::key_d; break;
+	case XK_E: eKey = main::key_e; break;
+	case XK_F: eKey = main::key_f; break;
+	case XK_G: eKey = main::key_g; break;
+	case XK_H: eKey = main::key_h; break;
+	case XK_I: eKey = main::key_i; break;
+	case XK_J: eKey = main::key_j; break;
+	case XK_K: eKey = main::key_k; break;
+	case XK_L: eKey = main::key_l; break;
+	case XK_M: eKey = main::key_m; break;
+	case XK_N: eKey = main::key_n; break;
+	case XK_O: eKey = main::key_o; break;
+	case XK_P: eKey = main::key_p; break;
+	case XK_Q: eKey = main::key_q; break;
+	case XK_R: eKey = main::key_r; break;
+	case XK_S: eKey = main::key_s; break;
+	case XK_T: eKey = main::key_t; break;
+	case XK_U: eKey = main::key_u; break;
+	case XK_V: eKey = main::key_v; break;
+	case XK_W: eKey = main::key_w; break;
+	case XK_X: eKey = main::key_x; break;
+	case XK_Y: eKey = main::key_y; break;
+	case XK_Z: eKey = main::key_z; break;
+	case XK_bracketleft: eKey = main::key_lsqbrkt; break;
+	case XK_backslash: eKey = main::key_backslash; break;
+	case XK_bracketright: eKey = main::key_rsqbrkt; break;
+//	case XK_asciicircum: eKey = main::key_escape; break;
+//	case XK_underscore: eKey = main::key_escape; break;
+//	case XK_grave: eKey = main::key_escape; break;
+	case XK_quoteleft: eKey = main::key_tilde; break;
+	case XK_a: eKey = main::key_a; break;
+	case XK_b: eKey = main::key_b; break;
+	case XK_c: eKey = main::key_c; break;
+	case XK_d: eKey = main::key_d; break;
+	case XK_e: eKey = main::key_e; break;
+	case XK_f: eKey = main::key_f; break;
+	case XK_g: eKey = main::key_g; break;
+	case XK_h: eKey = main::key_h; break;
+	case XK_i: eKey = main::key_i; break;
+	case XK_j: eKey = main::key_j; break;
+	case XK_k: eKey = main::key_k; break;
+	case XK_l: eKey = main::key_l; break;
+	case XK_m: eKey = main::key_m; break;
+	case XK_n: eKey = main::key_n; break;
+	case XK_o: eKey = main::key_o; break;
+	case XK_p: eKey = main::key_p; break;
+	case XK_q: eKey = main::key_q; break;
+	case XK_r: eKey = main::key_r; break;
+	case XK_s: eKey = main::key_s; break;
+	case XK_t: eKey = main::key_t; break;
+	case XK_u: eKey = main::key_u; break;
+	case XK_v: eKey = main::key_v; break;
+	case XK_w: eKey = main::key_w; break;
+	case XK_x: eKey = main::key_x; break;
+	case XK_y: eKey = main::key_y; break;
+	case XK_z: eKey = main::key_z; break;
+//	case XK_braceleft: eKey = main::key_escape; break;
+//	case XK_bar: eKey = main::key_escape; break;
+//	case XK_braceright: eKey = main::key_escape; break;
+//	case XK_asciitilde: eKey = main::key_tilde; break;
 	default:
 		std::cerr << "Unrecognized keycode " << std::hex << i_uiKey << std::endl;
 		break;
 	}
 	return eKey;
 }
-main::MOUSEBUTTON Mouse_Button_Map(unsigned int i_uiButton)
+main::mousebutton Mouse_Button_Map(unsigned int i_uiButton)
 {
-	main::MOUSEBUTTON eButton = main::MB_NOOP;
+	main::mousebutton eButton = main::mb_noop;
 	switch (i_uiButton)
 	{
-	case Button1: eButton = main::MB_LEFT; break;
-	case Button2: eButton = main::MB_RGT; break; // not sure about this - check
-	case Button3: eButton = main::MB_CTR; break; // not sure about this - check
-	case Button4: eButton = main::MB_X1; break; // not sure about this - check
-	case Button5: eButton = main::MB_X2; break; // not sure about this - check
-	case 6: eButton = main::MB_SCROLL_V; break; // undocumented button
-	case 7: eButton = main::MB_SCROLL_H; break; // undocumented button
+	case Button1: eButton = main::mb_left; break;
+	case Button2: eButton = main::mb_rgt; break; // not sure about this - check
+	case Button3: eButton = main::mb_ctr; break; // not sure about this - check
+	case Button4: eButton = main::mb_x1; break; // not sure about this - check
+	case Button5: eButton = main::mb_x2; break; // not sure about this - check
+	case 6: eButton = main::mb_scroll_v; break; // undocumented button
+	case 7: eButton = main::mb_scroll_h; break; // undocumented button
 	default: std::cerr << "Unidentified mouse button " << i_uiButton << std::endl; break;
 	}
 	return eButton;
@@ -702,8 +704,8 @@ main::MOUSEBUTTON Mouse_Button_Map(unsigned int i_uiButton)
 
 
 //GLYPHMETRICSFLOAT g_gmfFont_Storage[256]; 
-FTFont * g_lpcCurrent_Face = NULL;
-FTFont * g_lpdFontFaces[11][4] = {{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL},{NULL,NULL,NULL,NULL}};
+FTFont * g_lpcCurrent_Face = nullptr;
+FTFont * g_lpdFontFaces[11][4] = {{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr},{nullptr,nullptr,nullptr,nullptr}};
 
 void LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, bool i_bItalics)
 {
@@ -713,7 +715,7 @@ void LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_bBold, b
 		unsigned int uiFace = (i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0);
 		g_lpdFontFaces[uiFont][uiFace] = new FTTextureFont(i_lpszPath_To_Font); // placeholder until we properly manage font types
 		if (g_lpdFontFaces[uiFont][uiFace] && g_lpdFontFaces[uiFont][uiFace]->Error())
-			g_lpdFontFaces[uiFont][uiFace] = NULL;
+			g_lpdFontFaces[uiFont][uiFace] = nullptr;
 		if (g_lpdFontFaces[uiFont][uiFace])
 			g_lpdFontFaces[uiFont][uiFace]->FaceSize(96);
 		g_lpcCurrent_Face = g_lpdFontFaces[uiFont][uiFace];
@@ -783,7 +785,7 @@ void SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 		}
 		g_lpdFontFaces[uiFont][uiFace] = new FTTextureFont(cstrPath.c_str()); // placeholder until we properly manage font types
 		if (g_lpdFontFaces[uiFont][uiFace] && g_lpdFontFaces[uiFont][uiFace]->Error())
-			g_lpdFontFaces[uiFont][uiFace] = NULL;
+			g_lpdFontFaces[uiFont][uiFace] = nullptr;
 		if (g_lpdFontFaces[uiFont][uiFace])
 			g_lpdFontFaces[uiFont][uiFace]->FaceSize(96);
 	}
@@ -808,7 +810,7 @@ void glPrint(const double & i_dSize, const double & i_dX, const double & i_dY, c
 	}
 }
 
-void TextBBox(const double & i_dSize, const char * i_lpszString, PAIR<double> & o_cBot_Left, PAIR<double> & o_cTop_Right)
+void TextBBox(const double & i_dSize, const char * i_lpszString, pair<float> & o_cBot_Left, pair<float> & o_cTop_Right)
 {
 	FTBBox	cBBox;
 	if (g_lpcCurrent_Face)
@@ -848,28 +850,3 @@ std::vector<std::string> main::Get_Directory_File_List(const std::string &i_szDi
 	return szRet;
 }
 
-void DATE_TIME::Get_Current(void)
-{
-	time_t t = time(NULL);
-	struct tm tm = *localtime(&t);
-	m_uiYear = tm.tm_year + 1900;
-	m_uiMonth = tm.tm_mon + 1;
-	m_uiDay_of_Month = tm.tm_mday;
-	m_uiDay_of_Week;
-	m_uiHour = tm.tm_hour;
-	m_uiMinute = tm.tm_min;
-	m_dSeconds = tm.tm_sec;
-}
-
-void criticalsection::Set(void)
-{
-	bool * lpbPtr = (bool *) m_lpvCS_Data;
-	while (lpbPtr[0]) 
-		sleep(0); 
-	lpbPtr[0] = true;
-}
-criticalsection::criticalsection(void){m_lpvCS_Data = (void *)(new bool[1]); ((bool *)m_lpvCS_Data)[0] = false;}
-criticalsection::~criticalsection(void){bool * lpbPtr = (bool *) m_lpvCS_Data; delete [] lpbPtr;}
-
-void criticalsection::Unset(void){((bool *) m_lpvCS_Data)[0] = false;}
-bool criticalsection::Get(void) const {return ((bool *) m_lpvCS_Data)[0];}

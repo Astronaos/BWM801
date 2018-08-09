@@ -1,12 +1,15 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <core.hpp>
+#include <bwm801.h>
 #include <sstream>
 #include <cstring>
 #include <errno.h>
+#include <unistd.h>
 
-class SOCKET_INFO_LINUX
+using namespace bwm801;
+
+class socket_info_linux
 {
 public:
 	int 			m_iSocket_ID;
@@ -14,7 +17,7 @@ public:
 	struct addrinfo * m_lpsAddress_Info;
 	int				m_iLast_Error;
 
-	SOCKET_INFO_LINUX(void)
+	socket_info_linux(void)
 	{
 		m_iAccept_Socket_ID = -1;
 		m_iSocket_ID = -1;
@@ -23,14 +26,14 @@ public:
 	}
 };
 
-bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
+bool	commsocket::Initialize_Server(stream_type i_eType, unsigned short i_usPort)
 {
 	bool bError_Reported = false;
 	struct addrinfo hints, *res;
 	int sockfd;
 	std::ostringstream szPort;
 	szPort << i_usPort;
-	SOCKET_INFO_LINUX	* lpSock_Info = new SOCKET_INFO_LINUX;
+	socket_info_linux	* lpSock_Info = new socket_info_linux;
 	m_lpvSystem_Info = (void *)lpSock_Info;
 	bool bError = (lpSock_Info == NULL);
 	// first, load up address structs with getaddrinfo():
@@ -105,7 +108,7 @@ bool	COMMSOCKET::Initialize_Server(TYPE i_eType, unsigned short i_usPort)
 
 	return !bError;
 }
-bool	COMMSOCKET::Initialize_Client(TYPE i_eType, const std::string &i_szServer_Addr, unsigned short i_usPort)
+bool	commsocket::Initialize_Client(stream_type i_eType, const std::string &i_szServer_Addr, unsigned short i_usPort)
 {
 	bool bError_Reported = false;
 	struct addrinfo hints, *res;
@@ -113,7 +116,7 @@ bool	COMMSOCKET::Initialize_Client(TYPE i_eType, const std::string &i_szServer_A
 	std::ostringstream szPort;
 	m_eType = i_eType;
 	szPort << i_usPort;
-	SOCKET_INFO_LINUX	* lpSock_Info = new SOCKET_INFO_LINUX;
+	socket_info_linux	* lpSock_Info = new socket_info_linux;
 	m_lpvSystem_Info = (void *)lpSock_Info;
 	bool bError = (lpSock_Info == NULL);
 	// first, load up address structs with getaddrinfo():
@@ -183,12 +186,12 @@ int * g_lpiData_Container = NULL;
 size_t g_zInt_Data_Container_Size = 0;
 short * g_lpsData_Container = NULL;
 size_t g_zShort_Data_Container_Size = 0;
-bool	COMMSOCKET::Send(const int *i_lpiData, size_t i_zNum_To_Send)
+bool	commsocket::Send(const int *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		if (i_zNum_To_Send > g_zInt_Data_Container_Size)
 		{
 			if (g_lpiData_Container)
@@ -202,12 +205,12 @@ bool	COMMSOCKET::Send(const int *i_lpiData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Send(const short *i_lpiData, size_t i_zNum_To_Send)
+bool	commsocket::Send(const short *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		if (i_zNum_To_Send > g_zShort_Data_Container_Size)
 		{
 			if (g_lpsData_Container)
@@ -222,12 +225,12 @@ bool	COMMSOCKET::Send(const short *i_lpiData, size_t i_zNum_To_Send)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Send(const char * i_lplpcData, size_t i_zNum_To_Send)
+bool	commsocket::Send(const char * i_lplpcData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
@@ -253,12 +256,12 @@ bool	COMMSOCKET::Send(const char * i_lplpcData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Send(const unsigned int *i_lpiData, size_t i_zNum_To_Send)
+bool	commsocket::Send(const unsigned int *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		if (i_zNum_To_Send > g_zInt_Data_Container_Size)
 		{
 			if (g_lpiData_Container)
@@ -272,12 +275,12 @@ bool	COMMSOCKET::Send(const unsigned int *i_lpiData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Send(const unsigned short *i_lpiData, size_t i_zNum_To_Send)
+bool	commsocket::Send(const unsigned short *i_lpiData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		if (i_zNum_To_Send > g_zShort_Data_Container_Size)
 		{
 			if (g_lpsData_Container)
@@ -292,12 +295,12 @@ bool	COMMSOCKET::Send(const unsigned short *i_lpiData, size_t i_zNum_To_Send)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Send(const unsigned char * i_lplpcData, size_t i_zNum_To_Send)
+bool	commsocket::Send(const unsigned char * i_lplpcData, size_t i_zNum_To_Send)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
@@ -325,7 +328,7 @@ bool	COMMSOCKET::Send(const unsigned char * i_lplpcData, size_t i_zNum_To_Send)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Receive(int * i_lpiData, size_t i_zNum_To_Receive)
+bool	commsocket::Receive(int * i_lpiData, size_t i_zNum_To_Receive)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -346,7 +349,7 @@ bool	COMMSOCKET::Receive(int * i_lpiData, size_t i_zNum_To_Receive)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Receive(short * i_lpsData, size_t i_zNum_To_Receive)
+bool	commsocket::Receive(short * i_lpsData, size_t i_zNum_To_Receive)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -368,12 +371,12 @@ bool	COMMSOCKET::Receive(short * i_lpsData, size_t i_zNum_To_Receive)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Receive(char * i_lpcData, size_t i_zNum_To_Receive)
+bool	commsocket::Receive(char * i_lpcData, size_t i_zNum_To_Receive)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
@@ -397,7 +400,7 @@ bool	COMMSOCKET::Receive(char * i_lpcData, size_t i_zNum_To_Receive)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Receive(unsigned int * i_lpiData, size_t i_zNum_To_Receive)
+bool	commsocket::Receive(unsigned int * i_lpiData, size_t i_zNum_To_Receive)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -418,7 +421,7 @@ bool	COMMSOCKET::Receive(unsigned int * i_lpiData, size_t i_zNum_To_Receive)
 	}
 	return bSuccess;
 }
-bool	COMMSOCKET::Receive(unsigned short * i_lpsData, size_t i_zNum_To_Receive)
+bool	commsocket::Receive(unsigned short * i_lpsData, size_t i_zNum_To_Receive)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
@@ -440,12 +443,12 @@ bool	COMMSOCKET::Receive(unsigned short * i_lpsData, size_t i_zNum_To_Receive)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Receive(unsigned char * i_lpcData, size_t i_zNum_To_Receive)
+bool	commsocket::Receive(unsigned char * i_lpcData, size_t i_zNum_To_Receive)
 {
 	bool	bSuccess = false;
 	if (m_bIs_Initialized && m_bIs_Connected && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		size_t zSent = 0;
 		size_t zSent_Total = 0;
 		unsigned int uiTries = 0;
@@ -477,11 +480,11 @@ bool	COMMSOCKET::Receive(unsigned char * i_lpcData, size_t i_zNum_To_Receive)
 	return bSuccess;
 }
 
-bool	COMMSOCKET::Accept_Connections(void)
+bool	commsocket::Accept_Connections(void)
 {
 	if (m_bIs_Initialized && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		lpSock_Info->m_iSocket_ID = accept(lpSock_Info->m_iAccept_Socket_ID, lpSock_Info->m_lpsAddress_Info->ai_addr, &lpSock_Info->m_lpsAddress_Info->ai_addrlen);
 		if (lpSock_Info->m_iSocket_ID == -1)
 		{
@@ -496,11 +499,11 @@ bool	COMMSOCKET::Accept_Connections(void)
 	return m_bIs_Connected;
 }
 
-void COMMSOCKET::Close(void)
+void commsocket::Close(void)
 {
 	if (m_bIs_Connected)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		close(lpSock_Info->m_iSocket_ID);
 		if (lpSock_Info->m_iSocket_ID != lpSock_Info->m_iAccept_Socket_ID)
 			close(lpSock_Info->m_iAccept_Socket_ID);
@@ -512,25 +515,22 @@ void COMMSOCKET::Close(void)
 	}
 	if (m_bIs_Initialized)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		delete [] lpSock_Info;
 		m_lpvSystem_Info = NULL;
 		m_bIs_Initialized = false;
 	}
 }
 
-COMMSOCKET::~COMMSOCKET(void)
-{
-	Close();
-}
-
-int COMMSOCKET::Get_Error(void)
+int commsocket::Get_Error(void)
 {
 	int iRet = 0;
 	if (m_bIs_Initialized && m_lpvSystem_Info)
 	{
-		SOCKET_INFO_LINUX	* lpSock_Info = (SOCKET_INFO_LINUX *)m_lpvSystem_Info;
+		socket_info_linux	* lpSock_Info = (socket_info_linux *)m_lpvSystem_Info;
 		iRet = lpSock_Info->m_iLast_Error;
 	}
 	return iRet;
 }
+
+

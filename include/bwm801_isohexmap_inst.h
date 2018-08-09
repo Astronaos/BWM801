@@ -1,15 +1,15 @@
 
 
-template <typename T> PAIR<int> ISOMETRIC_HEXMAP<T>::Determine_Hex(const PAIR<double> &i_tView_Coord) const
+template <typename T> pair<int> isometric_hexmap<T>::Determine_Hex(const pair<double> &i_tView_Coord) const
 {
-	PAIR<int> tRet;
-	PAIR<double> tTrue_Coord = (i_tView_Coord + MAPBASE<T>::m_tScroll_Position - PAIR<double>(0.5 * MAPBASE<T>::m_dDisplay_Aspect_Ratio,0.5)) / MAPBASE<T>::m_dZoom;
+	pair<int> tRet;
+	pair<double> tTrue_Coord = (i_tView_Coord + mapbase<T>::m_tScroll_Position - pair<double>(0.5 * mapbase<T>::m_dDisplay_Aspect_Ratio,0.5)) / mapbase<T>::m_dZoom;
 	tRet.m_tX = -1;
 	tRet.m_tY = -1;
-	unsigned int uiBlock_X = (unsigned int)((tTrue_Coord.m_tX / MAPBASE<T>::m_dR) / 1.5);
-	unsigned int uiBlock_Y = (unsigned int)((tTrue_Coord.m_tY / MAPBASE<T>::m_dR));
-	double dHex_X = fmod(tTrue_Coord.m_tX / MAPBASE<T>::m_dR,1.5);
-	double dHex_Y = fmod(tTrue_Coord.m_tY / MAPBASE<T>::m_dR,1.0);
+	unsigned int uiBlock_X = (unsigned int)((tTrue_Coord.m_tX / mapbase<T>::m_dR) / 1.5);
+	unsigned int uiBlock_Y = (unsigned int)((tTrue_Coord.m_tY / mapbase<T>::m_dR));
+	double dHex_X = fmod(tTrue_Coord.m_tX / mapbase<T>::m_dR,1.5);
+	double dHex_Y = fmod(tTrue_Coord.m_tY / mapbase<T>::m_dR,1.0);
 
 	tRet.m_tX = uiBlock_X * 2;
 	tRet.m_tY = uiBlock_Y;
@@ -70,13 +70,13 @@ template <typename T> PAIR<int> ISOMETRIC_HEXMAP<T>::Determine_Hex(const PAIR<do
 }
 
 
-template <typename T>void ISOMETRIC_HEXMAP<T>::Get_Hex_Center(const PAIR<int> & i_tGrid_Position, PAIR<double> & o_tVitual_Coord) const
+template <typename T>void isometric_hexmap<T>::Get_Hex_Center(const pair<int> & i_tGrid_Position, pair<double> & o_tVitual_Coord) const
 {
 	o_tVitual_Coord = Get_Hex_Center(i_tGrid_Position);
 }
-template <typename T>PAIR<double> ISOMETRIC_HEXMAP<T>::Get_Hex_Center(const PAIR<int> & i_tGrid_Position) const
+template <typename T>pair<double> isometric_hexmap<T>::Get_Hex_Center(const pair<int> & i_tGrid_Position) const
 {
-	PAIR<double> cRet;
+	pair<double> cRet;
 	 // a little easier than going the other way....
 	int iY_Offset = (i_tGrid_Position.m_tX % 2);
 	if (i_tGrid_Position.m_tX < 0)
@@ -88,62 +88,62 @@ template <typename T>PAIR<double> ISOMETRIC_HEXMAP<T>::Get_Hex_Center(const PAIR
 	return cRet;
 }
 
-template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Filled_Hex(const PAIR<int> & i_tPosition) const
+template <typename T>void isometric_hexmap<T>::Draw_Filled_Hex(const pair<int> & i_tPosition) const
 {
-	PAIR<double> tPos;
-	MAPSPACEMIN cSpace;
+	pair<double> tPos;
+	mapspacemin cSpace;
 	Get_Hex_Center(i_tPosition,tPos);
 	glPushMatrix();
-		ISOMETRIC_HEXMAP<T>::Prepare_Draw();
+		isometric_hexmap<T>::Prepare_Draw();
 		glTranslated(tPos.m_tX,tPos.m_tY,0.0);
 		cSpace.Draw_Filled_Hex();
 	glPopMatrix();
 }
 
-template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Hex_Side(const PAIR<int> & i_tPosition, unsigned int i_uiSide) const
+template <typename T>void isometric_hexmap<T>::Draw_Hex_Side(const pair<int> & i_tPosition, unsigned int i_uiSide) const
 {
-	PAIR<double> tPos;
-	MAPSPACEMIN cSpace;
+	pair<double> tPos;
+	mapspacemin cSpace;
 	Get_Hex_Center(i_tPosition,tPos);
 	glPushMatrix();
-		ISOMETRIC_HEXMAP<T>::Prepare_Draw();
+		isometric_hexmap<T>::Prepare_Draw();
 		glTranslated(tPos.m_tX,tPos.m_tY,0.0);
 		cSpace.Draw_Hex_Side(i_uiSide);
 	glPopMatrix();
 }
-template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Hex_Outline(const PAIR<int> & i_tPosition) const
+template <typename T>void isometric_hexmap<T>::Draw_Hex_Outline(const pair<int> & i_tPosition) const
 {
-	PAIR<double> tPos;
-	MAPSPACEMIN cSpace;
+	pair<double> tPos;
+	mapspacemin cSpace;
 	Get_Hex_Center(i_tPosition,tPos);
 	glPushMatrix();
-		ISOMETRIC_HEXMAP<T>::Prepare_Draw();
+		isometric_hexmap<T>::Prepare_Draw();
 		glTranslated(tPos.m_tX,tPos.m_tY,0.0);
 		cSpace.Draw_Hex_Outline();
 	glPopMatrix();
 }
-template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void)
+template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 {
-	double dRoff = 0.5 * MAPBASE<T>::m_dR;
-	PAIR<double> tPos;
-	MAPSPACEMIN cSpace;
+	double dRoff = 0.5 * mapbase<T>::m_dR;
+	pair<double> tPos;
+	mapspacemin cSpace;
 	glPushMatrix();
-	ISOMETRIC_HEXMAP<T>::Prepare_Draw();
+	isometric_hexmap<T>::Prepare_Draw();
 	if (!m_clMap_Grid.Is_Valid())
 	{
 		m_clMap_Grid.Compile(true);
 		/// Draw grid lines
-		for (int uiI = 0; uiI < (int)(MAPBASE<T>::m_tGrid_Size.m_tX); uiI++)
+		for (int uiI = 0; uiI < (int)(mapbase<T>::m_tGrid_Size.m_tX); uiI++)
 		{
 			glBegin(GL_LINE_STRIP);
-			for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
+			for (int uiJ = 0; uiJ < (int)(mapbase<T>::m_tGrid_Size.m_tY); uiJ++)
 			{
-				PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>(uiI,uiJ));
+				pair<double> pdCenter = Get_Hex_Center(pair<int>(uiI,uiJ));
 				if (uiJ == 0)
 				{
 					if (uiI & 1 != 0)
 					{
-						PAIR<double> pdCenterOdd = Get_Hex_Center(PAIR<int>(uiI - 1,uiJ));
+						pair<double> pdCenterOdd = Get_Hex_Center(pair<int>(uiI - 1,uiJ));
 						(cSpace.Get_Hex_Vertex(5) + pdCenterOdd).glVertex();
 					}
 					(cSpace.Get_Hex_Vertex(0) + pdCenter).glVertex();
@@ -153,15 +153,15 @@ template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void)
 			}
 			if (uiI > 0 && ((uiI & 1) == 0))
 			{
-				PAIR<double> pdCenterOdd = Get_Hex_Center(PAIR<int>(uiI - 1,(int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)));
+				pair<double> pdCenterOdd = Get_Hex_Center(pair<int>(uiI - 1,(int)(mapbase<T>::m_tGrid_Size.m_tY - 1)));
 				(cSpace.Get_Hex_Vertex(3) + pdCenterOdd).glVertex();
 			}
 			glEnd();
 		}
 		glBegin(GL_LINE_STRIP);
-		for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
+		for (int uiJ = 0; uiJ < (int)(mapbase<T>::m_tGrid_Size.m_tY); uiJ++)
 		{
-			PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>((int)(MAPBASE<T>::m_tGrid_Size.m_tX - 1),uiJ));
+			pair<double> pdCenter = Get_Hex_Center(pair<int>((int)(mapbase<T>::m_tGrid_Size.m_tX - 1),uiJ));
 			if (uiJ == 0)
 			{
 				(cSpace.Get_Hex_Vertex(5) + pdCenter).glVertex();
@@ -171,15 +171,15 @@ template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void)
 		}
 		glEnd();
 		glBegin(GL_LINES);
-		for (int uiI = 0; uiI < (int)(MAPBASE<T>::m_tGrid_Size.m_tX); uiI++)
+		for (int uiI = 0; uiI < (int)(mapbase<T>::m_tGrid_Size.m_tX); uiI++)
 		{
-			for (int uiJ = 0; uiJ < (int)(MAPBASE<T>::m_tGrid_Size.m_tY); uiJ++)
+			for (int uiJ = 0; uiJ < (int)(mapbase<T>::m_tGrid_Size.m_tY); uiJ++)
 			{
-				PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>(uiI,uiJ));
+				pair<double> pdCenter = Get_Hex_Center(pair<int>(uiI,uiJ));
 				(cSpace.Get_Hex_Vertex(0) + pdCenter).glVertex();
 				(cSpace.Get_Hex_Vertex(5) + pdCenter).glVertex();
 			}
-			PAIR<double> pdCenter = Get_Hex_Center(PAIR<int>(uiI,(int)(MAPBASE<T>::m_tGrid_Size.m_tY - 1)));
+			pair<double> pdCenter = Get_Hex_Center(pair<int>(uiI,(int)(mapbase<T>::m_tGrid_Size.m_tY - 1)));
 			(cSpace.Get_Hex_Vertex(2) + pdCenter).glVertex();
 			(cSpace.Get_Hex_Vertex(3) + pdCenter).glVertex();
 		}
@@ -194,17 +194,17 @@ template <typename T>void ISOMETRIC_HEXMAP<T>::Draw_Grid(void)
 }
 
 
-template <typename T> void ISOMETRIC_HEXMAP<T>::Draw_Map(void * io_lpvData) const
+template <typename T> void isometric_hexmap<T>::Draw_Map(void * io_lpvData) const
 {
-	PAIR<double> tPos;
-	MAPSPACEMIN cSpace;
+	pair<double> tPos;
+	mapspacemin cSpace;
 	cSpace.Init(); // make sure the space has set up call lists
 	glPushMatrix();
-		ISOMETRIC_HEXMAP<T>::Prepare_Draw();
-		typename std::map<PAIR<int>,T>::const_iterator mapiterator;
-		for (unsigned int uiLayer = 0; uiLayer < MAPBASE<T>::m_uiNum_Layers; uiLayer++)
+		isometric_hexmap<T>::Prepare_Draw();
+		typename std::map<pair<int>,T>::const_iterator mapiterator;
+		for (unsigned int uiLayer = 0; uiLayer < mapbase<T>::m_uiNum_Layers; uiLayer++)
 		{
-			for (mapiterator = MAPBASE<T>::m_cMap.begin(); mapiterator != MAPBASE<T>::m_cMap.end(); mapiterator++)
+			for (mapiterator = mapbase<T>::m_cMap.begin(); mapiterator != mapbase<T>::m_cMap.end(); mapiterator++)
 			{
 				glPushMatrix();
 					Get_Hex_Center(mapiterator->first,tPos);
@@ -216,33 +216,33 @@ template <typename T> void ISOMETRIC_HEXMAP<T>::Draw_Map(void * io_lpvData) cons
 	glPopMatrix();
 }
 
-template <typename T> void ISOMETRIC_HEXMAP<T>::Center_Map(const PAIR<int> & i_tPosition)
+template <typename T> void isometric_hexmap<T>::Center_Map(const pair<int> & i_tPosition)
 {
-	if (i_tPosition.m_tX >= 0 && i_tPosition.m_tX <= (int)MAPBASE<T>::m_tGrid_Size.m_tX &&
-		i_tPosition.m_tY >= 0 && i_tPosition.m_tY <= (int)MAPBASE<T>::m_tGrid_Size.m_tY)
+	if (i_tPosition.m_tX >= 0 && i_tPosition.m_tX <= (int)mapbase<T>::m_tGrid_Size.m_tX &&
+		i_tPosition.m_tY >= 0 && i_tPosition.m_tY <= (int)mapbase<T>::m_tGrid_Size.m_tY)
 	{
 
-		PAIR<double> pdCenter;
+		pair<double> pdCenter;
 		Get_Hex_Center(i_tPosition,pdCenter);
-		MAPBASE<T>::m_tScroll_Position = pdCenter * (MAPBASE<T>::m_dR * MAPBASE<T>::m_dZoom);
-//		MAPBASE<T>::m_tScroll_Position.m_tX = pdCenter.m_tX * (MAPBASE<T>::m_dR * MAPBASE<T>::m_dZoom);
-//		MAPBASE<T>::m_tScroll_Position.m_tY = pdCenter.m_tY * (MAPBASE<T>::m_dR * MAPBASE<T>::m_dZoom);
+		mapbase<T>::m_tScroll_Position = pdCenter * (mapbase<T>::m_dR * mapbase<T>::m_dZoom);
+//		mapbase<T>::m_tScroll_Position.m_tX = pdCenter.m_tX * (mapbase<T>::m_dR * mapbase<T>::m_dZoom);
+//		mapbase<T>::m_tScroll_Position.m_tY = pdCenter.m_tY * (mapbase<T>::m_dR * mapbase<T>::m_dZoom);
 	}
 
 	// make sure corners of map are within the viewable area
 //	double dX = 
 
-	MAPBASE<T>::Check_Scroll_Limits();
+	mapbase<T>::Check_Scroll_Limits();
 }
 
-template <typename T> std::deque<PAIR<int> > ISOMETRIC_HEXMAP<T>::Get_Path(const PAIR<int> & i_pStart, const PAIR<int> & i_pEnd) const
+template <typename T> std::deque<pair<int> > isometric_hexmap<T>::Get_Path(const pair<int> & i_pStart, const pair<int> & i_pEnd) const
 {
-	std::deque<PAIR<int> > cRet;
+	std::deque<pair<int> > cRet;
 
 //	cRet.clear();
-	PAIR<int> tCurr_Position = i_pStart;
-	PAIR<double> tdEnd;
-	PAIR<double> tdCurr;
+	pair<int> tCurr_Position = i_pStart;
+	pair<double> tdEnd;
+	pair<double> tdCurr;
 	Get_Hex_Center(i_pEnd,tdEnd);
 	double	dPi = acos(-1.0);
 	double dRad_To_Deg = 360.0 / (2.0 * dPi);
@@ -292,11 +292,11 @@ template <typename T> std::deque<PAIR<int> > ISOMETRIC_HEXMAP<T>::Get_Path(const
 	return cRet;
 }
 
-template <typename T> void ISOMETRIC_HEXMAP<T>::Prepare_Draw(void) const
+template <typename T> void isometric_hexmap<T>::Prepare_Draw(void) const
 {
-	glTranslated(-MAPBASE<T>::m_tScroll_Position.m_tX + 0.5 * MAPBASE<T>::m_dDisplay_Aspect_Ratio,-MAPBASE<T>::m_tScroll_Position.m_tY + 0.5,0.0);
-	glScaled(MAPBASE<T>::m_dZoom,MAPBASE<T>::m_dZoom,MAPBASE<T>::m_dZoom);
-	glScaled(MAPBASE<T>::m_dR,MAPBASE<T>::m_dR,1.0);
+	glTranslated(-mapbase<T>::m_tScroll_Position.m_tX + 0.5 * mapbase<T>::m_dDisplay_Aspect_Ratio,-mapbase<T>::m_tScroll_Position.m_tY + 0.5,0.0);
+	glScaled(mapbase<T>::m_dZoom,mapbase<T>::m_dZoom,mapbase<T>::m_dZoom);
+	glScaled(mapbase<T>::m_dR,mapbase<T>::m_dR,1.0);
 	glRotated(-m_dCamera_Isometric_Angle,1.0,0.0,0.0);
 	glRotated(m_dCamera_Rotation_Angle,0.0,0.0,1.0);
 }

@@ -1,36 +1,37 @@
-#include <core.hpp>
+#include <bwm801.h>
+using namespace bwm801;
 
-QUAD<double> operator *(const QUAD<double> & i_cLHO, const double &i_dRHO)
+quad<float> operator *(const quad<float> & i_cLHO, const float &i_dRHO)
 {
-	QUAD<double> cRet = i_cLHO;
+	quad<float> cRet = i_cLHO;
 	cRet.m_tBL *= i_dRHO;
 	cRet.m_tTR *= i_dRHO;
 	return cRet;
 }
-QUAD<double> operator *(const double &i_dRHO, const QUAD<double> & i_cLHO)
+quad<float> operator *(const float &i_dRHO, const quad<float> & i_cLHO)
 {
-	QUAD<double> cRet = i_cLHO;
+	quad<float> cRet = i_cLHO;
 	cRet.m_tBL *= i_dRHO;
 	cRet.m_tTR *= i_dRHO;
 	return cRet;
 }
 
-QUAD<double> operator *=(QUAD<double> & i_cLHO, const double &i_dRHO)
+quad<float> operator *=(quad<float> & i_cLHO, const float &i_dRHO)
 {
 	i_cLHO.m_tBL *= i_dRHO;
 	i_cLHO.m_tTR *= i_dRHO;
 	return i_cLHO;
 }
 
-QUAD<double> operator /(const QUAD<double> & i_cLHO, const double &i_dRHO)
+quad<float> operator /(const quad<float> & i_cLHO, const float &i_dRHO)
 {
-	QUAD<double> cRet = i_cLHO;
+	quad<float> cRet = i_cLHO;
 	cRet.m_tBL /= i_dRHO;
 	cRet.m_tTR /= i_dRHO;
 	return cRet;
 }
 
-QUAD<double> operator /=(QUAD<double> & i_cLHO, const double &i_dRHO)
+quad<float> operator /=(quad<float> & i_cLHO, const float &i_dRHO)
 {
 	i_cLHO.m_tBL /= i_dRHO;
 	i_cLHO.m_tTR /= i_dRHO;

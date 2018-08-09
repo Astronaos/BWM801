@@ -2,18 +2,18 @@
 #include <windows.h>
 #include <windowsx.h>
 #endif
-#include <GL/gl.h>
-#include <core.hpp>
+#include <bwm801.h>
+using namespace bwm801;
 
-unsigned int MAPSPACE::m_uiQuad_Background_List = (unsigned int)-1;
-unsigned int MAPSPACE::m_uiQuad_Side_List[4] = {(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1};
-unsigned int MAPSPACE::m_uiQuad_Outline_List = (unsigned int)-1;
-unsigned int MAPSPACE::m_uiHex_Background_List = (unsigned int)-1;
-unsigned int MAPSPACE::m_uiHex_Side_List[6] = {(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1};
-unsigned int MAPSPACE::m_uiHex_Outline_List = (unsigned int)-1;
+unsigned int mapspace::m_uiQuad_Background_List = (unsigned int)-1;
+unsigned int mapspace::m_uiQuad_Side_List[4] = {(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1};
+unsigned int mapspace::m_uiQuad_Outline_List = (unsigned int)-1;
+unsigned int mapspace::m_uiHex_Background_List = (unsigned int)-1;
+unsigned int mapspace::m_uiHex_Side_List[6] = {(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1,(unsigned int)-1};
+unsigned int mapspace::m_uiHex_Outline_List = (unsigned int)-1;
 
 
-void MAPSPACE::Init(void)
+void mapspace::Init(void)
 {
 	unsigned int uiList;
 	if (m_uiHex_Background_List == -1)
@@ -72,7 +72,7 @@ void MAPSPACE::Init(void)
 	}
 }
 
-void MAPSPACE::Draw_Filled_Hex(void) const
+void mapspace::Draw_Filled_Hex(void) const
 {
 	if (m_uiHex_Background_List == -1)
 	{
@@ -90,7 +90,7 @@ void MAPSPACE::Draw_Filled_Hex(void) const
 	else
 		glCallList(m_uiHex_Background_List);
 }
-void MAPSPACE::Draw_Hex_Side(unsigned int i_uiSide) const
+void mapspace::Draw_Hex_Side(unsigned int i_uiSide) const
 {
 	i_uiSide %= 6;
 
@@ -114,9 +114,9 @@ void MAPSPACE::Draw_Hex_Side(unsigned int i_uiSide) const
 	else
 		glCallList(m_uiHex_Side_List[i_uiSide]);
 }
-PAIR<double> MAPSPACE::Get_Hex_Vertex(unsigned int i_uiSide) const
+pair<double> mapspace::Get_Hex_Vertex(unsigned int i_uiSide) const
 {
-	PAIR<double> pdRet;
+	pair<double> pdRet;
 	i_uiSide %= 6;
 
 	switch (i_uiSide)
@@ -153,7 +153,7 @@ PAIR<double> MAPSPACE::Get_Hex_Vertex(unsigned int i_uiSide) const
 	}
 	return pdRet;
 }
-void MAPSPACE::Draw_Hex_Outline(void) const
+void mapspace::Draw_Hex_Outline(void) const
 {
 	if (m_uiHex_Outline_List == -1)
 	{
@@ -171,7 +171,7 @@ void MAPSPACE::Draw_Hex_Outline(void) const
 }
 
 
-void MAPSPACE::Draw_Filled_Quad(void) const
+void mapspace::Draw_Filled_Quad(void) const
 {
 	if (m_uiQuad_Background_List == -1)
 	{
@@ -185,7 +185,7 @@ void MAPSPACE::Draw_Filled_Quad(void) const
 	else
 		glCallList(m_uiQuad_Background_List);
 }
-void MAPSPACE::Draw_Quad_Side(unsigned int i_uiSide) const
+void mapspace::Draw_Quad_Side(unsigned int i_uiSide) const
 {
 	i_uiSide %= 4;
 
@@ -205,7 +205,7 @@ void MAPSPACE::Draw_Quad_Side(unsigned int i_uiSide) const
 	else
 		glCallList(m_uiQuad_Side_List[i_uiSide]);
 }
-void MAPSPACE::Draw_Quad_Outline(void) const
+void mapspace::Draw_Quad_Outline(void) const
 {
 	if (m_uiQuad_Outline_List == -1)
 	{

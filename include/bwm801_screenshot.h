@@ -10,15 +10,10 @@ public:
 	size_t m_tHeight;
 	size_t m_tColor_Depth_Bits;
 	void * m_lpvData;
-	ogl_screenshot_info (void)
-	{
-		m_bRequest = false;
-		m_bReady = false;
-		m_tWidth = 0;
-		m_tHeight = 0;
-		m_tColor_Depth_Bits = 0;
-		m_lpvData = nullptr;
-	}
+	virtual void Initializer (void);
+
+
+	ogl_screenshot_info(void){Initializer();}
 };
 
 extern ogl_screenshot_info g_cOGL_Screenshot;
