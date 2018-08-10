@@ -32,15 +32,15 @@ void user_template_main::gfx_reshape(const pair<unsigned int> & i_tNew_Size) // 
 
 	pair<unsigned int> tWindow_BL(0,0);
 	pair<unsigned int> tWindow_TR((unsigned int)m_tViewport_Size.m_tX,(unsigned int)(m_tViewport_Size.m_tY));
-	pair<unsigned int> tError_BL = tWindow_TR * 0.25;
-	pair<unsigned int> tError_TR = tWindow_TR * 0.75;
+	//pair<unsigned int> tError_BL = tWindow_TR * 0.25;
+	//pair<unsigned int> tError_TR = tWindow_TR * 0.75;
 
 	Move_Pane(m_idPane,quad<unsigned int> (tWindow_BL,tWindow_TR));
 
-	double dAR = Get_Pane_Aspect_Ratio(m_idError_Pane);
+	//double dAR = Get_Pane_Aspect_Ratio(m_idError_Pane);
 
 
-	dAR = Get_Pane_Aspect_Ratio(m_idPane);
+	//dAR = Get_Pane_Aspect_Ratio(m_idPane);
 
 
 }

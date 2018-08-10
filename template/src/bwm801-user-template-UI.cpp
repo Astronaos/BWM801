@@ -4,10 +4,17 @@
 
 using namespace bwm801;
 
-void user_template_main::on_key_down(keyid eKey_ID, unsigned char chScan_Code, unsigned int uiRepeat_Count, bool bExtended_Key, bool bPrevious_Key_State)
+#ifndef WIN32
+#define ATTRUNUSED __attribute__((unused))
+#else
+#define ATTRUNUSED
+#endif
+
+void user_template_main::on_key_down(keyid eKey_ID, unsigned char chScan_Code ATTRUNUSED, unsigned int uiRepeat_Count ATTRUNUSED, bool bExtended_Key ATTRUNUSED, bool bPrevious_Key_State ATTRUNUSED)
 {
 	switch (eKey_ID)
 	{
+	default: break;
 	case key_escape:
 	case key_q: // handle a request to exit
 		m_qEvent_List.push_back(quit_request);
@@ -22,15 +29,15 @@ void user_template_main::on_key_down(keyid eKey_ID, unsigned char chScan_Code, u
 	}
 }
 
-void user_template_main::on_key_up(keyid eKey_ID, unsigned char chScan_Code, unsigned int uiRepeat_Count, bool bExtended_Key, bool bPrevious_Key_State)
+void user_template_main::on_key_up(keyid eKey_ID ATTRUNUSED, unsigned char chScan_Code ATTRUNUSED, unsigned int uiRepeat_Count ATTRUNUSED, bool bExtended_Key ATTRUNUSED, bool bPrevious_Key_State ATTRUNUSED)
 { // handle any key releases
 }
-void user_template_main::on_mouse_button_double_click(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
+void user_template_main::on_mouse_button_double_click(mousebutton i_eButton ATTRUNUSED, const pair<unsigned int> &i_tMouse_Position ATTRUNUSED)
 { // handle double click
 }
-void user_template_main::on_mouse_button_down(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
+void user_template_main::on_mouse_button_down(mousebutton i_eButton ATTRUNUSED, const pair<unsigned int> &i_tMouse_Position ATTRUNUSED)
 { // handle clicking on something
-	pair<float> tMouse = i_tMouse_Position;
+/*	pair<float> tMouse = i_tMouse_Position;
 	pane_id idMouse_Pane = Find_Pane(tMouse);
 	quad<unsigned int> qPane_Position = Get_Pane_Position(idMouse_Pane);
 	pair<unsigned int> tMouse_TR = tMouse - qPane_Position.m_tTR;
@@ -59,18 +66,18 @@ void user_template_main::on_mouse_button_down(mousebutton i_eButton, const pair<
 //				bProcessed = true;
 //			}
 //		}
-	}
+	}*/
 }
-void user_template_main::on_mouse_button_up(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
+void user_template_main::on_mouse_button_up(mousebutton i_eButton ATTRUNUSED, const pair<unsigned int> &i_tMouse_Position ATTRUNUSED)
 { // handle mouse button release
 }
-void user_template_main::on_mousemove(const pair<unsigned int> &i_tMouse_Position)
+void user_template_main::on_mousemove(const pair<unsigned int> &i_tMouse_Position ATTRUNUSED)
 { // handle moving the mouse
 }
-void user_template_main::on_mouse_wheel(mousebutton i_eWheel, int i_iWheel_Delta, const pair<unsigned int> &i_tMouse_Position)
+void user_template_main::on_mouse_wheel(mousebutton i_eWheel ATTRUNUSED, int i_iWheel_Delta ATTRUNUSED, const pair<unsigned int> &i_tMouse_Position ATTRUNUSED)
 { // handle using the mouse wheel (scroll wheel)
 }
-void user_template_main::on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
+void user_template_main::on_timer(unsigned int i_uiTimer_ID ATTRUNUSED, const double & i_dDelta_Time_s)
 { // handle real-time processing
 //	if (!m_vsError_Info.empty())
 //	{
@@ -82,6 +89,7 @@ void user_template_main::on_timer(unsigned int i_uiTimer_ID, const double & i_dD
 		m_qEvent_List.pop_front();
 		switch (eEvent)
 		{
+		default: break;
 		case error_ack:
 //			m_vsError_Info.clear();
 //			Change_Pane_Visibility(m_idError_Pane,false);
@@ -102,3 +110,4 @@ void user_template_main::on_timer(unsigned int i_uiTimer_ID, const double & i_dD
 
 }
 
+#undef ATTRUNUSED
