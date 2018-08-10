@@ -51,7 +51,7 @@ private:
 
 // for Windows compilation, export the main class
 #ifdef WIN32
-	__declspec(dllexport) extern user_template_main g_cMain;
+extern "C" { __declspec(dllexport) extern user_template_main g_cMain; };
 #endif
 
 
