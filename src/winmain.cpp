@@ -227,7 +227,7 @@ void Main_Timer_Loop(void)
 LRESULT CALLBACK WndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
 //#endif
 
-INT WINAPI bwm801_top::bwm801_WinMain(bwm801::main * i_lpcMain, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow)
+INT bwm801_top::bwm801_WinMain(bwm801::main * i_lpcMain, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow)
 {
 	MSG msg;
     WNDCLASS wndclass;

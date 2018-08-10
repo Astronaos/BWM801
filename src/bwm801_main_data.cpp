@@ -64,6 +64,7 @@ main_data::main_data(main * i_lpMain, const main_data * i_cRHO)
 
 	if (i_cRHO != nullptr)
 		Copy(*i_cRHO);
+	_RPT1(_CRT_WARN, "main instantiated\n", nullptr);
 
 }
 
@@ -76,5 +77,6 @@ main_data::~main_data(void)
 	m_lpbKey_Status = nullptr;
 	g_lpMain = nullptr;
 	m_szScreenshot_Default_Filename.clear();
+	_RPT1(_CRT_WARN, "main unloaded\n", nullptr);
 
 }
