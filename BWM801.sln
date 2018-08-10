@@ -6,8 +6,12 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BWM801", "BWM801.vcxproj", "{3054396B-444C-4739-B2B2-8D9F55C718C4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bwm801-launcher", "bwm801-launcher.vcxproj", "{2B3868AC-AE69-47F5-B0E0-E668A0CECD19}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3054396B-444C-4739-B2B2-8D9F55C718C4} = {3054396B-444C-4739-B2B2-8D9F55C718C4}
+		{37AC0ACE-3972-4150-87FF-8C100F12E1C6} = {37AC0ACE-3972-4150-87FF-8C100F12E1C6}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "template", "template\bwm801-user-template.vcxproj", "{37AC0ACE-3972-4150-87FF-8C100F12E1C6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bwm801-user-template", "template\bwm801-user-template.vcxproj", "{37AC0ACE-3972-4150-87FF-8C100F12E1C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
