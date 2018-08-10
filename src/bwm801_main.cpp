@@ -106,7 +106,11 @@ void main::On_Timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
 }
 
 
-unsigned int	main::Request_Timer(const double & i_dDelta_Time __attribute__((unused)))
+unsigned int	main::Request_Timer(const double & i_dDelta_Time 
+#ifndef WIN32
+	__attribute__((unused))
+#endif
+)
 {
 	//@@TODO
 	return 0;
