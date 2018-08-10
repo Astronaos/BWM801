@@ -54,7 +54,7 @@ void user_template_main::gfx_display(pane_id i_idPane) // primary display routin
 {
 	if (i_idPane == m_idPane)
 	{
-		float dSize = Get_Pane_Aspect_Ratio(m_idPane);
+		float dSize = (float)Get_Pane_Aspect_Ratio(m_idPane);
 		// draw a white rectangle, filling the pane
 		glColor4f(1.0,1.0,1.0,1.0);
 		glBegin(GL_QUADS);
@@ -65,7 +65,7 @@ void user_template_main::gfx_display(pane_id i_idPane) // primary display routin
 		glEnd();
 		// draw rectangle that is covered with the texture
 		glPushMatrix();
-			glTranslatef(m_dTimer * 0.1f,m_dTimer * 0.1f,0.0); // make it move slowly
+			glTranslatef((float)(m_dTimer * 0.1),(float)(m_dTimer * 0.1),0.0); // make it move slowly
 			glColor4f(0.0,0.0,0.0,1.0);
 			glEnable(GL_TEXTURE_2D);
 			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
