@@ -43,5 +43,5 @@ namespace bwm801
 		virtual void	Push_To_Back(void);
 		
 	};
-};
+}
 

@@ -45,4 +45,4 @@ namespace bwm801
 
 	};
 	#include <bwm801_isohexmap_inst.h>
-};
+}

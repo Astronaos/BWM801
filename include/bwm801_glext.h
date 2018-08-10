@@ -16,7 +16,7 @@ namespace bwm801
 
 	EXTERN oglve g_lpf_glGenerateMipmap;
 	EXTERN oglvui g_lpf_glGenerateTextureMipmap;
-};
+}
 #undef EXTERN
 #ifndef WIN32
 #undef WINAPI

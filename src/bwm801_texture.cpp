@@ -54,7 +54,7 @@ tex_buffer g_cCore_Texture_Buffer;
 //	GLuint m_uiTexture_ID;
 bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tHeight, size_t & o_iNum_Colors)
 {
-	bool bRet = false;
+	bool bRet; // defined for each if ... else becase libpng insists on requiring setjmp
 	if (!i_sFile_Path.empty())
 	{
 		FILE *fileImage = fopen(i_sFile_Path.c_str(), "rb");
@@ -78,6 +78,7 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 						{
 							if (setjmp(png_jmpbuf(pngsRead_Struct)) == 0)
 							{
+								bRet = false;
 								png_init_io(pngsRead_Struct, fileImage);
 								png_read_png(pngsRead_Struct, pngsInfo_Struct, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, nullptr);
 								png_bytepp lpRow_Pointers = png_get_rows(pngsRead_Struct, pngsInfo_Struct);
@@ -96,6 +97,7 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 									case PNG_COLOR_TYPE_GRAY_ALPHA:
 										o_iNum_Colors = 2;
 										break;
+									default:
 									case PNG_COLOR_TYPE_RGB:
 										o_iNum_Colors = 3;
 										break;
@@ -116,24 +118,40 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 									o_tHeight = uiHeight;
 									bRet = true; // success
 								}
+								else
+									bRet = false;
 							}
+							else
+								bRet = false;
 						}
+						else
+							bRet = false;
 					}
+					else
+						bRet = false;
 					png_destroy_read_struct(&pngsRead_Struct, &pngsInfo_Struct, &pngsEnd_Info_Struct);
 				}
+				else
+					bRet = false;
 			}
+			else
+				bRet = false;
 			fclose(fileImage);
 			fileImage = nullptr;
 		}
+		else
+			bRet = false;
 	}
+	else
+		bRet = false;
 	return bRet;
 }
 
 void texture::Initializer(void)
 {
-	m_uiTexture_ID = -1;
-	m_tWidth = -1;
-	m_tHeight = -1;
+	m_uiTexture_ID = (unsigned int)-1;
+	m_tWidth = (size_t)-1;
+	m_tHeight = (size_t)-1;
 
 	m_iParam_Wrap_S = GL_CLAMP_TO_EDGE;
 	m_iParam_Wrap_T = GL_CLAMP_TO_EDGE;
@@ -155,7 +173,7 @@ void texture::Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level)
 {
 	if (i_sFile_Path.size() > 4) // it at least needs to be called '.png'
 	{
-		bool bSuccess;
+		bool bSuccess = false;
 		size_t tWidth, tHeight, tColors;
 		if (i_sFile_Path.substr(i_sFile_Path.size() - 4, 4) == ".png" ||
 			i_sFile_Path.substr(i_sFile_Path.size() - 4, 4) == ".PNG")
@@ -175,7 +193,7 @@ void texture::Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level)
 			m_tWidth = tWidth;
 			m_tHeight = tHeight;
 
-			if (m_uiTexture_ID == -1)
+			if (m_uiTexture_ID == (unsigned int)-1)
 				glGenTextures(1, &m_uiTexture_ID);
 			glBindTexture(GL_TEXTURE_2D, m_uiTexture_ID);
 			// set the texture wrapping/filtering options (on the currently bound texture object)
@@ -193,6 +211,7 @@ void texture::Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level)
 				eColor = GL_RED;
 				break;
 			case 3:
+			default:
 				eColor = GL_RGB;
 				break;
 			case 4:
@@ -222,7 +241,7 @@ void texture::Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level)
 }
 void texture::Apply(void) const
 {
-	if (m_uiTexture_ID != -1)
+	if (m_uiTexture_ID != (unsigned int)-1)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_uiTexture_ID);
 		// set the texture wrapping/filtering options (on the currently bound texture object)
@@ -236,10 +255,10 @@ void texture::Apply(void) const
 }
 void texture::Delete(void)
 {
-	if (m_uiTexture_ID != -1)
+	if (m_uiTexture_ID != (unsigned int)-1)
 	{
 		glDeleteTextures(1, &m_uiTexture_ID);
-		m_uiTexture_ID = -1;
+		m_uiTexture_ID = (unsigned int)-1;
 	}
 }
 
@@ -255,6 +274,7 @@ void texture::Set_Parameter(GLenum i_eParam, GLint i_iValue)
 {
 	switch (i_eParam)
 	{
+	default: break;
 	case GL_TEXTURE_WRAP_S:
 		m_iParam_Wrap_S = i_iValue;
 		break;

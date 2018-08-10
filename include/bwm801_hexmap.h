@@ -25,4 +25,4 @@ namespace bwm801
 
 	};
 #include <bwm801_hexmap_inst.h>
-};
+}

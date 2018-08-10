@@ -51,8 +51,8 @@ void bwm801::LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_
 {
 	if (i_eFont >= USER_1 && i_eFont <= USER_8)
 	{
-		unsigned int uiFont = (i_eFont - SANS);
-		unsigned int uiFace = (i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0);
+		unsigned int uiFont = (unsigned int)(i_eFont - SANS);
+		unsigned int uiFace = (unsigned int)((i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0));
 		g_lpdFontFaces[uiFont][uiFace] = new FTTextureFont(i_lpszPath_To_Font); // placeholder until we properly manage font types
 		if (g_lpdFontFaces[uiFont][uiFace] && g_lpdFontFaces[uiFont][uiFace]->Error())
 			g_lpdFontFaces[uiFont][uiFace] = nullptr;
@@ -64,16 +64,18 @@ void bwm801::LoadFontFace(FONT i_eFont, const char * i_lpszPath_To_Font, bool i_
 
 void bwm801::SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 {
-	unsigned int uiFont = (i_eFont - SANS);
-	unsigned int uiFace = (i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0);
+	unsigned int uiFont = (unsigned int)(i_eFont - SANS);
+	unsigned int uiFace = (unsigned int)((i_bBold ? 1 : 0) + (i_bItalics ? 2 : 0));
 	if (!g_lpdFontFaces[uiFont][uiFace])
 	{
 		std::string cstrPath;
 		switch (i_eFont)
 		{
+		default:
 		case SANS:
 			switch(uiFace)
 			{
+			default:
 			case 0:
 				cstrPath = "/usr/share/fonts/gnu-free/FreeSans.ttf";
 				break;
@@ -91,6 +93,7 @@ void bwm801::SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 		case SERIF:
 			switch(uiFace)
 			{
+			default:
 			case 0:
 				cstrPath = "/usr/share/fonts/gnu-free/FreeSerif.ttf";
 				break;
@@ -108,6 +111,7 @@ void bwm801::SelectFontFace(FONT i_eFont, bool i_bBold, bool i_bItalics)
 		case MONO:
 			switch(uiFace)
 			{
+			default:
 			case 0:
 				cstrPath = "/usr/share/fonts/gnu-free/FreeMono.ttf";
 				break;
@@ -516,17 +520,17 @@ void Main_Timer_Loop(void)
 	}
 }
 
-int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const char * i_lpszArg_Values[])
+int bwm801_top::bwm801_main(bwm801::main * i_lpcMain __attribute__((unused)), int i_iArg_Count, const char * i_lpszArg_Values[])
 {
-	bool	bCtrl_Key = false;
-	bool	bShift_Key = false;
-	bool	bF12_Key = false;
+//	bool	bCtrl_Key = false;
+//	bool	bShift_Key = false;
+//	bool	bF12_Key = false;
 	std::vector<std::thread> vThread_List;
 
 
 	//g_lpMain = i_lpcMain;
 	//i_lpcMain->Initializer(); // equivalent of calling constructor
-	g_lpMain->Process_Command_Line(i_iArg_Count, i_lpszArg_Values);
+	g_lpMain->Process_Command_Line((unsigned int)i_iArg_Count, i_lpszArg_Values);
 	Load_OGL_Extensions();
 	Initialize_Circle_Vectors();
 	XInitThreads();
@@ -546,7 +550,7 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 //	printf("root\n");
 	g_wRoot = DefaultRootWindow(g_lpdpyDisplay);
 	XVisualInfo * lpXVisual = glXChooseVisual(g_lpdpyDisplay, DefaultScreen(g_lpdpyDisplay),iAttributeList);
-	GLint uiAttribs_Test[] = {GLX_USE_GL, GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, GLX_STENCIL_SIZE, GLX_RED_SIZE, GLX_GREEN_SIZE, GLX_BLUE_SIZE, GLX_ALPHA_SIZE, None};
+	//GLint uiAttribs_Test[] = {GLX_USE_GL, GLX_RGBA, GLX_DOUBLEBUFFER, GLX_DEPTH_SIZE, GLX_STENCIL_SIZE, GLX_RED_SIZE, GLX_GREEN_SIZE, GLX_BLUE_SIZE, GLX_ALPHA_SIZE, None};
 	
 //	for (unsigned int uiI = 0; uiAttribs_Test[uiI] != None; uiI++)
 //	{
@@ -588,16 +592,16 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 
 	std::string szExtensions = glXQueryExtensionsString(g_lpdpyDisplay,0);
 	GLint iNum_Ext;
-	PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddress((GLubyte *)"glGetStringi");
+	PFNGLGETSTRINGIPROC glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddress((const GLubyte *)"glGetStringi");
 	if (glGetStringi)
 	{
 		glGetIntegerv(GL_NUM_EXTENSIONS,&iNum_Ext);
-		unsigned int uiMax = iNum_Ext - 1;
+		unsigned int uiMax = (unsigned int)(iNum_Ext - 1);
 		for (unsigned int uiI = 0; uiI < uiMax; uiI++)
 		{
 			if (glGetStringi(GL_EXTENSIONS,uiI))
 			{
-				vstrGL_Extensions_list[std::string((char *)glGetStringi(GL_EXTENSIONS,uiI))] = 1;
+				vstrGL_Extensions_list[std::string((const char *)glGetStringi(GL_EXTENSIONS,uiI))] = 1;
 			}
 		}
 	}
@@ -620,7 +624,7 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 	if (vstrGL_Extensions_list.count("GLX_EXT_swap_control") > 0)
 	{
 		PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT;
-		glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC) glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT");
+		glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC) glXGetProcAddress((const GLubyte *)"glXSwapIntervalEXT");
 		GLXDrawable drawable = glXGetCurrentDrawable();
 		if (glXSwapIntervalEXT)
 			glXSwapIntervalEXT(g_lpdpyDisplay,drawable,0);
@@ -628,13 +632,13 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 	else if (vstrGL_Extensions_list.count("GLX_SGI_swap_control") > 0)
 	{
 		PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalSGI;
-		glXSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC) glXGetProcAddress((GLubyte *)"glXSwapIntervalSGI");
+		glXSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC) glXGetProcAddress((const GLubyte *)"glXSwapIntervalSGI");
 		glXSwapIntervalSGI(1);
 	}
 	else if (vstrGL_Extensions_list.count("MESA_swap_control") > 0)
 	{
 		PFNGLXSWAPINTERVALMESAPROC glXSwapIntervalMESA;
-		glXSwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC) glXGetProcAddress((GLubyte *)"glXSwapIntervalMESA");
+		glXSwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC) glXGetProcAddress((const GLubyte *)"glXSwapIntervalMESA");
 		glXSwapIntervalMESA(1);
 	}
 
@@ -664,8 +668,9 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 			case KeyRelease:
 				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Key %i \n",evEvent.xkey.keycode);
-				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
+/*				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
 				{
+				default: break;
 				case main::key_rctrl:
 					bCtrl_Key = false;
 					break;
@@ -675,12 +680,13 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 				case main::key_f12:
 					bF12_Key = false;
 					break;
-				}
+				}*/
 				g_lpMain->On_Key_Up(Key_Map(XLookupKeysym(&evEvent.xkey,0)),0,0, 0, 1);
 				break;
 			case KeyPress:
-				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
+/*				switch (Key_Map(XLookupKeysym(&evEvent.xkey,0)))
 				{
+				default: break;
 				case main::key_rctrl:
 					bCtrl_Key = true;
 					break;
@@ -690,7 +696,7 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 				case main::key_f12:
 					bF12_Key = true;
 					break;
-				}
+				}*/
 				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Key %i \n",evEvent.xkey.keycode);
 
@@ -700,7 +706,7 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 			case ButtonPress:
 			case ButtonRelease:
 				if (g_lpMain->Is_Debug_Mode_Enabled())
-					printf("Event loop Button %i (%i,%i)\n",Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tX,Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)).m_tY);
+					printf("Event loop Button %i (%i,%i)\n",Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>((unsigned int)evEvent.xbutton.x, (unsigned int)evEvent.xbutton.y)).m_tX,Fix_Coordinate_Window(pair<unsigned int>((unsigned int)evEvent.xbutton.x, (unsigned int)evEvent.xbutton.y)).m_tY);
 				bReady_To_Process_Buttons = (XEventsQueued(g_lpdpyDisplay,QueuedAfterFlush) == 0);
 				if (!bReady_To_Process_Buttons)
 				{
@@ -728,7 +734,7 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 							veButton_Events[0].button == veButton_Events[3].button &&
 							(veButton_Events[3].time - veButton_Events[0].time) < 500) //@@TODO make this user selectable
 						{ // double click detected
-							g_lpMain->On_Mouse_Button_Double_Click(Mouse_Button_Map(veButton_Events[0].button), Fix_Coordinate_Window(pair<unsigned int>(veButton_Events[0].x, veButton_Events[0].y)));
+							g_lpMain->On_Mouse_Button_Double_Click(Mouse_Button_Map(veButton_Events[0].button), Fix_Coordinate_Window(pair<unsigned int>((unsigned int)veButton_Events[0].x, (unsigned int)veButton_Events[0].y)));
 						}
 						else
 						{
@@ -736,11 +742,11 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 							{
 								if (cI->type == ButtonPress)
 								{
-									g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(pair<unsigned int>(cI->x, cI->y)));
+									g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(pair<unsigned int>((unsigned int)cI->x, (unsigned int)cI->y)));
 								}
 								else
 								{
-									g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(pair<unsigned int>(cI->x, cI->y)));
+									g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(cI->button), Fix_Coordinate_Window(pair<unsigned int>((unsigned int)cI->x, (unsigned int)cI->y)));
 								}
 							}
 						}
@@ -748,18 +754,18 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 					}
 					else if (evEvent.type == ButtonPress)
 					{
-						g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)));
+						g_lpMain->On_Mouse_Button_Down(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>((unsigned int)evEvent.xbutton.x,(unsigned int) evEvent.xbutton.y)));
 					}
 					else
 					{
-						g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>(evEvent.xbutton.x, evEvent.xbutton.y)));
+						g_lpMain->On_Mouse_Button_Up(Mouse_Button_Map(evEvent.xbutton.button), Fix_Coordinate_Window(pair<unsigned int>((unsigned int)evEvent.xbutton.x,(unsigned int) evEvent.xbutton.y)));
 					}
 				}
 				break;
 			case MotionNotify:
 				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Motion\n");
-				g_lpMain->On_Mousemove(Fix_Coordinate_Window(pair<unsigned int>(evEvent.xmotion.x, evEvent.xmotion.y)));
+				g_lpMain->On_Mousemove(Fix_Coordinate_Window(pair<unsigned int>((unsigned int)evEvent.xmotion.x, (unsigned int)evEvent.xmotion.y)));
 				break;
 	// Mouse wheel events not supported under X windows
 	//		case WM_MOUSEWHEEL:
@@ -772,17 +778,17 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain, int i_iArg_Count, const ch
 			case GraphicsExpose:
 				if (g_lpMain->Is_Debug_Mode_Enabled())
 					printf("Event loop Expose\n");
-				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>(evEvent.xexpose.x,evEvent.xexpose.y)));
-				g_lpMain->On_Window_Resize(pair<unsigned int>(evEvent.xexpose.width,evEvent.xexpose.height));
+				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>((unsigned int)evEvent.xexpose.x,(unsigned int)evEvent.xexpose.y)));
+				g_lpMain->On_Window_Resize(pair<unsigned int>((unsigned int)evEvent.xexpose.width,(unsigned int)evEvent.xexpose.height));
 				if (!bFirst_Draw)
 					g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
 				g_lpMain->Request_Refresh();
 				break;
 		    case ConfigureNotify:
 				if (g_lpMain->Is_Debug_Mode_Enabled())
-					printf("Event loop Configure %i %i\n",evEvent.xconfigure.event, evEvent.xconfigure.window);
-				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>(evEvent.xconfigure.x,evEvent.xconfigure.y)));
-				g_lpMain->On_Window_Resize(pair<unsigned int>(evEvent.xconfigure.width,evEvent.xconfigure.height));
+					printf("Event loop Configure %i %i\n",(int)evEvent.xconfigure.event, (int)evEvent.xconfigure.window);
+				g_lpMain->On_Window_Move(Fix_Coordinate_Global(pair<unsigned int>((unsigned int)evEvent.xconfigure.x,(unsigned int)evEvent.xconfigure.y)));
+				g_lpMain->On_Window_Resize(pair<unsigned int>((unsigned int)evEvent.xconfigure.width,(unsigned int)evEvent.xconfigure.height));
 				if (!bFirst_Draw)
 					g_lpMain->gfx_reshape(g_lpMain->Get_Window_Size());
 				g_lpMain->Request_Refresh();

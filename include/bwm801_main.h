@@ -34,8 +34,8 @@ namespace bwm801
 		virtual void	Set_Frame_Rate(const double & i_dFrame_Rate);
 
 		virtual void Set_Draw_Mode(draw_mode i_eMode);
-		virtual pane_id Register_Pane(bool i_bVisible, unsigned int i_uiUser_ID = -1);
-		virtual pane_id Register_Pane(const quad <unsigned int> & i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID = -1);
+		virtual pane_id Register_Pane(bool i_bVisible, unsigned int i_uiUser_ID = (unsigned int)-1);
+		virtual pane_id Register_Pane(const quad <unsigned int> & i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID = (unsigned int) -1);
 		virtual pane_id Find_Pane(const pair <unsigned int> & i_tLocation, bool i_bRequire_Pane_Visible = true) const;
 		virtual void Move_Pane(pane_id i_idPane_ID, const quad <unsigned int> & i_qPosition);
 		virtual void Raise_Pane(pane_id i_idPane_ID);
@@ -132,5 +132,5 @@ namespace bwm801
 		virtual void Request_Screenshot(const std::string & i_szFilename);
 
 	};
-};
+}
 

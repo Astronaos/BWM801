@@ -95,6 +95,7 @@ void bwm801::glPrintJustified(const float & i_dSize, const float & i_dX, const f
 	pTR -= pBL;
 	switch (i_eHorizontal_Justification)
 	{
+	default:
 	case hj_left:
 		break;
 	case hj_center:
@@ -111,6 +112,7 @@ void bwm801::glPrintJustified(const float & i_dSize, const float & i_dX, const f
 	case vj_middle:
 		dY = -pTR.m_tY * 0.5f;
 		break;
+	default:
 	case vj_top:
 		dY = -pTR.m_tY;
 		break;
@@ -279,29 +281,30 @@ void bwm801::Draw_Scroll_Button(bwm801::sb_direction i_eDirection, bool i_bActiv
 	else
 		glBegin(GL_LINE_STRIP);
 
-		switch (i_eDirection)
-		{
-		case sbd_up:
-			glVertex2f(0.0,-1.0);
-			glVertex2f(0.5,0.00);
-			glVertex2f(1.0,-1.0);
-			break;
-		case sbd_down:
-			glVertex2f(1.0,0.0);
-			glVertex2f(0.5,-1.00);
-			glVertex2f(0.0,0.0);
-			break;
-		case sbd_left:
-			glVertex2f(1.0,-1.0);
-			glVertex2f(0.0,-0.5);
-			glVertex2f(1.0, 0.0);
-			break;
-		case sbd_right:
-			glVertex2f(0.0, 0.0);
-			glVertex2f(1.0,-0.5);
-			glVertex2f(0.0,-1.0);
-			break;
-		}
+	switch (i_eDirection)
+	{
+	default:
+	case sbd_up:
+		glVertex2f(0.0,-1.0);
+		glVertex2f(0.5,0.00);
+		glVertex2f(1.0,-1.0);
+		break;
+	case sbd_down:
+		glVertex2f(1.0,0.0);
+		glVertex2f(0.5,-1.00);
+		glVertex2f(0.0,0.0);
+		break;
+	case sbd_left:
+		glVertex2f(1.0,-1.0);
+		glVertex2f(0.0,-0.5);
+		glVertex2f(1.0, 0.0);
+		break;
+	case sbd_right:
+		glVertex2f(0.0, 0.0);
+		glVertex2f(1.0,-0.5);
+		glVertex2f(0.0,-1.0);
+		break;
+	}
 	glEnd();
 }
 void bwm801::Draw_Simple_Button(bool bStatus)

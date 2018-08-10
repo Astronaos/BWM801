@@ -37,4 +37,4 @@ namespace bwm801
 		main_data(main * i_lpMain, const main_data * i_cRHO = nullptr);
 		~main_data(void);
 	};
-};
+}

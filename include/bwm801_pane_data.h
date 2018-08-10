@@ -16,4 +16,4 @@ namespace bwm801
 		pane_data(pane_id i_idID, const quad<unsigned int> i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID);
 
 	};
-};
+}

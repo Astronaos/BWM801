@@ -5,14 +5,14 @@ using namespace bwm801;
 
 pane_data::pane_data(void)
 {
-	m_idID = -1;
-	m_uiUser_ID = -1;
+	m_idID = (unsigned int)-1;
+	m_uiUser_ID = (unsigned int)-1;
 	m_iLevel = 0;
 }
 pane_data::pane_data(pane_id i_idID)
 {
 	m_idID = i_idID;
-	m_uiUser_ID = -1;
+	m_uiUser_ID = (unsigned int)-1;
 	m_iLevel = 0;
 }
 pane_data::pane_data(pane_id i_idID, const quad<unsigned int> i_qPosition, bool i_bVisible, unsigned int i_uiUser_ID)

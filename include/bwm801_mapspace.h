@@ -32,4 +32,4 @@ namespace bwm801
 		virtual void Draw_Quad_Side(unsigned int i_uiSide) const;
 		virtual void Draw_Quad_Outline(void) const;
 	};
-};
+}

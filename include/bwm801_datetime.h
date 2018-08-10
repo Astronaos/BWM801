@@ -5,7 +5,7 @@ namespace bwm801
 	class EXPORT date_time
 	{
 	public:
-		unsigned int m_uiYear;
+		int m_iYear;
 		unsigned int m_uiMonth;
 		unsigned int m_uiDay_of_Month;
 		unsigned int m_uiDay_of_Week;
@@ -15,5 +15,5 @@ namespace bwm801
 	public:
 		virtual void Get_Current(void);
 	};
-};
+}
 

@@ -133,5 +133,5 @@ namespace bwm801
 //	pair<float> operator /=(pair<float> & io_cLHO, const float &i_dRHO);
 //	pair<float> operator *(const float &i_dRHO, const pair<float> & i_cLHO );
 //	pair<float> operator /(const float &i_dRHO, const pair<float> & i_cLHO);
-};
+}
 

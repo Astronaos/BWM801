@@ -17,5 +17,5 @@ namespace bwm801
 		~criticalsection(void){Destructor();}
 
 	};
-};
+}
 

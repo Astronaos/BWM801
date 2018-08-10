@@ -98,4 +98,4 @@ namespace bwm801
 	};
 
 #include <bwm801_mapbase_inst.h>
-};
+}

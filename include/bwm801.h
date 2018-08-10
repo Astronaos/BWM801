@@ -68,7 +68,7 @@ namespace bwm801
 		EXPORT extern void glGenerateMipmap(GLenum target);
 		EXPORT extern void glGenerateTextureMipmap(GLuint texture);
 	}
-};
+}
 
 #include <bwm801_pane.h>
 #include <bwm801_texture.h>

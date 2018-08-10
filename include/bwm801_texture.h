@@ -39,5 +39,5 @@ namespace bwm801
 		virtual void Set_Border_Color(const GLfloat & i_fRed, const GLfloat & i_fGreen, const GLfloat & i_fBlue, const GLfloat & i_fAlpha);
 		virtual void Set_Parameter(GLenum i_eParam, GLint i_iValue);
 	};
-};
+}
 

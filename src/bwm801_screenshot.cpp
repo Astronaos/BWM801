@@ -14,7 +14,7 @@ namespace bwm801
 	{
 		usleep(i_uiLength * 1000);
 	}
-};
+}
 #endif
 
 using namespace bwm801;
@@ -74,7 +74,7 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 					{
 						if (iterI->substr(0, ((main_data*)m_lpvData)->m_szScreenshot_Default_Filename.size()) == ((main_data*)m_lpvData)->m_szScreenshot_Default_Filename)
 						{
-							unsigned int uiCount = std::stoi(iterI->substr(((main_data*)m_lpvData)->m_szScreenshot_Default_Filename.size() + 1,8));
+							unsigned int uiCount = (unsigned int)std::stoi(iterI->substr((unsigned int)(((main_data*)m_lpvData)->m_szScreenshot_Default_Filename.size() + 1),8));
 							mapExist_Files[uiCount] = 1;
 						}
 					}
@@ -95,10 +95,10 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 	}
 }
 
-void write_row_callback(png_structrp i_ppPng_Ptr, png_uint_32 i_uiRow, int i_iPass)
+void write_row_callback(png_structrp i_ppPng_Ptr __attribute__((unused)), png_uint_32 i_uiRow, int i_iPass __attribute__((unused)))
 {
 	if (g_cScreenshot.m_bPending && g_cOGL_Screenshot.m_bReady)
-		g_cScreenshot.m_fProgress += (float)(1.0 / g_cOGL_Screenshot.m_tHeight); // or something
+		g_cScreenshot.m_fProgress = ((float)i_uiRow) / g_cOGL_Screenshot.m_tHeight; // or something
 }
 
 extern bwm801::main * g_lpMain;

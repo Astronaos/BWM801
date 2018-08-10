@@ -74,19 +74,19 @@ void main::On_Key_Up(main::keyid eKey_ID, unsigned char chScan_Code, unsigned in
 void main::On_Mouse_Button_Double_Click(main::mousebutton i_eButton, const pair<unsigned int> & i_tMouse_Position)
 {
 //	((main_data*)m_lpvData)->m_tMouse_Position = i_tMouse_Position;
-	on_mouse_button_double_click(i_eButton, ((main_data*)m_lpvData)->m_tMouse_Position);
+	on_mouse_button_double_click(i_eButton, i_tMouse_Position);
 }
 void main::On_Mouse_Button_Down(main::mousebutton i_eButton, const pair<unsigned int> & i_tMouse_Position)
 {
 	((main_data*)m_lpvData)->m_lpbMouse_Button_Status[i_eButton - key_noop] = true;
 //	((main_data*)m_lpvData)->m_tMouse_Position = i_tMouse_Position;
-	on_mouse_button_down(i_eButton, ((main_data*)m_lpvData)->m_tMouse_Position);
+	on_mouse_button_down(i_eButton, i_tMouse_Position);
 }
 void main::On_Mouse_Button_Up(main::mousebutton i_eButton, const pair<unsigned int> & i_tMouse_Position)
 {
 	((main_data*)m_lpvData)->m_lpbMouse_Button_Status[i_eButton - key_noop] = false;
 //	((main_data*)m_lpvData)->m_tMouse_Position = i_tMouse_Position;
-	on_mouse_button_up(i_eButton, ((main_data*)m_lpvData)->m_tMouse_Position);
+	on_mouse_button_up(i_eButton, i_tMouse_Position);
 }
 void main::On_Mousemove(const pair<unsigned int> & i_tMouse_Position)
 {
@@ -98,7 +98,7 @@ void main::On_Mousemove(const pair<unsigned int> & i_tMouse_Position)
 void main::On_Mouse_Wheel(main::mousebutton i_eWheel, int i_iWheel_Delta, const pair<unsigned int> & i_tMouse_Position)
 {
 //	((main_data*)m_lpvData)->m_tMouse_Position = i_tMouse_Position;
-	on_mouse_wheel(i_eWheel,i_iWheel_Delta,((main_data*)m_lpvData)->m_tMouse_Position);
+	on_mouse_wheel(i_eWheel,i_iWheel_Delta,i_tMouse_Position);
 }
 void main::On_Timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
 {
@@ -106,7 +106,7 @@ void main::On_Timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s)
 }
 
 
-unsigned int	main::Request_Timer(const double & i_dDelta_Time)
+unsigned int	main::Request_Timer(const double & i_dDelta_Time __attribute__((unused)))
 {
 	//@@TODO
 	return 0;
@@ -178,8 +178,8 @@ void main::Draw(void)
 			}
 
 		}
-		g_cOGL_Screenshot.m_tWidth = (GLsizei) tWindow_Size.m_tX;
-		g_cOGL_Screenshot.m_tHeight = (GLsizei) tWindow_Size.m_tY;
+		g_cOGL_Screenshot.m_tWidth = tWindow_Size.m_tX;
+		g_cOGL_Screenshot.m_tHeight = tWindow_Size.m_tY;
 		g_cOGL_Screenshot.m_tColor_Depth_Bits = 24;
 		if (g_cOGL_Screenshot.m_lpvData == nullptr)
 			g_cOGL_Screenshot.m_lpvData = new unsigned char[g_cOGL_Screenshot.m_tWidth * g_cOGL_Screenshot.m_tWidth * 3];
@@ -321,7 +321,7 @@ quad<unsigned int> main::Get_Pane_Position(pane_id i_idPane_ID)
 }
 unsigned int main::Get_Pane_User_ID(pane_id i_idPane_ID)
 {
-	unsigned int uiRet = -1;
+	unsigned int uiRet = (unsigned int)-1;
 	if (i_idPane_ID & PANE_ID_PREFIX)
 	{
 		unsigned int uiIdx = i_idPane_ID & PANE_ID_IDX_MASK;

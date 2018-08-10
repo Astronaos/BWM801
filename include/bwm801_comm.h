@@ -41,5 +41,5 @@ namespace bwm801
 		virtual int		Get_Error(void);
 		virtual void	Close(void);
 	};
-};
+}
 

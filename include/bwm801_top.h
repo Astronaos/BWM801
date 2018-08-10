@@ -18,7 +18,7 @@ namespace bwm801_top
 #endif
 
 	}
-};
+}
 
 
 

@@ -37,7 +37,7 @@ bool	pane::Is_In_Pane(const pair<unsigned int> &i_tLocation) const
 void pane::Set_Clipping(void) const
 {	// note: I tested glScissor vs glViewport on windows 7; glScissor is about 2x faster for the same view area. (render time ~ 0.0009s for viewport and 0.0005s for scissor)
 	glPushAttrib(GL_SCISSOR_BIT);              // Pushes The Display List Bits     ( NEW )
-	glScissor(((pane_data*)m_lpvPane_Data)->m_qPosition.m_tBL.m_tX, ((pane_data*)m_lpvPane_Data)->m_qPosition.m_tBL.m_tY, ((pane_data*)m_lpvPane_Data)->m_qPosition.Get_Size().m_tX, ((pane_data*)m_lpvPane_Data)->m_qPosition.Get_Size().m_tY);
+	glScissor((GLint)((pane_data*)m_lpvPane_Data)->m_qPosition.m_tBL.m_tX, (GLint)((pane_data*)m_lpvPane_Data)->m_qPosition.m_tBL.m_tY, (GLint)((pane_data*)m_lpvPane_Data)->m_qPosition.Get_Size().m_tX, (GLint)((pane_data*)m_lpvPane_Data)->m_qPosition.Get_Size().m_tY);
 	glEnable(GL_SCISSOR_TEST);
 }
 void pane::End_Clipping(void) const

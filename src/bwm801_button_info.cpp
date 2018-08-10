@@ -35,6 +35,7 @@ bool button_info::TestHit(const pair<float> &i_pdPosition) const
 	bool bHit = false;
 	switch (((button_info_data*)m_lpvData)->m_eShape)
 	{
+	default: break;
 	case rectangle:
 		bHit = pOffset.m_tX >= 0.0 && pOffset.m_tX <= ((button_info_data*)m_lpvData)->m_pdSize.m_tX && pOffset.m_tY >= -((button_info_data*)m_lpvData)->m_pdSize.m_tY && pOffset.m_tY <= 0.0;
 		break;
@@ -58,9 +59,9 @@ void button_info::Initializer(const button_info & i_cRHO)
 {
 	m_lpvData = new button_info_data(*((button_info_data*)i_cRHO.m_lpvData));
 }
-void button_info::Initializer(button_info::shape i_eShape, const pair<float> i_pdPosition, const pair<float> i_pdSize, unsigned int i_uiID, unsigned int i_uiStatus)
+void button_info::Initializer(button_info::shape i_eShape, const pair<float> i_pdPosition, const pair<float> i_pdSize, unsigned int i_uiID, int i_iStatus)
 {
-	m_lpvData = new button_info_data(i_eShape, i_pdPosition, i_pdSize, i_uiID, i_uiStatus);
+	m_lpvData = new button_info_data(i_eShape, i_pdPosition, i_pdSize, i_uiID, i_iStatus);
 }
 void button_info::Destructor(void)
 {

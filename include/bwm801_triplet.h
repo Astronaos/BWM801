@@ -110,5 +110,5 @@ namespace bwm801
 	triplet<float> operator /(const triplet<float> & i_cLHO, const float &i_dRHO);
 	triplet<float> operator /=(triplet<float> & io_cLHO, const float &i_dRHO);
 	triplet<float> operator *(const float &i_dRHO, const triplet<float> & i_cLHO );
-};
+}
 

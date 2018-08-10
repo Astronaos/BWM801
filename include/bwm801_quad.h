@@ -85,4 +85,4 @@ namespace bwm801
 	quad<float> operator /=(quad<float> & io_cLHO, const float &i_dRHO);
 	quad<float> operator *(const float &i_dRHO, const quad<float> & i_cLHO );
 
-};
+}

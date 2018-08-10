@@ -12,6 +12,6 @@ namespace bwm801
 		int					m_iStatus;
 
 		button_info_data(void);
-		button_info_data(button_info::shape i_eShape, const pair<float> i_pdPosition, const pair<float> i_pdSize, unsigned int i_uiID, unsigned int i_uiStatus);
+		button_info_data(button_info::shape i_eShape, const pair<float> i_pdPosition, const pair<float> i_pdSize, unsigned int i_uiID, int i_iStatus);
 	};
 }

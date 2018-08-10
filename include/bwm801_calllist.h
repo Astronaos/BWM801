@@ -21,5 +21,5 @@ namespace bwm801
 		~calllist(void){Destructor();}
 
 	};
-};
+}
 
