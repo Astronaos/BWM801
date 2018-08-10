@@ -101,6 +101,8 @@ void write_row_callback(png_structrp i_ppPng_Ptr, png_uint_32 i_uiRow, int i_iPa
 		g_cScreenshot.m_fProgress += (float)(1.0 / g_cOGL_Screenshot.m_tHeight); // or something
 }
 
+extern bwm801::main * g_lpMain;
+
 void Screenshot_Loop(void)
 {
 	do

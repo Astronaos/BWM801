@@ -8,7 +8,7 @@ m4_define([package_auth_email],[bwmulligan@astronaos.com])
 # API version
 m4_define([api_version],package_version_major)
 
-AC_INIT(Luftwaffe,package_version_major.package_version_minor.package_version_micro,package_auth_email,Luftwaffe,package_repository)
+AC_INIT(bwm801-template,package_version_major.package_version_minor.package_version_micro,package_auth_email,bwm801-template,package_repository)
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_SUBST([PACKAGE_VERSION_MAJOR],package_version_major)

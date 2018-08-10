@@ -140,9 +140,5 @@ namespace bwm801
 
 	};
 };
-extern "C" 
-{
-	EXPORT extern bwm801::main * g_lpMain;
-}
 
 #undef EXPORT

@@ -1,6 +1,11 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 AM_CPPFLAGS = -I${srcdir}/include ${x11_CFLAGS} ${gl_CFLAGS} ${freetype2_CFLAGS} ${ftgl_CFLAGS} ${libpng_CFLAGS}
 
+bin_PROGRAMS = bwm801-launcher
+bwm801_launcher_SOURCES = src/Xwin_bwm801_launcher.cpp
+#bwm801_launcher_CFLAGS
+bwm801_launcher_LDADD = -ldl
+
 lib_LTLIBRARIES = libbwm801.la
 libbwm801_la_SOURCES = src/bwm801_gfx.cpp src/bwm801_mapspace.cpp src/bwm801_quad.cpp src/bwm801_triplet.cpp src/Xwin_main.cpp src/bwm801_main.cpp src/bwm801_pair.cpp src/linux_bwm801_sockets.cpp src/bwm801_screenshot.cpp src/bwm801_texture.cpp src/bwm801_glext.cpp src/Xwin_bwm801_date_time.cpp src/Xwin_bwm801_crit_section.cpp src/bwm801_button_info.cpp  src/bwm801_calllist.cpp src/bwm801_pane.cpp src/bwm801_sockets.cpp src/bwm801_button_info_data.cpp src/bwm801_main_data.cpp src/bwm801_pane_data.cpp
 
