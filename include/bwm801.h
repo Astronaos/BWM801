@@ -23,15 +23,14 @@
 #endif
 #include <GL/gl.h>
 
+#ifndef EXPORT
+#define EXPORT
+#endif
+
 #include <bwm801_pair.h>
 #include <bwm801_triplet.h>
 #include <bwm801_quad.h>
 
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 namespace bwm801
 {
@@ -56,7 +55,7 @@ namespace bwm801
 		EXPORT extern void Draw_Pushbutton(bool i_bState, draw_callback i_vDrawing_Fn, void * i_lpvDraw_Info);
 
 		// common functions for drawing buttons
-		EXPORT extern std::vector<pair<float> > g_vEllipse;
+		//EXPORT extern std::vector<pair<float> > g_vEllipse;
 
 		enum sb_direction { sbd_up, sbd_down, sbd_left, sbd_right };
 		EXPORT extern void Initialize_Circle_Vectors(void);
@@ -70,8 +69,6 @@ namespace bwm801
 		EXPORT extern void glGenerateTextureMipmap(GLuint texture);
 	}
 };
-
-#undef EXPORT
 
 #include <bwm801_pane.h>
 #include <bwm801_texture.h>

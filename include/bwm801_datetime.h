@@ -1,9 +1,4 @@
 #pragma once
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 namespace bwm801
 {
@@ -22,4 +17,3 @@ namespace bwm801
 	};
 };
 
-#undef EXPORT

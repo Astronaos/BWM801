@@ -19,8 +19,10 @@
 #include <bwm801_glext.h>
 #include <map>
 #include <deque>
+#include <bwm801_top.h>
 
 using namespace bwm801;
+extern main * g_lpMain;
 
 
 HINSTANCE		g_hInst = 0;
@@ -225,7 +227,7 @@ void Main_Timer_Loop(void)
 LRESULT CALLBACK WndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam);
 //#endif
 
-INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow)
+INT WINAPI bwm801_top::bwm801_WinMain(bwm801::main * i_lpcMain, HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, INT nCmdShow)
 {
 	MSG msg;
     WNDCLASS wndclass;
@@ -937,7 +939,7 @@ std::vector<std::string> main::Get_Directory_File_List(const std::string &i_szDi
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	std::ostringstream szAll;
 	szAll << i_szDirectory;
-	szAll << "/*.luftwaffe";
+	szAll << "/*.*";
 	hFind = FindFirstFile(szAll .str().c_str(), &ffd);
 	do
 	{

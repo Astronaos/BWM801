@@ -1,9 +1,4 @@
 #pragma once
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 #define PANE_ID_PREFIX		0x0010000
 #define PANE_ID_IDX_MASK	0x000ffff
@@ -50,4 +45,3 @@ namespace bwm801
 	};
 };
 
-#undef EXPORT

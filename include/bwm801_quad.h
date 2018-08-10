@@ -1,9 +1,4 @@
 #pragma once
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 //@@TODO: create volume class from triplets
 namespace bwm801
@@ -91,4 +86,3 @@ namespace bwm801
 	quad<float> operator *(const float &i_dRHO, const quad<float> & i_cLHO );
 
 };
-#undef EXPORT

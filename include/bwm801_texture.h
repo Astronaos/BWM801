@@ -1,12 +1,6 @@
 #pragma once
 #include <string>
 
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
 #ifndef GL_MIRRORED_REPEAT
 #define GL_MIRRORED_REPEAT                0x8370
 #define GL_CLAMP_TO_EDGE                  0x812F
@@ -47,4 +41,3 @@ namespace bwm801
 	};
 };
 
-#undef EXPORT

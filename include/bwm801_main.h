@@ -2,13 +2,6 @@
 #include <vector>
 #include <string>
 
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
-
 namespace bwm801
 {
 	class EXPORT main
@@ -141,4 +134,3 @@ namespace bwm801
 	};
 };
 
-#undef EXPORT

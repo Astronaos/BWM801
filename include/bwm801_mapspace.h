@@ -1,9 +1,4 @@
 #pragma once
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 namespace bwm801
 {
 	class EXPORT mapspace
@@ -38,4 +33,3 @@ namespace bwm801
 		virtual void Draw_Quad_Outline(void) const;
 	};
 };
-#undef EXPORT

@@ -87,6 +87,9 @@
     <ClCompile Include="src\bwm801_button_info_data.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Xwin_bwm801_launcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bwm801_glext.h">
@@ -159,6 +162,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\bwm801_button_info_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bwm801_top.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include <bwm801.h>
 #include <cmath>
 
-std::vector<bwm801::pair<float> > bwm801::g_vEllipse;
+std::vector<bwm801::pair<float> > g_vEllipse;
 
 float	g_dTwoPi = 2.0f * std::acos(-1.0f);
 void bwm801::GenerateEllipse(const float & i_dRx, const float & i_dRy, std::vector<bwm801::pair<float> > &o_vpResult, const unsigned int i_uiNum_Points)

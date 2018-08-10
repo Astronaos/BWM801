@@ -1,9 +1,4 @@
 #pragma once
-#ifdef WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 #include <GL/gl.h>
 
@@ -28,4 +23,3 @@ namespace bwm801
 	};
 };
 
-#undef EXPORT

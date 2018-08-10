@@ -52,13 +52,9 @@ void user_template_main::gfx_close(void) // graphics exiting; rendering context 
 
 void user_template_main::gfx_display(pane_id i_idPane) // primary display routine
 {
-	if (g_vEllipse.empty())
-	{
-		GenerateEllipse(1.0,1.0,g_vEllipse);
-	}
 	if (i_idPane == m_idPane)
 	{
-		double dSize = Get_Pane_Aspect_Ratio(m_idPane);
+		float dSize = Get_Pane_Aspect_Ratio(m_idPane);
 		// draw a white rectangle, filling the pane
 		glColor4f(1.0,1.0,1.0,1.0);
 		glBegin(GL_QUADS);
@@ -69,7 +65,7 @@ void user_template_main::gfx_display(pane_id i_idPane) // primary display routin
 		glEnd();
 		// draw rectangle that is covered with the texture
 		glPushMatrix();
-			glTranslatef(m_dTimer * 0.1,m_dTimer * 0.1,0.0); // make it move slowly
+			glTranslatef(m_dTimer * 0.1f,m_dTimer * 0.1f,0.0); // make it move slowly
 			glColor4f(0.0,0.0,0.0,1.0);
 			glEnable(GL_TEXTURE_2D);
 			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
@@ -78,11 +74,11 @@ void user_template_main::gfx_display(pane_id i_idPane) // primary display routin
 				glTexCoord2f(0.0,0.0);
 				glVertex2f(0.0,0.0);
 				glTexCoord2f(1.0,0.0);
-				glVertex2f(0.3,0.0);
+				glVertex2f(0.3f,0.0);
 				glTexCoord2f(1.0,1.0);
-				glVertex2f(0.3,0.15);
+				glVertex2f(0.3f,0.15f);
 				glTexCoord2f(0.0,1.0);
-				glVertex2f(0.0,0.15);
+				glVertex2f(0.0,0.15f);
 			glEnd();
 			glDisable(GL_TEXTURE_2D);
 		glPopMatrix();

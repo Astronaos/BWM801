@@ -30,13 +30,13 @@ void user_template_main::on_mouse_button_double_click(mousebutton i_eButton, con
 }
 void user_template_main::on_mouse_button_down(mousebutton i_eButton, const pair<unsigned int> &i_tMouse_Position)
 { // handle clicking on something
-	pair<unsigned int> tMouse = i_tMouse_Position;
+	pair<float> tMouse = i_tMouse_Position;
 	pane_id idMouse_Pane = Find_Pane(tMouse);
 	quad<unsigned int> qPane_Position = Get_Pane_Position(idMouse_Pane);
 	pair<unsigned int> tMouse_TR = tMouse - qPane_Position.m_tTR;
 	tMouse -= qPane_Position.m_tBL;
-	double dPane_Scale = 1.0 / (double) qPane_Position.Get_Size().m_tY;
-	pair<double> tMouse_Scaled = tMouse * dPane_Scale;
+	float dPane_Scale = (float)(1.0 / qPane_Position.Get_Size().m_tY);
+	pair<float> tMouse_Scaled = tMouse * dPane_Scale;
 	bool bProcessed = false;
 	if (idMouse_Pane == m_idError_Pane)
 	{

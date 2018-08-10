@@ -12,12 +12,6 @@ enum button_id
 
 using namespace bwm801;
 
-#ifdef WIN32
-# define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
 class EXPORT user_template_main : public bwm801::main
 {
 private:
