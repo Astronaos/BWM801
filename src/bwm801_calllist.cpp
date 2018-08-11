@@ -37,6 +37,6 @@ void calllist::Initializer(void)
 }
 void calllist::Destructor(void)
 { 
-	Delete();
+	//Delete(); // don't delete! Because the calllist is a class the list may be copied through multiple instances. We don't want to delete the list when a copy is destroyed
 }
 
