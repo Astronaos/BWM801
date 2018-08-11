@@ -166,7 +166,7 @@ void texture::Initializer(void)
 
 void texture::Destructor(void)
 {
-	Delete();
+	//Delete(); // don't delete! Because the texture is a class the texture may be copied through multiple instances. We don't want to delete the texture when a copy is destroyed
 }
 
 void texture::Load_Image(const std::string & i_sFile_Path, int i_iMipmap_Level)
