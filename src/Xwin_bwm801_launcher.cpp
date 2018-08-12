@@ -52,19 +52,25 @@ template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::
 		std::ostringstream ossPath;
 		ossPath << "./" << *iterI;
 		void * lpvDLL = nullptr;
-		if (io_mapDLLs.count(*iterI) == 1)
+		if (io_mapDLLs.count(*iterI) == 1 && io_mapDLLs[*iterI] != nullptr)
 			lpvDLL = io_mapDLLs[*iterI];
 		else
 		{
-
+			//std::cout << "Trying to open " << *iterI << std::endl;
 			lpvDLL = dlopen(ossPath.str().c_str(),RTLD_LAZY);
-			io_mapDLLs[*iterI] = lpvDLL;
+			if (lpvDLL != nullptr)
+			{
+				//std::cout << "Successfully opened " << *iterI << std::endl;
+				io_mapDLLs[*iterI] = lpvDLL;
+			}
 		}
 		if (lpvDLL != nullptr)
 		{
+			//std::cout << "Checking " << *iterI << std::endl;
 			T * lpInstance = (T *)dlsym(lpvDLL,i_sName.c_str());
 			if (lpInstance != nullptr)
 			{
+				//std::cout << i_sName << " instance found" << std::endl;
 				if (o_tResult == nullptr)
 				{
 					szDefault_Location = ossPath.str();
@@ -106,19 +112,21 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 		std::ostringstream ossPath;
 		ossPath << "./" << *iterI;
 		void * lpvDLL = nullptr;
-		if (io_mapDLLs.count(*iterI) == 1)
+		if (io_mapDLLs.count(*iterI) == 1 && io_mapDLLs[*iterI] != nullptr)
 			lpvDLL = io_mapDLLs[*iterI];
 		else
 		{
 
 			lpvDLL = dlopen(ossPath.str().c_str(),RTLD_LAZY);
-			io_mapDLLs[*iterI] = lpvDLL;
+			if (lpvDLL != nullptr)
+				io_mapDLLs[*iterI] = lpvDLL;
 		}
 		if (lpvDLL != nullptr)
 		{
 			T lpInstance = (T)dlsym(lpvDLL,i_sName.c_str());
 			if (lpInstance != nullptr)
 			{
+				//std::cout << i_sName << " instance found" << std::endl;
 				if (tResult == nullptr)
 				{
 					szDefault_Location = ossPath.str();
