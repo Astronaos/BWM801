@@ -1,5 +1,5 @@
 # BWM801 : multi-threaded cross-platform application engine
-Brian W. Mulligan (mailto:astrobit2@yahoo.com)
+Brian W. Mulligan (mailto:bwmulligan@astronaos.com)
 
 This is version 1.0
 
