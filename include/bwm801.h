@@ -49,6 +49,7 @@ namespace bwm801
 		EXPORT extern void glPrintJustified(const float & i_dSize, const float & i_dX, const float & i_dY, const float & i_dZ, const char * i_lpszString, horiz_justification i_eHorizontal_Justification, vert_justification i_eVertical_Justification);
 
 		EXPORT extern void GenerateEllipse(const float & i_dRx, const float & i_dRy, std::vector<pair<float> > &o_vpResult, const unsigned int i_uiNum_Points = 64);
+		EXPORT extern const std::vector<pair<float> > & Get_Ellipse(void);
 		EXPORT extern void GenerateArc(const float & i_dRx, const float & i_dRy, const float & i_dStart_Angle_Deg, const float & i_dEnd_Angle_Deg, std::vector<pair<float> > &o_vpResult, const unsigned int i_uiNum_Points = 64);
 		EXPORT extern void InvertList(std::vector <pair<float> > & io_vpVertex_List);
 		EXPORT extern void glVertexList(const std::vector <pair<float> > & i_vpVertex_List);

@@ -4,6 +4,13 @@
 std::vector<bwm801::pair<float> > g_vEllipse;
 
 float	g_dTwoPi = 2.0f * std::acos(-1.0f);
+const std::vector<bwm801::pair<float> > & bwm801::Get_Ellipse(void)
+{
+	if (g_vEllipse.empty())
+		GenerateEllipse(1.0,1.0,g_vEllipse);
+	return g_vEllipse;
+}
+
 void bwm801::GenerateEllipse(const float & i_dRx, const float & i_dRy, std::vector<bwm801::pair<float> > &o_vpResult, const unsigned int i_uiNum_Points)
 {
 	for (unsigned int uiI = 0; uiI < i_uiNum_Points; uiI++)
