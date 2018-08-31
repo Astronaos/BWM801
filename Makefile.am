@@ -8,7 +8,7 @@ bwm801_launcher_LDADD = -ldl
 
 lib_LTLIBRARIES = libbwm801.la
 libbwm801_la_SOURCES = src/bwm801_gfx.cpp src/bwm801_mapspace.cpp src/bwm801_quad.cpp src/bwm801_triplet.cpp src/Xwin_main.cpp src/bwm801_main.cpp src/bwm801_pair.cpp src/linux_bwm801_sockets.cpp src/bwm801_screenshot.cpp src/bwm801_texture.cpp src/bwm801_glext.cpp src/Xwin_bwm801_date_time.cpp src/Xwin_bwm801_crit_section.cpp src/bwm801_button_info.cpp  src/bwm801_calllist.cpp src/bwm801_pane.cpp src/bwm801_sockets.cpp src/bwm801_button_info_data.cpp src/bwm801_main_data.cpp src/bwm801_pane_data.cpp
-libbwm801_la_LDFLAGS = -version-info 1:0:0
+libbwm801_la_LDFLAGS = -version-info 2:0:1
 
 
 include_HEADERS = include/bwm801_button_info.h include/bwm801_calllist.h include/bwm801_comm.h include/bwm801_critsec.h include/bwm801_datetime.h include/bwm801_glext.h include/bwm801.h include/bwm801_hexmap.h include/bwm801_hexmap_inst.h include/bwm801_isohexmap.h include/bwm801_isohexmap_inst.h include/bwm801_main.h include/bwm801_mapbase.h include/bwm801_mapbase_inst.h include/bwm801_mapspace.h include/bwm801_pair.h include/bwm801_pane.h include/bwm801_quad.h include/bwm801_texture.h include/bwm801_triplet.h
