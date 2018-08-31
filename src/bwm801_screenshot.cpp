@@ -94,6 +94,11 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 		g_cScreenshot.m_bRequest_Ready = true;
 	}
 }
+bool main::Is_Screenshot_Ready(void)
+{
+	return !g_cScreenshot.m_bPending && !g_cScreenshot.m_bRequest;
+}
+
 
 void write_row_callback(png_structrp i_ppPng_Ptr 
 #ifndef WIN32
@@ -165,6 +170,7 @@ void Screenshot_Loop(void)
 				}
 				fclose(filePNG);
 			}
+			g_cScreenshot.m_bPending = false;
 		}
 
 		Sleep(1);

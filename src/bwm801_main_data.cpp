@@ -62,6 +62,10 @@ main_data::main_data(main * i_lpMain, const main_data * i_cRHO)
 
 	m_szScreenshot_Default_Filename = "BWM801-screenshot";
 
+	m_ptWindow_Size_Requested = bwm801::pair<size_t>((size_t)-1,(size_t)-1);;
+	m_bShow_Frame = true;
+	m_bFullscreen_Window_Requested = false;
+
 	if (i_cRHO != nullptr)
 		Copy(*i_cRHO);
 

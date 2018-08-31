@@ -29,6 +29,12 @@ namespace bwm801
 
 		virtual void Process_Command_Line(unsigned int i_uiNum_Parameters, const char * i_lpszParameter_Values[]);
 		virtual void Set_Window_Name(const std::string &i_szName);
+		virtual void Set_Main_Window_Size(bwm801::pair<size_t> i_ptSize, bool i_bShow_Frame);
+		virtual void Set_Main_Window_Fullscreen(void);
+		virtual bool Is_Window_Framed(void) const;
+		virtual bool Is_Window_Fullscreen(void) const;
+		virtual bwm801::pair<size_t> Get_Window_Requested_Size(void) const;
+
 		virtual std::string Get_Window_Name(void);
 		virtual double	Get_Frame_Rate(void) const;
 		virtual void	Set_Frame_Rate(const double & i_dFrame_Rate);
@@ -79,6 +85,12 @@ namespace bwm801
 				key_max // not a key - used internally
 			};
 		enum mousebutton {mb_noop, mb_left, mb_ctr, mb_rgt, mb_scroll_v, mb_scroll_h, mb_x1, mb_x2, mb_max};// mb_max not a key - used internally
+		enum joystick_button {js_noop, js_btn0, js_btn1, js_btn2, js_btn3, js_btn4, js_btn5, js_btn6, js_btn7, js_btn8, js_btn9, js_btn10, js_btn11, js_btn12, js_btn13, js_btn14, js_btn15, js_max};
+		enum joystick_axis {jsa_noop, jsa_x0, jsa_x1, jsa_x2, jsa_x3, jsa_x4, jsa_x5, jsa_x6, jsa_x7, jsa_max};
+
+		enum gamepad_button {gp_noop, gp_lft_trg_z, gp_lft_trg_top, gp_rgt_trg_z, gp_rgt_trg_top, gp_dpad_up, gp_dpad_down, gp_dpad_left, gp_dpad_right, gp_apad_north, gp_apad_west, gp_apad_south, gp_apad_east, gp_menu_start, gp_menu_select, gp_menu_special, gp_thumb_l, gp_thumb_r, gp_max};
+		enum gamepad_axis {gpa_noop, gpa_thmb_l_left, gpa_thmb_l_right, gpa_thmb_l_up, gpa_thmb_l_down, gpa_thmb_r_left, gpa_thmb_r_right, gpa_thmb_r_up, gpa_thmb_r_down, gpa_lft_trg, gpa_rgt_trig, gpa_mid_trig, gpa_max};
+
 		// 
 
 		// Member functions with capitalized names are called by the common / top level library routines.  Users should not call these functions
@@ -94,6 +106,14 @@ namespace bwm801
 		virtual void On_Window_Resize(const pair<unsigned int> & i_tWindow_Size);
 		virtual void Gain_Focus(void);
 		virtual void Lose_Focus(void);
+		virtual void On_Joystick_Move(unsigned int i_uiJoystick_ID, joystick_axis i_eAxis, int i_iPosition);
+		virtual void On_Joystick_Button(unsigned int i_uiJoystick_ID, joystick_button i_eButton, bool i_bState);
+		virtual void On_Gamepad_Move(unsigned int i_uiGamepad_ID, gamepad_axis i_eAxis, int i_iPosition);
+		virtual void On_Gamepad_Button(unsigned int i_uiGamepad_ID, gamepad_button i_eButton, bool i_bState);
+
+		// potential future unified on input event function
+		//enum input_type {it_noop, it_keyboard, it_mouse, it_mouse_button, it_joystick, it_gamepad, it_max};
+		//virtual void On_Input(input_type i_eType, int i_iAxis, int i_iDevice_ID, int i_i
 
 		// Member functions with lower case names are defined by the user. 
 		virtual void on_key_down(keyid eKey_ID, unsigned char chScan_Code, unsigned int uiRepeat_Count, bool bExtended_Key, bool bPrevious_Key_State) = 0;
@@ -104,6 +124,10 @@ namespace bwm801
 		virtual void on_mousemove(const pair<unsigned int> &i_tMouse_Position) = 0;
 		virtual void on_mouse_wheel(mousebutton i_eWheel, int i_iWheel_Delta, const pair<unsigned int> &i_tMouse_Position) = 0;
 		virtual void on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s) = 0;
+		virtual void on_joystick_move(unsigned int i_uiJoystick_ID, joystick_axis i_eAxis, int i_iPosition) = 0;
+		virtual void on_joystick_button(unsigned int i_uiJoystick_ID, joystick_button i_eButton, bool i_bState) = 0;
+		virtual void on_gamepad_move(unsigned int i_uiGamepad_ID, gamepad_axis i_eAxis, int i_iPosition) = 0;
+		virtual void on_gamepad_button(unsigned int i_uiGamepad_ID, gamepad_button i_eButton, bool i_bState) = 0;
 
 		virtual void init(void) = 0; // initialization routine; rendering context not created
 		virtual void gfx_display(pane_id i_idPane) = 0; // primary display routine
@@ -130,6 +154,7 @@ namespace bwm801
 		virtual std::vector<std::string> Get_Directory_File_List(const std::string &i_szDirectory); /// get list of all files in the given direcctory
 		virtual void Draw_Pane_Grid(const float &i_dXmax);
 		virtual void Request_Screenshot(const std::string & i_szFilename);
+		virtual bool Is_Screenshot_Ready(void);
 
 	};
 }

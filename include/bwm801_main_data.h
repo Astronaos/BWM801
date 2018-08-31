@@ -34,6 +34,10 @@ namespace bwm801
 		std::string 			m_szScreenshot_Default_Filename;
 		std::string 			m_szScreenshot_Default_Path;
 
+		bool					m_bFullscreen_Window_Requested;
+		bwm801::pair<size_t>	m_ptWindow_Size_Requested;
+		bool					m_bShow_Frame;
+
 		main_data(main * i_lpMain, const main_data * i_cRHO = nullptr);
 		~main_data(void);
 	};

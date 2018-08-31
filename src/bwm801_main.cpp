@@ -420,6 +420,45 @@ bool			main::Pending_Draw(void) const
 	return ((main_data*)m_lpvData)->m_bDraw_Flag;
 }
 
+void main::On_Joystick_Move(unsigned int i_uiJoystick_ID, joystick_axis i_eAxis, int i_iPosition)
+{
+	on_joystick_move(i_uiJoystick_ID, i_eAxis, i_iPosition);
+}
+void main::On_Joystick_Button(unsigned int i_uiJoystick_ID, joystick_button i_eButton, bool i_bState)
+{
+	on_joystick_button(i_uiJoystick_ID, i_eButton, i_bState);
+}
+void main::On_Gamepad_Move(unsigned int i_uiGamepad_ID, gamepad_axis i_eAxis, int i_iPosition)
+{
+	on_gamepad_move(i_uiGamepad_ID, i_eAxis, i_iPosition);
+}
+void main::On_Gamepad_Button(unsigned int i_uiGamepad_ID, gamepad_button i_eButton, bool i_bState)
+{
+	on_gamepad_button(i_uiGamepad_ID, i_eButton, i_bState);
+}
 
 
+void main::Set_Main_Window_Size(bwm801::pair<size_t> i_ptSize, bool i_bShow_Frame)
+{
+	((main_data*)m_lpvData)->m_ptWindow_Size_Requested = i_ptSize;
+	((main_data*)m_lpvData)->m_bShow_Frame = i_bShow_Frame;
+}
+void main::Set_Main_Window_Fullscreen(void)
+{
+	((main_data*)m_lpvData)->m_bFullscreen_Window_Requested = true;
+}
+
+
+bool main::Is_Window_Framed(void) const
+{
+	return ((main_data*)m_lpvData)->m_bShow_Frame;
+}
+bool main::Is_Window_Fullscreen(void) const
+{
+	return ((main_data*)m_lpvData)->m_bFullscreen_Window_Requested;
+}
+bwm801::pair<size_t> main::Get_Window_Requested_Size(void) const
+{
+	return ((main_data*)m_lpvData)->m_ptWindow_Size_Requested;
+}
 
