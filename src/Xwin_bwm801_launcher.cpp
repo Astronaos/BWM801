@@ -50,7 +50,8 @@ template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::
 	for (auto iterI = o_vsDLL_List.begin(); iterI != o_vsDLL_List.end(); iterI++)
 	{
 		std::ostringstream ossPath;
-		ossPath << "./" << *iterI;
+		//ossPath << "./" << *iterI;
+		ossPath << *iterI;
 		void * lpvDLL = nullptr;
 		if (io_mapDLLs.count(*iterI) == 1 && io_mapDLLs[*iterI] != nullptr)
 			lpvDLL = io_mapDLLs[*iterI];
@@ -63,6 +64,8 @@ template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::
 				//std::cout << "Successfully opened " << *iterI << std::endl;
 				io_mapDLLs[*iterI] = lpvDLL;
 			}
+			else
+				std::cout << "Failed to open " << ossPath.str() << ". (" << dlerror() << ")" << std::endl;
 		}
 		if (lpvDLL != nullptr)
 		{
@@ -110,7 +113,8 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 	for (auto iterI = o_vsDLL_List.begin(); iterI != o_vsDLL_List.end(); iterI++)
 	{
 		std::ostringstream ossPath;
-		ossPath << "./" << *iterI;
+		//ossPath << "./" << *iterI;
+		ossPath << *iterI;
 		void * lpvDLL = nullptr;
 		if (io_mapDLLs.count(*iterI) == 1 && io_mapDLLs[*iterI] != nullptr)
 			lpvDLL = io_mapDLLs[*iterI];
@@ -120,6 +124,8 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 			lpvDLL = dlopen(ossPath.str().c_str(),RTLD_LAZY);
 			if (lpvDLL != nullptr)
 				io_mapDLLs[*iterI] = lpvDLL;
+			else
+				std::cout << "Failed to open " << ossPath.str() << ". (" << dlerror() << ")" << std::endl;
 		}
 		if (lpvDLL != nullptr)
 		{
@@ -160,17 +166,19 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 
 typedef int (*fp_i_bwm801main)(bwm801::main * i_lpcMain, int i_iArg_Count, const char * i_lpszArg_Values[]);
 
-int main(int i_iArg_Count, const char * i_lpszArg_Values[])
+std::vector<std::string> & operator += (std::vector<std::string> & i_cLHO, const std::vector<std::string> & i_cRHO)
 {
-	int iRet = 1;
-	bwm801::main * lpMain = nullptr;
-	fp_i_bwm801main bwm801main = nullptr;
-	std::map<std::string, void *> mapDLLs;
+	for (auto iterI = i_cRHO.begin(); iterI != i_cRHO.end(); iterI++)
+	{
+		i_cLHO.push_back(*iterI);
+	}
+	return i_cLHO;
+}
 
-	std::cout << "bwm801-launcher v1.0.0" << std::endl;
-
+std::vector<std::string> Find_DLLs_In_Directory(const std::string & i_sDirectory)
+{
 	std::vector<std::string> sDLLs_Found;
-	DIR * dirList = opendir (".");
+	DIR * dirList = opendir (i_sDirectory.c_str());
 	if (dirList)
 	{
 		dirent64 * direntInfo = readdir64(dirList);
@@ -178,16 +186,47 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 		{
 			if (direntInfo->d_name[0] != '.') // don't include . and ..; these can be assumed
 			{
-				std::cout << "file/dir " << direntInfo->d_name;
-				if (strstr(direntInfo->d_name,".so") != nullptr ||
-					strstr(direntInfo->d_name,".la") != nullptr)
+				//std::cout << "file/dir " << direntInfo->d_name;
+//				if (strstr(direntInfo->d_name,".so") != nullptr ||
+//					strstr(direntInfo->d_name,".la") != nullptr)
+				if (strstr(direntInfo->d_name,".so") != nullptr)
 				{
-					std::cout << " added to list.";
-					sDLLs_Found.push_back(direntInfo->d_name);
+					std::ostringstream ossPath;
+					ossPath << i_sDirectory;
+					ossPath << "/";
+					ossPath << direntInfo->d_name;
+
+//					std::cout << " added to list.";
+					sDLLs_Found.push_back(ossPath.str());
 				}
 				std::cout << std::endl;
 			}
 			direntInfo = readdir64(dirList);
+		}
+	}
+	return sDLLs_Found;
+}
+
+int main(int i_iArg_Count, const char * i_lpszArg_Values[])
+{
+	int iRet = 1;
+	bwm801::main * lpMain = nullptr;
+	fp_i_bwm801main bwm801main = nullptr;
+	std::map<std::string, void *> mapDLLs;
+	size_t tArg_Count = (size_t)i_iArg_Count;
+
+	std::cout << "bwm801-launcher v1.1.0" << std::endl;
+
+	std::vector<std::string> sDLLs_Found = Find_DLLs_In_Directory(".");
+	for (size_t tI = 1; tI < tArg_Count; tI++)
+	{
+		if (i_lpszArg_Values[tI][0] != '-') // not an option
+		{
+			size_t tStrlen = std::strlen(i_lpszArg_Values[tI]);
+			if (i_lpszArg_Values[tI][tStrlen - 3] == '.' && i_lpszArg_Values[tI][tStrlen - 2] == 's' && i_lpszArg_Values[tI][tStrlen - 1] == 'o')
+				sDLLs_Found.push_back(i_lpszArg_Values[tI]);
+			else
+				sDLLs_Found += Find_DLLs_In_Directory(i_lpszArg_Values[tI]);
 		}
 	}
 
