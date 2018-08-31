@@ -40,6 +40,10 @@ private:
 	virtual void on_mousemove(const pair<unsigned int> &i_tMouse_Position);
 	virtual void on_mouse_wheel(mousebutton i_eWheel, int i_iWheel_Delta, const pair<unsigned int> &i_tMouse_Position);
 	virtual void on_timer(unsigned int i_uiTimer_ID, const double & i_dDelta_Time_s);
+	virtual void on_joystick_move(unsigned int i_uiJoystick_ID, joystick_axis i_eAxis, int i_iPosition);
+	virtual void on_joystick_button(unsigned int i_uiJoystick_ID, joystick_button i_eButton, bool i_bState);
+	virtual void on_gamepad_move(unsigned int i_uiGamepad_ID, gamepad_axis i_eAxis, int i_iPosition);
+	virtual void on_gamepad_button(unsigned int i_uiGamepad_ID, gamepad_button i_eButton, bool i_bState);
 
 	virtual void init(void); // initialization routine; rendering context not created
 	virtual void gfx_display(pane_id i_idPane); // primary display routine

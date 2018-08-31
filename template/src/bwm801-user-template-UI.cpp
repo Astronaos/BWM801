@@ -110,4 +110,19 @@ void user_template_main::on_timer(unsigned int i_uiTimer_ID ATTRUNUSED, const do
 
 }
 
+
+void user_template_main::on_joystick_move(unsigned int i_uiJoystick_ID ATTRUNUSED, bwm801::main::joystick_axis i_eAxis ATTRUNUSED, int i_iPosition ATTRUNUSED)
+{
+}
+void user_template_main::on_joystick_button(unsigned int i_uiJoystick_ID ATTRUNUSED, bwm801::main::joystick_button i_eButton ATTRUNUSED, bool i_bState ATTRUNUSED)
+{
+}
+void user_template_main::on_gamepad_move(unsigned int i_uiGamepad_ID ATTRUNUSED, bwm801::main::gamepad_axis i_eAxis ATTRUNUSED, int i_iPosition ATTRUNUSED)
+{
+}
+void user_template_main::on_gamepad_button(unsigned int i_uiGamepad_ID ATTRUNUSED, bwm801::main::gamepad_button i_eButton ATTRUNUSED, bool i_bState ATTRUNUSED)
+{
+}
+
+
 #undef ATTRUNUSED
