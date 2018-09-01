@@ -42,10 +42,13 @@
 	
 typedef void (*fp_v_v)(void);
 
-template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::vector<std::string> & o_vsDLL_List, std::map<std::string, void *> &io_mapDLLs, T * &o_tResult)
+template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::vector<std::string> & o_vsDLL_List, std::map<std::string, void *> &io_mapDLLs, T * &o_tResult, bool i_bDebug)
 {
 	std::string szDefault_Location;
 	bool bFault = false;
+
+	if (i_bDebug)
+		std::cout << "Looking for " << i_sName << std::endl;
 
 	for (auto iterI = o_vsDLL_List.begin(); iterI != o_vsDLL_List.end(); iterI++)
 	{
@@ -57,11 +60,13 @@ template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::
 			lpvDLL = io_mapDLLs[*iterI];
 		else
 		{
-			//std::cout << "Trying to open " << *iterI << std::endl;
+			if (i_bDebug)
+				std::cout << "Trying to open " << *iterI << std::endl;
 			lpvDLL = dlopen(ossPath.str().c_str(),RTLD_LAZY);
 			if (lpvDLL != nullptr)
 			{
-				//std::cout << "Successfully opened " << *iterI << std::endl;
+				if (i_bDebug)
+					std::cout << "Successfully opened " << *iterI << std::endl;
 				io_mapDLLs[*iterI] = lpvDLL;
 			}
 			else
@@ -69,11 +74,13 @@ template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::
 		}
 		if (lpvDLL != nullptr)
 		{
-			//std::cout << "Checking " << *iterI << std::endl;
+			if (i_bDebug)
+				std::cout << "Checking " << *iterI << std::endl;
 			T * lpInstance = (T *)dlsym(lpvDLL,i_sName.c_str());
 			if (lpInstance != nullptr)
 			{
-				//std::cout << i_sName << " instance found" << std::endl;
+				if (i_bDebug)
+					std::cout << i_sName << " instance found" << std::endl;
 				if (o_tResult == nullptr)
 				{
 					szDefault_Location = ossPath.str();
@@ -104,11 +111,13 @@ template<typename T> bool Load_From_DLL(const std::string & i_sName, const std::
 	return !bFault;
 }
 
-template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const std::vector<std::string> & o_vsDLL_List, std::map<std::string, void *> &io_mapDLLs, T &o_tResult)
+template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const std::vector<std::string> & o_vsDLL_List, std::map<std::string, void *> &io_mapDLLs, T &o_tResult, bool i_bDebug)
 {
 	std::string szDefault_Location;
 	bool bFault = false;
 	T tResult = nullptr;
+	if (i_bDebug)
+		std::cout << "Looking for " << i_sName << std::endl;
 
 	for (auto iterI = o_vsDLL_List.begin(); iterI != o_vsDLL_List.end(); iterI++)
 	{
@@ -121,9 +130,15 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 		else
 		{
 
+			if (i_bDebug)
+				std::cout << "Trying to open " << *iterI << std::endl;
 			lpvDLL = dlopen(ossPath.str().c_str(),RTLD_LAZY);
 			if (lpvDLL != nullptr)
+			{
+				if (i_bDebug)
+					std::cout << "Successfully opened " << *iterI << std::endl;
 				io_mapDLLs[*iterI] = lpvDLL;
+			}
 			else
 				std::cout << "Failed to open " << ossPath.str() << ". (" << dlerror() << ")" << std::endl;
 		}
@@ -132,7 +147,8 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 			T lpInstance = (T)dlsym(lpvDLL,i_sName.c_str());
 			if (lpInstance != nullptr)
 			{
-				//std::cout << i_sName << " instance found" << std::endl;
+				if (i_bDebug)
+					std::cout << i_sName << " instance found" << std::endl;
 				if (tResult == nullptr)
 				{
 					szDefault_Location = ossPath.str();
@@ -175,10 +191,12 @@ std::vector<std::string> & operator += (std::vector<std::string> & i_cLHO, const
 	return i_cLHO;
 }
 
-std::vector<std::string> Find_DLLs_In_Directory(const std::string & i_sDirectory)
+std::vector<std::string> Find_DLLs_In_Directory(const std::string & i_sDirectory, bool i_bDebug)
 {
 	std::vector<std::string> sDLLs_Found;
 	DIR * dirList = opendir (i_sDirectory.c_str());
+	if (i_bDebug)
+		std::cout << "Searchig directory " << i_sDirectory << std::endl;
 	if (dirList)
 	{
 		dirent64 * direntInfo = readdir64(dirList);
@@ -186,7 +204,8 @@ std::vector<std::string> Find_DLLs_In_Directory(const std::string & i_sDirectory
 		{
 			if (direntInfo->d_name[0] != '.') // don't include . and ..; these can be assumed
 			{
-				//std::cout << "file/dir " << direntInfo->d_name;
+				if (i_bDebug)
+					std::cout << "file/dir " << direntInfo->d_name;
 //				if (strstr(direntInfo->d_name,".so") != nullptr ||
 //					strstr(direntInfo->d_name,".la") != nullptr)
 				if (strstr(direntInfo->d_name,".so") != nullptr)
@@ -196,10 +215,12 @@ std::vector<std::string> Find_DLLs_In_Directory(const std::string & i_sDirectory
 					ossPath << "/";
 					ossPath << direntInfo->d_name;
 
-//					std::cout << " added to list.";
+					if (i_bDebug)
+						std::cout << " added to list.";
 					sDLLs_Found.push_back(ossPath.str());
 				}
-				std::cout << std::endl;
+				if (i_bDebug)
+					std::cout << std::endl;
 			}
 			direntInfo = readdir64(dirList);
 		}
@@ -216,23 +237,55 @@ int main(int i_iArg_Count, const char * i_lpszArg_Values[])
 	size_t tArg_Count = (size_t)i_iArg_Count;
 
 	std::cout << "bwm801-launcher v1.1.0" << std::endl;
+	std::string szMain_Name = "g_cMain";
+	bool bLaunch_Debug = false;
 
-	std::vector<std::string> sDLLs_Found = Find_DLLs_In_Directory(".");
+	for (size_t tI = 1; tI < tArg_Count; tI++)
+	{
+		if (std::strcmp(i_lpszArg_Values[tI],"--launch-debug") == 0)
+		{
+			bLaunch_Debug = true;
+		}
+	}
+
+	std::vector<std::string> sDLLs_Found = Find_DLLs_In_Directory(".",bLaunch_Debug);
+
 	for (size_t tI = 1; tI < tArg_Count; tI++)
 	{
 		if (i_lpszArg_Values[tI][0] != '-') // not an option
 		{
-			size_t tStrlen = std::strlen(i_lpszArg_Values[tI]);
-			if (i_lpszArg_Values[tI][tStrlen - 3] == '.' && i_lpszArg_Values[tI][tStrlen - 2] == 's' && i_lpszArg_Values[tI][tStrlen - 1] == 'o')
-				sDLLs_Found.push_back(i_lpszArg_Values[tI]);
-			else
-				sDLLs_Found += Find_DLLs_In_Directory(i_lpszArg_Values[tI]);
+			if (tI == 1 || i_lpszArg_Values[tI - 1][std::strlen(i_lpszArg_Values[tI]) - 1] != '=') // make sure this isn't a value for an option that had a space between the option and the value
+			{
+				size_t tStrlen = std::strlen(i_lpszArg_Values[tI]);
+				if (i_lpszArg_Values[tI][tStrlen - 3] == '.' && i_lpszArg_Values[tI][tStrlen - 2] == 's' && i_lpszArg_Values[tI][tStrlen - 1] == 'o')
+					sDLLs_Found.push_back(i_lpszArg_Values[tI]);
+				else
+					sDLLs_Found += Find_DLLs_In_Directory(i_lpszArg_Values[tI],bLaunch_Debug);
+			}
 		}
+		else if (std::strncmp(i_lpszArg_Values[tI],"--main=",7) == 0)
+		{
+			if (i_lpszArg_Values[tI][7] == 0)
+			{
+				tI++;
+				if (tI < tArg_Count)
+				{
+					szMain_Name = i_lpszArg_Values[tI];
+					std::cout << "Using " << szMain_Name << " for main class." << std::endl;
+				}
+			}
+			else
+			{
+				szMain_Name = &i_lpszArg_Values[tI][7];
+				std::cout << "Using " << szMain_Name << " for main class." << std::endl;
+			}
+		}
+			
 	}
 
-	if (Load_From_DLL<bwm801::main>("g_cMain",sDLLs_Found,mapDLLs,lpMain))
+	if (Load_From_DLL<bwm801::main>(szMain_Name,sDLLs_Found,mapDLLs,lpMain,bLaunch_Debug))
 	{
-		if (Load_Func_From_DLL<fp_i_bwm801main>("bwm801_main",sDLLs_Found,mapDLLs,bwm801main))
+		if (Load_Func_From_DLL<fp_i_bwm801main>("bwm801_main",sDLLs_Found,mapDLLs,bwm801main,bLaunch_Debug))
 		{
 			iRet = bwm801main(lpMain,i_iArg_Count,i_lpszArg_Values);
 		}
