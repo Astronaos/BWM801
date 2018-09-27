@@ -61,62 +61,66 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 		if (fileImage != nullptr)
 		{
 			char lpchHeader[8];
-				fread(lpchHeader, 1, 8, fileImage);
-			int tiIs_PNG = !png_sig_cmp((png_const_bytep)lpchHeader, 0, 8);
-			if (tiIs_PNG != 0)
+			if (fread(lpchHeader, 1, 8, fileImage) > 0)
 			{
-				fseek(fileImage, 0, SEEK_SET); // rewind to start of file
-				png_structp pngsRead_Struct = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
-				if (pngsRead_Struct != nullptr)
+				int tiIs_PNG = !png_sig_cmp((png_const_bytep)lpchHeader, 0, 8);
+				if (tiIs_PNG != 0)
 				{
-					png_infop pngsInfo_Struct = png_create_info_struct(pngsRead_Struct);
-					png_infop pngsEnd_Info_Struct = nullptr;
-					if (pngsInfo_Struct != nullptr)
+					fseek(fileImage, 0, SEEK_SET); // rewind to start of file
+					png_structp pngsRead_Struct = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+					if (pngsRead_Struct != nullptr)
 					{
-						pngsEnd_Info_Struct = png_create_info_struct(pngsRead_Struct);
-						if (pngsEnd_Info_Struct != nullptr)
+						png_infop pngsInfo_Struct = png_create_info_struct(pngsRead_Struct);
+						png_infop pngsEnd_Info_Struct = nullptr;
+						if (pngsInfo_Struct != nullptr)
 						{
-							if (setjmp(png_jmpbuf(pngsRead_Struct)) == 0)
+							pngsEnd_Info_Struct = png_create_info_struct(pngsRead_Struct);
+							if (pngsEnd_Info_Struct != nullptr)
 							{
-								bRet = false;
-								png_init_io(pngsRead_Struct, fileImage);
-								png_read_png(pngsRead_Struct, pngsInfo_Struct, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, nullptr);
-								png_bytepp lpRow_Pointers = png_get_rows(pngsRead_Struct, pngsInfo_Struct);
-								if (lpRow_Pointers != nullptr)
+								if (setjmp(png_jmpbuf(pngsRead_Struct)) == 0)
 								{
-									png_uint_32 uiWidth, uiHeight;
-									int iBit_Depth, iColor_Type, iInterlace_Type;
-									png_get_IHDR(pngsRead_Struct, pngsInfo_Struct, &uiWidth, &uiHeight, &iBit_Depth, &iColor_Type, &iInterlace_Type, nullptr, nullptr);
-									// we now have all of the data that we need for creating the texture
-									size_t tData_Size;
-									switch (iColor_Type)
+									bRet = false;
+									png_init_io(pngsRead_Struct, fileImage);
+									png_read_png(pngsRead_Struct, pngsInfo_Struct, PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, nullptr);
+									png_bytepp lpRow_Pointers = png_get_rows(pngsRead_Struct, pngsInfo_Struct);
+									if (lpRow_Pointers != nullptr)
 									{
-									case PNG_COLOR_TYPE_GRAY:
-										o_iNum_Colors = 1;
-										break;
-									case PNG_COLOR_TYPE_GRAY_ALPHA:
-										o_iNum_Colors = 2;
-										break;
-									default:
-									case PNG_COLOR_TYPE_RGB:
-										o_iNum_Colors = 3;
-										break;
-									case PNG_COLOR_TYPE_RGB_ALPHA:
-										o_iNum_Colors = 4;
-										break;
+										png_uint_32 uiWidth, uiHeight;
+										int iBit_Depth, iColor_Type, iInterlace_Type;
+										png_get_IHDR(pngsRead_Struct, pngsInfo_Struct, &uiWidth, &uiHeight, &iBit_Depth, &iColor_Type, &iInterlace_Type, nullptr, nullptr);
+										// we now have all of the data that we need for creating the texture
+										size_t tData_Size;
+										switch (iColor_Type)
+										{
+										case PNG_COLOR_TYPE_GRAY:
+											o_iNum_Colors = 1;
+											break;
+										case PNG_COLOR_TYPE_GRAY_ALPHA:
+											o_iNum_Colors = 2;
+											break;
+										default:
+										case PNG_COLOR_TYPE_RGB:
+											o_iNum_Colors = 3;
+											break;
+										case PNG_COLOR_TYPE_RGB_ALPHA:
+											o_iNum_Colors = 4;
+											break;
+										}
+										size_t tRow_Len = o_iNum_Colors * uiWidth;
+										tData_Size = o_iNum_Colors * uiWidth * uiHeight;
+										g_cCore_Texture_Buffer.realloc(tData_Size);
+										size_t tIdx = 0;
+										for (size_t tI = uiHeight - 1; tI < uiHeight; tI--)
+										{
+											memcpy(g_cCore_Texture_Buffer.m_chTexture_Buffer + tIdx, lpRow_Pointers[tI], tRow_Len);
+											tIdx += tRow_Len;
+										}
+										o_tWidth = uiWidth;
+										o_tHeight = uiHeight;
+										bRet = true; // success
 									}
-									size_t tRow_Len = o_iNum_Colors * uiWidth;
-									tData_Size = o_iNum_Colors * uiWidth * uiHeight;
-									g_cCore_Texture_Buffer.realloc(tData_Size);
-									size_t tIdx = 0;
-									for (size_t tI = uiHeight - 1; tI < uiHeight; tI--)
-									{
-										memcpy(g_cCore_Texture_Buffer.m_chTexture_Buffer + tIdx, lpRow_Pointers[tI], tRow_Len);
-										tIdx += tRow_Len;
-									}
-									o_tWidth = uiWidth;
-									o_tHeight = uiHeight;
-									bRet = true; // success
+									else
+										bRet = false;
 								}
 								else
 									bRet = false;
@@ -126,10 +130,10 @@ bool Read_PNG(const std::string & i_sFile_Path, size_t & o_tWidth, size_t & o_tH
 						}
 						else
 							bRet = false;
+						png_destroy_read_struct(&pngsRead_Struct, &pngsInfo_Struct, &pngsEnd_Info_Struct);
 					}
 					else
 						bRet = false;
-					png_destroy_read_struct(&pngsRead_Struct, &pngsInfo_Struct, &pngsEnd_Info_Struct);
 				}
 				else
 					bRet = false;
