@@ -1,6 +1,9 @@
 #linux launcher
 bwm801-launcher
 
+#distro files
+*.tar.gz
+
 #module files (currently version 0.x.y)
 0.*.* 
 1.*.*
