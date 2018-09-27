@@ -13,6 +13,9 @@ libbwm801_la_LDFLAGS = -version-info 2:0:1
 
 include_HEADERS = include/bwm801_button_info.h include/bwm801_calllist.h include/bwm801_comm.h include/bwm801_critsec.h include/bwm801_datetime.h include/bwm801_glext.h include/bwm801.h include/bwm801_hexmap.h include/bwm801_hexmap_inst.h include/bwm801_isohexmap.h include/bwm801_isohexmap_inst.h include/bwm801_main.h include/bwm801_mapbase.h include/bwm801_mapbase_inst.h include/bwm801_mapspace.h include/bwm801_pair.h include/bwm801_pane.h include/bwm801_quad.h include/bwm801_texture.h include/bwm801_triplet.h
 
+noinst_HEADERS = include/bwm801_button_info_data.h include/bwm801_main_data.h include/bwm801_pane_data.h include/bwm801_screenshot.h include/bwm801_top.h
+
+
 # Install the pkg-config file; the directory is set using
 # PKG_INSTALLDIR in configure.ac.
 pkgconfig_DATA = ${PACKAGE_NAME}-${API_VERSION}.pc
@@ -20,7 +23,13 @@ pkgconfig_DATA = ${PACKAGE_NAME}-${API_VERSION}.pc
 if INSTALLMOD
 if HAVEENVMOD
 modfile_DATA = ${PACKAGE_VERSION}
+CLEANFILES = ${PACKAGE_NAME}-${API_VERSION}.pc ${PACKAGE_VERSION}
 else
 modfile_DATA = ${PACKAGE_VERSION}.lua
+CLEANFILES = ${PACKAGE_NAME}-${API_VERSION}.pc ${PACKAGE_VERSION}.lua 
 endif
+else
+CLEANFILES = ${PACKAGE_NAME}-${API_VERSION}.pc
 endif
+
+
