@@ -1,15 +1,15 @@
 
 
-template <typename T> pair<int> isometric_hexmap<T>::Determine_Hex(const pair<double> &i_tView_Coord) const
+template <typename T> bwm801::pair<int> isometric_hexmap<T>::Determine_Hex(const bwm801::pair<float> &i_tView_Coord) const
 {
-	pair<int> tRet;
-	pair<double> tTrue_Coord = (i_tView_Coord + mapbase<T>::m_tScroll_Position - pair<double>(0.5 * mapbase<T>::m_dDisplay_Aspect_Ratio,0.5)) / mapbase<T>::m_dZoom;
+	bwm801::pair<int> tRet;
+	bwm801::pair<float> tTrue_Coord = (i_tView_Coord + mapbase<T>::m_tScroll_Position - bwm801::pair<float>(0.5 * mapbase<T>::m_dDisplay_Aspect_Ratio,0.5)) / mapbase<T>::m_dZoom;
 	tRet.m_tX = -1;
 	tRet.m_tY = -1;
 	unsigned int uiBlock_X = (unsigned int)((tTrue_Coord.m_tX / mapbase<T>::m_dR) / 1.5);
 	unsigned int uiBlock_Y = (unsigned int)((tTrue_Coord.m_tY / mapbase<T>::m_dR));
-	double dHex_X = fmod(tTrue_Coord.m_tX / mapbase<T>::m_dR,1.5);
-	double dHex_Y = fmod(tTrue_Coord.m_tY / mapbase<T>::m_dR,1.0);
+	float dHex_X = fmod(tTrue_Coord.m_tX / mapbase<T>::m_dR,1.5);
+	float dHex_Y = fmod(tTrue_Coord.m_tY / mapbase<T>::m_dR,1.0);
 
 	tRet.m_tX = uiBlock_X * 2;
 	tRet.m_tY = uiBlock_Y;
@@ -70,13 +70,13 @@ template <typename T> pair<int> isometric_hexmap<T>::Determine_Hex(const pair<do
 }
 
 
-template <typename T>void isometric_hexmap<T>::Get_Hex_Center(const pair<int> & i_tGrid_Position, pair<double> & o_tVitual_Coord) const
+template <typename T>void isometric_hexmap<T>::Get_Hex_Center(const bwm801::pair<int> & i_tGrid_Position, bwm801::pair<float> & o_tVitual_Coord) const
 {
 	o_tVitual_Coord = Get_Hex_Center(i_tGrid_Position);
 }
-template <typename T>pair<double> isometric_hexmap<T>::Get_Hex_Center(const pair<int> & i_tGrid_Position) const
+template <typename T>bwm801::pair<float> isometric_hexmap<T>::Get_Hex_Center(const bwm801::pair<int> & i_tGrid_Position) const
 {
-	pair<double> cRet;
+	bwm801::pair<float> cRet;
 	 // a little easier than going the other way....
 	int iY_Offset = (i_tGrid_Position.m_tX % 2);
 	if (i_tGrid_Position.m_tX < 0)
@@ -88,9 +88,9 @@ template <typename T>pair<double> isometric_hexmap<T>::Get_Hex_Center(const pair
 	return cRet;
 }
 
-template <typename T>void isometric_hexmap<T>::Draw_Filled_Hex(const pair<int> & i_tPosition) const
+template <typename T>void isometric_hexmap<T>::Draw_Filled_Hex(const bwm801::pair<int> & i_tPosition) const
 {
-	pair<double> tPos;
+	bwm801::pair<float> tPos;
 	mapspacemin cSpace;
 	Get_Hex_Center(i_tPosition,tPos);
 	glPushMatrix();
@@ -100,9 +100,9 @@ template <typename T>void isometric_hexmap<T>::Draw_Filled_Hex(const pair<int> &
 	glPopMatrix();
 }
 
-template <typename T>void isometric_hexmap<T>::Draw_Hex_Side(const pair<int> & i_tPosition, unsigned int i_uiSide) const
+template <typename T>void isometric_hexmap<T>::Draw_Hex_Side(const bwm801::pair<int> & i_tPosition, unsigned int i_uiSide) const
 {
-	pair<double> tPos;
+	bwm801::pair<float> tPos;
 	mapspacemin cSpace;
 	Get_Hex_Center(i_tPosition,tPos);
 	glPushMatrix();
@@ -111,9 +111,9 @@ template <typename T>void isometric_hexmap<T>::Draw_Hex_Side(const pair<int> & i
 		cSpace.Draw_Hex_Side(i_uiSide);
 	glPopMatrix();
 }
-template <typename T>void isometric_hexmap<T>::Draw_Hex_Outline(const pair<int> & i_tPosition) const
+template <typename T>void isometric_hexmap<T>::Draw_Hex_Outline(const bwm801::pair<int> & i_tPosition) const
 {
-	pair<double> tPos;
+	bwm801::pair<float> tPos;
 	mapspacemin cSpace;
 	Get_Hex_Center(i_tPosition,tPos);
 	glPushMatrix();
@@ -124,8 +124,8 @@ template <typename T>void isometric_hexmap<T>::Draw_Hex_Outline(const pair<int> 
 }
 template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 {
-	double dRoff = 0.5 * mapbase<T>::m_dR;
-	pair<double> tPos;
+	float dRoff = 0.5 * mapbase<T>::m_dR;
+	bwm801::pair<float> tPos;
 	mapspacemin cSpace;
 	glPushMatrix();
 	isometric_hexmap<T>::Prepare_Draw();
@@ -138,12 +138,12 @@ template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 			glBegin(GL_LINE_STRIP);
 			for (int uiJ = 0; uiJ < (int)(mapbase<T>::m_tGrid_Size.m_tY); uiJ++)
 			{
-				pair<double> pdCenter = Get_Hex_Center(pair<int>(uiI,uiJ));
+				bwm801::pair<float> pdCenter = Get_Hex_Center(bwm801::pair<int>(uiI,uiJ));
 				if (uiJ == 0)
 				{
 					if (uiI & 1 != 0)
 					{
-						pair<double> pdCenterOdd = Get_Hex_Center(pair<int>(uiI - 1,uiJ));
+						bwm801::pair<float> pdCenterOdd = Get_Hex_Center(bwm801::pair<int>(uiI - 1,uiJ));
 						(cSpace.Get_Hex_Vertex(5) + pdCenterOdd).glVertex();
 					}
 					(cSpace.Get_Hex_Vertex(0) + pdCenter).glVertex();
@@ -153,7 +153,7 @@ template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 			}
 			if (uiI > 0 && ((uiI & 1) == 0))
 			{
-				pair<double> pdCenterOdd = Get_Hex_Center(pair<int>(uiI - 1,(int)(mapbase<T>::m_tGrid_Size.m_tY - 1)));
+				bwm801::pair<float> pdCenterOdd = Get_Hex_Center(bwm801::pair<int>(uiI - 1,(int)(mapbase<T>::m_tGrid_Size.m_tY - 1)));
 				(cSpace.Get_Hex_Vertex(3) + pdCenterOdd).glVertex();
 			}
 			glEnd();
@@ -161,7 +161,7 @@ template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 		glBegin(GL_LINE_STRIP);
 		for (int uiJ = 0; uiJ < (int)(mapbase<T>::m_tGrid_Size.m_tY); uiJ++)
 		{
-			pair<double> pdCenter = Get_Hex_Center(pair<int>((int)(mapbase<T>::m_tGrid_Size.m_tX - 1),uiJ));
+			bwm801::pair<float> pdCenter = Get_Hex_Center(bwm801::pair<int>((int)(mapbase<T>::m_tGrid_Size.m_tX - 1),uiJ));
 			if (uiJ == 0)
 			{
 				(cSpace.Get_Hex_Vertex(5) + pdCenter).glVertex();
@@ -175,11 +175,11 @@ template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 		{
 			for (int uiJ = 0; uiJ < (int)(mapbase<T>::m_tGrid_Size.m_tY); uiJ++)
 			{
-				pair<double> pdCenter = Get_Hex_Center(pair<int>(uiI,uiJ));
+				bwm801::pair<float> pdCenter = Get_Hex_Center(bwm801::pair<int>(uiI,uiJ));
 				(cSpace.Get_Hex_Vertex(0) + pdCenter).glVertex();
 				(cSpace.Get_Hex_Vertex(5) + pdCenter).glVertex();
 			}
-			pair<double> pdCenter = Get_Hex_Center(pair<int>(uiI,(int)(mapbase<T>::m_tGrid_Size.m_tY - 1)));
+			bwm801::pair<float> pdCenter = Get_Hex_Center(bwm801::pair<int>(uiI,(int)(mapbase<T>::m_tGrid_Size.m_tY - 1)));
 			(cSpace.Get_Hex_Vertex(2) + pdCenter).glVertex();
 			(cSpace.Get_Hex_Vertex(3) + pdCenter).glVertex();
 		}
@@ -196,12 +196,12 @@ template <typename T>void isometric_hexmap<T>::Draw_Grid(void)
 
 template <typename T> void isometric_hexmap<T>::Draw_Map(void * io_lpvData) const
 {
-	pair<double> tPos;
+	bwm801::pair<float> tPos;
 	mapspacemin cSpace;
 	cSpace.Init(); // make sure the space has set up call lists
 	glPushMatrix();
 		isometric_hexmap<T>::Prepare_Draw();
-		typename std::map<pair<int>,T>::const_iterator mapiterator;
+		typename std::map<bwm801::pair<int>,T>::const_iterator mapiterator;
 		for (unsigned int uiLayer = 0; uiLayer < mapbase<T>::m_uiNum_Layers; uiLayer++)
 		{
 			for (mapiterator = mapbase<T>::m_cMap.begin(); mapiterator != mapbase<T>::m_cMap.end(); mapiterator++)
@@ -216,13 +216,13 @@ template <typename T> void isometric_hexmap<T>::Draw_Map(void * io_lpvData) cons
 	glPopMatrix();
 }
 
-template <typename T> void isometric_hexmap<T>::Center_Map(const pair<int> & i_tPosition)
+template <typename T> void isometric_hexmap<T>::Center_Map(const bwm801::pair<int> & i_tPosition)
 {
 	if (i_tPosition.m_tX >= 0 && i_tPosition.m_tX <= (int)mapbase<T>::m_tGrid_Size.m_tX &&
 		i_tPosition.m_tY >= 0 && i_tPosition.m_tY <= (int)mapbase<T>::m_tGrid_Size.m_tY)
 	{
 
-		pair<double> pdCenter;
+		bwm801::pair<float> pdCenter;
 		Get_Hex_Center(i_tPosition,pdCenter);
 		mapbase<T>::m_tScroll_Position = pdCenter * (mapbase<T>::m_dR * mapbase<T>::m_dZoom);
 //		mapbase<T>::m_tScroll_Position.m_tX = pdCenter.m_tX * (mapbase<T>::m_dR * mapbase<T>::m_dZoom);
@@ -230,27 +230,27 @@ template <typename T> void isometric_hexmap<T>::Center_Map(const pair<int> & i_t
 	}
 
 	// make sure corners of map are within the viewable area
-//	double dX = 
+//	float dX = 
 
 	mapbase<T>::Check_Scroll_Limits();
 }
 
-template <typename T> std::deque<pair<int> > isometric_hexmap<T>::Get_Path(const pair<int> & i_pStart, const pair<int> & i_pEnd) const
+template <typename T> std::deque<bwm801::pair<int> > isometric_hexmap<T>::Get_Path(const bwm801::pair<int> & i_pStart, const bwm801::pair<int> & i_pEnd) const
 {
-	std::deque<pair<int> > cRet;
+	std::deque<bwm801::pair<int> > cRet;
 
 //	cRet.clear();
-	pair<int> tCurr_Position = i_pStart;
-	pair<double> tdEnd;
-	pair<double> tdCurr;
+	bwm801::pair<int> tCurr_Position = i_pStart;
+	bwm801::pair<float> tdEnd;
+	bwm801::pair<float> tdCurr;
 	Get_Hex_Center(i_pEnd,tdEnd);
-	double	dPi = acos(-1.0);
-	double dRad_To_Deg = 360.0 / (2.0 * dPi);
+	float	dPi = acos(-1.0);
+	float dRad_To_Deg = 360.0 / (2.0 * dPi);
 	cRet.push_back(tCurr_Position);
 	while (tCurr_Position != i_pEnd)
 	{
 		Get_Hex_Center(tCurr_Position,tdCurr);
-		double dAngle = atan2((tdEnd.m_tY - tdCurr.m_tY),(tdEnd.m_tX - tdCurr.m_tX)) *dRad_To_Deg;
+		float dAngle = atan2((tdEnd.m_tY - tdCurr.m_tY),(tdEnd.m_tX - tdCurr.m_tX)) *dRad_To_Deg;
 		if (dAngle < 0.0)
 			dAngle += 360.0;
 		if (dAngle <= 60.0)
