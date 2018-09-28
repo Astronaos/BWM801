@@ -143,7 +143,6 @@
     <ClCompile Include="src\bwm801_glext.cpp" />
     <ClCompile Include="src\bwm801_main.cpp" />
     <ClCompile Include="src\bwm801_main_data.cpp" />
-    <ClCompile Include="src\bwm801_main_events.cpp" />
     <ClCompile Include="src\bwm801_mapspace.cpp" />
     <ClCompile Include="src\bwm801_pair.cpp" />
     <ClCompile Include="src\bwm801_pane.cpp" />
