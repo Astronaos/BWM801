@@ -43,6 +43,11 @@ rm -rf $RPM_BUILD_ROOT
 %make_install
 
 
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+
 %files
 %defattr(-,root,root,-)
 %license LICENSE
@@ -53,7 +58,9 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root,-)
 #%%doc examples
-%{_includedir}/%{name}
+%license LICENSE
+%doc README.md
+%{_includedir}/*.h
 %{_libdir}/*.a
 %{_libdir}/*.la
 %{_libdir}/*.so

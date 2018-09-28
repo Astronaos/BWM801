@@ -15,20 +15,26 @@ include_HEADERS = include/bwm801_button_info.h include/bwm801_calllist.h include
 
 noinst_HEADERS = include/bwm801_button_info_data.h include/bwm801_main_data.h include/bwm801_pane_data.h include/bwm801_screenshot.h include/bwm801_top.h
 
+EXTRA_DIST = LICENSE README.md ${PACKAGE_NAME}-${API_VERSION}.pc
+
+licensedir= ${datarootdir}/licenses/${PACKAGE_NAME}
 # Install the pkg-config file; the directory is set using
 # PKG_INSTALLDIR in configure.ac.
 pkgconfig_DATA = ${PACKAGE_NAME}-${API_VERSION}.pc
+# Install license and readme
+doc_DATA = README.md
+license_DATA = LICENSE 
 
-if INSTALLMOD
-if HAVEENVMOD
-modfile_DATA = ${PACKAGE_VERSION}
-CLEANFILES = ${PACKAGE_VERSION} ${PACKAGE_NAME}-${API_VERSION}.pc
-else
-modfile_DATA = ${PACKAGE_VERSION}.lua
-CLEANFILES = ${PACKAGE_VERSION}.lua ${PACKAGE_NAME}-${API_VERSION}.pc
-endif
-else
+#if INSTALLMOD
+#if HAVEENVMOD
+#modfile_DATA = ${PACKAGE_VERSION}
+#CLEANFILES = ${PACKAGE_VERSION} ${PACKAGE_NAME}-${API_VERSION}.pc
+#else
+#modfile_DATA = ${PACKAGE_VERSION}.lua
+#CLEANFILES = ${PACKAGE_VERSION}.lua ${PACKAGE_NAME}-${API_VERSION}.pc
+#endif
+#else
 CLEANFILES = ${PACKAGE_NAME}-${API_VERSION}.pc
-endif
+#endif
 
 
