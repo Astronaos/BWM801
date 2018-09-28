@@ -165,6 +165,7 @@ void Screenshot_Loop(void)
 				}
 				fclose(filePNG);
 			}
+			g_cScreenshot.m_bPending = false;
 		}
 
 		Sleep(1);
