@@ -569,6 +569,7 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain __attribute__((unused)), in
 	int iX,iY;
 	unsigned int uiWidth,uiHeight,uiBorder_Width,uiDepth;
 	XGetGeometry(g_lpdpyDisplay, g_wRoot, &wRoot, &iX, &iY, &uiWidth, &uiHeight, &uiBorder_Width, &uiDepth);
+	
 
 	g_wWindow = XCreateWindow(g_lpdpyDisplay, g_wRoot, 0, 0, uiWidth - 2*uiBorder_Width, uiHeight - 2*uiBorder_Width, 0, lpXVisual->depth, InputOutput, lpXVisual->visual, CWColormap | CWEventMask, &swa);
 
@@ -843,7 +844,10 @@ int bwm801_top::bwm801_main(bwm801::main * i_lpcMain __attribute__((unused)), in
 
 	//XFreeGC(g_lpdpyDisplay, gc);
 	XDestroyWindow(g_lpdpyDisplay,g_wWindow);
-	XCloseDisplay(g_lpdpyDisplay);	
+	XCloseDisplay(g_lpdpyDisplay);
+
+	g_lpMain->close();
+	
 	return 0;
 }
 
