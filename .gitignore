@@ -2,6 +2,9 @@
 0.*.* 
 1.*.*
 
+# distributable files
+*.tar.gz
+
 # Compiled Object files
 *.slo
 *.lo
