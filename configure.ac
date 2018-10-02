@@ -8,7 +8,7 @@ m4_define([package_auth_email],[bwmulligan@astronaos.com])
 # API version
 m4_define([api_version],package_version_major)
 
-AC_INIT(BWM801,package_version_major.package_version_minor.package_version_micro,package_auth_email,bwm801,package_repository)
+AC_INIT(bwm801,package_version_major.package_version_minor.package_version_micro,package_auth_email,bwm801,package_repository)
 AC_CONFIG_MACRO_DIR([m4])
 
 LT_INIT
@@ -80,9 +80,9 @@ PKG_CHECK_MODULES([libpng],[libpng],[],[AC_MSG_ERROR[" Could not find png."]])
 
 AC_CONFIG_FILES([Makefile $PACKAGE_NAME-$API_VERSION.pc:lib.pc.in],[],[PACKAGE_NAME='$PACKAGE_NAME' API_VERSION='$API_VERSION'])
 
-AS_IF( [test ${MODTYPE} = "LMOD"],
-	[AC_CONFIG_FILES([$PACKAGE_VERSION.lua:modfile.lua.in])],
-	[AS_IF( [test ${MODTYPE} = "ENVMOD"], [AC_CONFIG_FILES([$PACKAGE_VERSION:modfile.in])], [])])
+#AS_IF( [test ${MODTYPE} = "LMOD"],
+#	[AC_CONFIG_FILES([$PACKAGE_VERSION.lua:modfile.lua.in])],
+#	[AS_IF( [test ${MODTYPE} = "ENVMOD"], [AC_CONFIG_FILES([$PACKAGE_VERSION:modfile.in])], [])])
 
 
 AC_OUTPUT
