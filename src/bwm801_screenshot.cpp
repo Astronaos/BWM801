@@ -95,6 +95,7 @@ void main::Request_Screenshot(const std::string & i_szFilename)
 	}
 }
 
+#if (PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR >= 6)
 void write_row_callback(png_structrp i_ppPng_Ptr 
 #ifndef WIN32
 	__attribute__((unused))
@@ -108,6 +109,7 @@ void write_row_callback(png_structrp i_ppPng_Ptr
 	if (g_cScreenshot.m_bPending && g_cOGL_Screenshot.m_bReady)
 		g_cScreenshot.m_fProgress = ((float)i_uiRow) / g_cOGL_Screenshot.m_tHeight; // or something
 }
+#endif
 
 extern bwm801::main * g_lpMain;
 
@@ -132,14 +134,17 @@ void Screenshot_Loop(void)
 				png_structp spngStruct = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 				if (spngStruct != nullptr)
 				{
+#if (PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR >= 6)
 					png_set_write_status_fn(spngStruct, write_row_callback);
+#endif
 					png_infop pspngiInfo = png_create_info_struct(spngStruct);
 					if (pspngiInfo != nullptr)
 					{
 						png_init_io(spngStruct, filePNG);
 
+#if (PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR >= 6)
 						png_set_write_status_fn(spngStruct, write_row_callback);
-
+#endif
 						while (!g_cOGL_Screenshot.m_bReady)
 							Sleep(1); // wait on the image to be ready before procedding
 
