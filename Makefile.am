@@ -17,13 +17,13 @@ noinst_HEADERS = include/bwm801_button_info_data.h include/bwm801_main_data.h in
 
 EXTRA_DIST = LICENSE README.md ${PACKAGE_NAME}-${API_VERSION}.pc
 
-licensedir= ${datarootdir}/licenses/${PACKAGE_NAME}
+#licensedir= ${datarootdir}/licenses/${PACKAGE_NAME}
 # Install the pkg-config file; the directory is set using
 # PKG_INSTALLDIR in configure.ac.
 pkgconfig_DATA = ${PACKAGE_NAME}-${API_VERSION}.pc
 # Install license and readme
-doc_DATA = README.md
-license_DATA = LICENSE 
+#doc_DATA = README.md
+#license_DATA = LICENSE 
 
 #if INSTALLMOD
 #if HAVEENVMOD
