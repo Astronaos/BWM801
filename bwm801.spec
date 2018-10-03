@@ -13,8 +13,8 @@ Source0:        https://astronaos.com/bwm801/bwm801-0.4.1.tar.gz
 # cannot update it, please try building the source; if you find that it
 # compiles correctly, let me know and I will make the update to the RPM, or
 # please generate a pull request on github
-BuildRequires:  libX11-devel >= 1.6 freetype-devel >= 2.2 ftgl-devel >= 2.1  mesa-libGL-devel >= 12.0 mesa-libGLU-devel >= 9.0 libpng-devel >= 1.6
-Requires:       libX11 >= 1.6 freetype >= 2.2 ftgl >= 2.1 mesa-libGL >= 12.0 mesa-libGLU >= 9.0 libpng >= 1.6
+BuildRequires:  libX11-devel >= 1.6 freetype-devel >= 2.2 ftgl-devel >= 2.1  mesa-libGL-devel >= 10.0 mesa-libGLU-devel >= 9.0 libpng-devel >= 1.5
+Requires:       libX11 >= 1.6 freetype >= 2.2 ftgl >= 2.1 mesa-libGL >= 10.0 mesa-libGLU >= 9.0 libpng >= 1.5
 
 %description
 This package contains headers and libraries required to build applications that
