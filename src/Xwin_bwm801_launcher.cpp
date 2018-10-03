@@ -123,7 +123,8 @@ template<typename T> bool Load_Func_From_DLL(const std::string & i_sName, const 
 		}
 		if (lpvDLL != nullptr)
 		{
-			T lpInstance = (T)dlsym(lpvDLL,i_sName.c_str());
+			T lpInstance;
+			*(void **) (&lpInstance) = dlsym(lpvDLL,i_sName.c_str());
 			if (lpInstance != nullptr)
 			{
 				//std::cout << i_sName << " instance found" << std::endl;
